@@ -25,6 +25,11 @@ ALLOWED: dict[str, frozenset[str]] = {
 }
 
 
+# Standard-library routes to importing a module by name, or to running code.
+LOADER_MODULES = frozenset({"importlib", "runpy", "pkgutil"})
+DYNAMIC_BUILTINS = frozenset({"__import__", "exec", "eval"})
+
+
 def _imported_names(module: str, is_package: bool, source: str) -> list[str]:
     """Absolute dotted names of everything `source` imports from the project."""
     names: list[str] = []
@@ -50,16 +55,19 @@ def _dynamic_imports(source: str) -> list[str]:
     found: list[str] = []
     for node in ast.walk(ast.parse(source)):
         if isinstance(node, ast.Import):
-            found += [a.name for a in node.names if a.name == "importlib"]
-        elif isinstance(node, ast.ImportFrom) and node.module == "importlib":
-            found += [
-                f"importlib.{a.name}"
-                for a in node.names
-                if a.name in ("import_module", "__import__")
-            ]
-        elif isinstance(node, ast.Name) and node.id == "__import__":
+            found += [a.name for a in node.names if _is_loader(a.name)]
+        elif isinstance(node, ast.ImportFrom) and not node.level:
+            if _is_loader(node.module or ""):
+                found.append(node.module or "")
+        elif isinstance(node, ast.Name) and node.id in DYNAMIC_BUILTINS:
             found.append(node.id)
+        elif isinstance(node, ast.Attribute) and node.attr == "__import__":
+            found.append(node.attr)
     return found
+
+
+def _is_loader(module: str) -> bool:
+    return module.split(".")[0] in LOADER_MODULES
 
 
 def violations(module: str, source: str, is_package: bool = False) -> list[str]:
@@ -114,6 +122,11 @@ def test_import_direction_rejects_forbidden_examples() -> None:
         ("agent_pfc.domain.probe", "import importlib\nimportlib.import_module('x')"),
         ("agent_pfc.domain.probe", "from importlib import import_module"),
         ("agent_pfc.domain.probe", "__import__('agent_pfc.probes')"),
+        ("agent_pfc.domain.probe", "import builtins\nbuiltins.__import__('x')"),
+        ("agent_pfc.domain.probe", "import importlib.util\nimportlib.import_module('x')"),
+        ("agent_pfc.domain.probe", "from importlib.util import find_spec"),
+        ("agent_pfc.domain.probe", "import runpy"),
+        ("agent_pfc.domain.probe", "exec('from agent_pfc import probes')"),
         ("agent_pfc.helpers", ""),
     ]
     for module, source in forbidden:
