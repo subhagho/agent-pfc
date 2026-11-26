@@ -1,0 +1,1 @@
+362	{"artifactId":"LLD-2152718849ceb87c-s1","entry":{"id":"d7f42c5ee8cd44db8f8bed4d2307d2fe","actor":{"id":"insrc:approval","kind":"system","properties":{}},"timestamp":"2026-11-26T10:31:43.445Z","operation":"approve","revision":{"number":2,"contentHash":"b4260fdde71803f71520c0dcd20b55ab5d220b750d27367221d14175dd71491a"},"status":{"from":"draft","to":"approved"}}}

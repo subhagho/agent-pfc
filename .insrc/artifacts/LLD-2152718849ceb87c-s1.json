@@ -1,0 +1,630 @@
+{
+  "meta": {
+    "workflow": "design.story",
+    "runId": "wf-1795685420064-vbz7yv",
+    "repoPath": "/Users/subhagho/work/projects/agent-pfc",
+    "createdAt": "2026-11-26T09:31:59.465Z",
+    "epicCreatedAt": "2026-11-26T09:22:28.532Z",
+    "attribution": {
+      "outputs": [
+        {
+          "role": "(client)",
+          "tier": "core",
+          "runner": "cli-claude",
+          "model": "claude-sonnet-5-5"
+        }
+      ]
+    },
+    "elapsedMs": 99151,
+    "repoIndexedAt": null,
+    "schemaVersion": 1,
+    "epicHash": "2152718849ceb87c",
+    "epicSlug": "test-modality-collapse-operation-embeddings",
+    "storyId": "s1",
+    "hldBaseRunId": "wf-1795685420064-vbz7yv",
+    "hldEffectiveHash": "67fcbde13b3d942d5f8243ed5ba8423a65dc53037fac63986b09d1f8acb20b16",
+    "hldAmendmentsApplied": [],
+    "storyTitle": "Test modality collapse in operation embeddings",
+    "standalone": true,
+    "sizeClass": "feature",
+    "authoredBy": "controller",
+    "lifecycle": {
+      "status": "approved",
+      "revision": {
+        "number": 2,
+        "contentHash": "b4260fdde71803f71520c0dcd20b55ab5d220b750d27367221d14175dd71491a",
+        "at": "2026-11-26T09:31:59.606Z",
+        "by": {
+          "id": "insrc:system",
+          "kind": "system",
+          "properties": {}
+        }
+      },
+      "signoffs": [],
+      "approval": {
+        "revision": 2,
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        },
+        "at": "2026-11-26T10:31:43.444Z"
+      }
+    },
+    "revision": 2,
+    "envelope": {
+      "description": "",
+      "references": [],
+      "attachments": []
+    },
+    "rangeBase": "0814395a6e924e68cf517c1488498c6f048bf7f9"
+  },
+  "body": {
+    "summary": {
+      "prose": "This story builds an offline-testable experiment that measures whether operations differing only in modality stay distinguishable under each composition method and dimension. It adds a versioned probe set, a pluggable embedder with a local Ollama backend and cache, pure composition and evaluation functions, and a run that writes confusion matrices, margins and a pass or fail verdict against a criterion fixed beforehand.",
+      "audience": "technical"
+    },
+    "hldContextSlice": {
+      "frameworkSummary": "Standalone feature — no parent HLD. Design directly against the repo, grounded on the s1 analyze passes. There are no HLD shared contracts to honour.",
+      "ownedContracts": [],
+      "consumedContracts": [],
+      "boundary": {
+        "storyId": "s1",
+        "owns": [],
+        "depends": [],
+        "internal": "Test modality collapse in operation embeddings"
+      },
+      "adjacentBoundaries": [],
+      "rolloutPhase": "standalone",
+      "nonFunctional": {}
+    },
+    "contractDetails": {
+      "surfaceLevel": "internal",
+      "api": [
+        {
+          "name": "Embedder",
+          "signature": "class Embedder(Protocol): fingerprint: EncoderFingerprint; def encode(self, texts: Sequence[str]) -> np.ndarray",
+          "parameters": [
+            {
+              "name": "texts",
+              "type": "Sequence[str]",
+              "purpose": "Non-empty strings to embed, in order. Dimension is fixed when the embedder is constructed.",
+              "optional": false
+            }
+          ],
+          "returns": {
+            "type": "np.ndarray",
+            "meaning": "float32 array of shape (len(texts), dimension), each row unit length, in input order."
+          },
+          "errors": [
+            {
+              "type": "ValueError",
+              "condition": "Any input is empty or whitespace only."
+            },
+            {
+              "type": "EmbeddingBackendError",
+              "condition": "The backend is unreachable, returns an error, returns the wrong count or dimension, returns a non-finite or zero vector, or its model digest differs from the configured one."
+            }
+          ],
+          "preconditions": [
+            "The embedder was constructed with a supported dimension: 256, 512 or 1024."
+          ],
+          "postconditions": [
+            "No partial result is returned.",
+            "Equal inputs under an equal fingerprint come from the same cache entry when the cache wrapper is used."
+          ]
+        }
+      ]
+    },
+    "dataModelChanges": [
+      {
+        "entity": "ProbeOperation",
+        "change": "new",
+        "details": "Domain record: concept, modality (required, strict_required, permitted, not_required, prohibited), phase (+1, +2, +1, -1, -1 in that order, matching the usual v0.1 convention), phase_modality_text, contextual_text, split (select or confirm). Identity is concept plus modality; phase never identifies an operation. One record per concept and modality, and every concept has all five (confirmed by the user).",
+        "callSites": []
+      },
+      {
+        "entity": "ProbeQuery",
+        "change": "new",
+        "details": "Domain record: id, concept, expected modality, text (a natural paraphrase) and synonym_term (a synonym of the modality wording, used only by the symmetric track). A query text never equals any stored contextual_text or phase_modality_text. Size, confirmed by the user: 20 concepts, 3 queries per concept and modality, 300 queries, split by concept into 10 select and 10 confirm. The user reviews the paraphrases before a verdict run. A word that fits more than one modality, such as 'optional' for permitted and not_required, is either excluded or assigned to one modality by the user during that review.",
+        "callSites": []
+      },
+      {
+        "entity": "ProbeSet",
+        "change": "new",
+        "details": "Versioned files under data/probes/modality_collapse_v1: operations.jsonl, queries.jsonl and manifest.json with counts, file hashes and a reviewed_by_user flag. Benchmark v0.1 is not read or modified by this story. The package probes loads and validates; it holds no scoring logic.",
+        "callSites": []
+      },
+      {
+        "entity": "MethodVariant",
+        "change": "new",
+        "details": "Method id plus weight. Stored vectors, with u the unit embedding, o concept, m phase_modality_text, c contextual_text: C0 u(c); C1 norm(u(o)+w*u(m)); C2 norm((1-w)*u(o)+w*u(c)); C4 u of the text 'Operation: o; Phase: p; Modality: m'; C5 u(o). C3 for operations is defined by the benchmark README as the same formula as C1, so it is reported as identical to C1 and not run twice. Weights 0.25, 0.5, 0.75, 1.0 for C1 and C2; C2 at 1.0 equals C0 and is computed once. No vector negation and no instruction-conditioned queries. R0 does not apply.",
+        "callSites": [
+          "docs/PFC_PYTHON_PROJECT_CONTEXT.md:113-226"
+        ]
+      },
+      {
+        "entity": "QueryTrack",
+        "change": "new",
+        "details": "natural (primary, decides the verdict): query vector is u(text) for every method. symmetric (diagnostic): the query is composed by the same method from concept, synonym_term and text: C0 u(text); C1 norm(u(o)+w*u(synonym_term)); C2 norm((1-w)*u(o)+w*u(text)); C4 u of the text 'Operation: o; Modality: synonym_term'; C5 u(o). A query is never built from the expected modality or its phase, so the C4 query has no Phase field although the stored C4 text has one. Results of the two tracks are never mixed.",
+        "callSites": [
+          "docs/PFC_SCOPE_REVIEW.md"
+        ]
+      },
+      {
+        "entity": "CollapseResult",
+        "change": "new",
+        "details": "Per variant, dimension, track and split. Modality ranking: each query ranks the five stored operations of its own concept; it is correct only if the expected one scores strictly highest, with scores within 1e-6 counted as a tie and therefore wrong. Reports accuracy, a 5x5 confusion matrix with a separate tie column, pairwise accuracy for each of the 10 modality pairs (queries of either modality whose own operation strictly outscores the other), margin (own cosine minus best other cosine: mean, minimum, 5th percentile) and the worst cases. Neutral measure: u(o) ranks all stored operations of all concepts in the split; reports the share of its five modalities found in the top five. It is reported, not part of the verdict.",
+        "callSites": []
+      },
+      {
+        "entity": "PassCriterion",
+        "change": "new",
+        "details": "Confirmed by the user. Held in the run config and copied into the run record before any embedding: minimum accuracy 0.95 and minimum pairwise accuracy 0.90, natural track. The variant, weight and dimension are chosen on the select split (highest accuracy, then highest worst pair, then smallest dimension, then method id and weight order). The verdict is that single choice evaluated on the confirm split. Confirm results for other variants are reported but cannot change the choice.",
+        "callSites": []
+      },
+      {
+        "entity": "EncoderFingerprint",
+        "change": "new",
+        "details": "Model name, model digest, quantization, backend name and version, dimension, text convention and dtype. It is part of every cache key together with the input text, and is stored in each run record.",
+        "callSites": [
+          "docs/PFC_PYTHON_PROJECT_CONTEXT.md:113-226"
+        ]
+      },
+      {
+        "entity": "PackageLayout",
+        "change": "new",
+        "details": "Under src/agent_pfc, with dependencies pointing only downward. domain: records and enums, imports nothing from the project. probes: loading.py and validation.py, depends on domain. embeddings: protocol.py, ollama.py, cache.py, errors.py; no project imports beyond its own package. composition: rendering.py builds texts from domain records, methods.py is pure vector arithmetic. evaluation: ranking.py, margins.py, neutral.py, verdict.py, pure functions over arrays and domain records. experiments: config.py and collapse.py orchestrate, receiving an Embedder instance. reporting: run_record.py and markdown.py write under runs/. cli.py constructs the concrete objects, may import domain records to pass them between packages, and calls experiments then reporting. Only embeddings/ollama.py knows about Ollama; it uses the standard library HTTP client, sends batches of at most 32, and accepts only a loopback base URL. numpy is the only new runtime dependency. The scaffold hello stub is removed.",
+        "callSites": [
+          "src/agent_pfc/__init__.py",
+          "pyproject.toml",
+          "tests/test_import.py"
+        ]
+      }
+    ],
+    "interactionWithShared": [],
+    "errorPaths": {
+      "errorCases": [
+        {
+          "scenario": "Ollama is not running or the model is not installed",
+          "detection": "The HTTP request fails to connect, returns a non-2xx status, or the model is absent from the local model list.",
+          "response": "Raise EmbeddingBackendError naming the endpoint and model; the run stops without a verdict.",
+          "userImpact": "Run fails with a clear message.",
+          "recoverable": true
+        },
+        {
+          "scenario": "Installed model differs from the configured digest",
+          "detection": "The digest reported by the local model list is compared with the configured digest before any encoding.",
+          "response": "Raise EmbeddingBackendError showing both digests.",
+          "userImpact": "Results from another model cannot be mixed in.",
+          "recoverable": true
+        },
+        {
+          "scenario": "Backend returns a missing, extra, wrong-sized, non-finite or zero vector",
+          "detection": "The backend checks response count against input count, then shape, finiteness and norm of each row.",
+          "response": "Raise EmbeddingBackendError; nothing from that batch is cached.",
+          "userImpact": "Run fails instead of scoring bad vectors.",
+          "recoverable": true
+        },
+        {
+          "scenario": "A composed vector cannot be normalized",
+          "detection": "The composition function finds a norm at or below 1e-12.",
+          "response": "Raise ValueError naming the method and weight.",
+          "userImpact": "Run fails; no silent zero vector.",
+          "recoverable": false
+        },
+        {
+          "scenario": "Probe set is malformed or incomplete",
+          "detection": "Validation checks required fields, unique ids, five modalities per concept, phase matching the modality table, split per concept, no query text equal to a stored text after case and whitespace folding, and manifest hashes.",
+          "response": "Raise a validation error listing every failure before any embedding.",
+          "userImpact": "The user fixes the data.",
+          "recoverable": true
+        },
+        {
+          "scenario": "Probe set has not been reviewed by the user",
+          "detection": "The manifest reviewed_by_user flag is false.",
+          "response": "Run proceeds only with an explicit draft option; the report is labelled draft and states no verdict.",
+          "userImpact": "Unreviewed data cannot produce a pass or fail claim.",
+          "recoverable": true
+        },
+        {
+          "scenario": "The control behaves like a real method",
+          "detection": "C5 results are checked: every modality ranking must be a tie.",
+          "response": "Fail the run as a harness error.",
+          "userImpact": "A scoring bug is caught before results are read.",
+          "recoverable": false
+        },
+        {
+          "scenario": "A cache entry is corrupt or truncated",
+          "detection": "On read, shape, dtype, finiteness and norm are checked against the fingerprint.",
+          "response": "Discard the entry and encode again; write entries through a temporary file and atomic rename.",
+          "userImpact": "None beyond recomputation.",
+          "recoverable": true
+        },
+        {
+          "scenario": "Run directory already exists",
+          "detection": "Directory creation fails because the path is present.",
+          "response": "Stop without overwriting.",
+          "userImpact": "Earlier results are never replaced.",
+          "recoverable": true
+        },
+        {
+          "scenario": "Configured base URL is not loopback",
+          "detection": "The host of the configured URL is checked at construction.",
+          "response": "Raise EmbeddingBackendError.",
+          "userImpact": "Text is never sent off the machine.",
+          "recoverable": true
+        }
+      ],
+      "edgeCases": [
+        {
+          "input": "Two modality vectors are identical",
+          "expected": "Scores within 1e-6 count as a tie, the query is wrong and the tie column increments."
+        },
+        {
+          "input": "C2 weight 1.0",
+          "expected": "Identical to C0; computed once and reported under both names."
+        },
+        {
+          "input": "C3 requested",
+          "expected": "Reported as identical to C1 for operations, with no separate computation."
+        },
+        {
+          "input": "More texts than one batch",
+          "expected": "Split into batches of at most 32 with order preserved."
+        },
+        {
+          "input": "Duplicate texts in one call",
+          "expected": "One row per input, identical rows for identical texts."
+        },
+        {
+          "input": "A modality pair with no queries in a split",
+          "expected": "Validation rejects the probe set; no pair is reported as perfect by default."
+        },
+        {
+          "input": "Several variants tie on the select split",
+          "expected": "The documented tie-break order picks exactly one."
+        }
+      ],
+      "invariantsToPreserve": [
+        {
+          "text": "Benchmark v0.1 stays unchanged and is not read by this run.",
+          "source": "c1"
+        },
+        {
+          "text": "Operation identity includes concept and modality; phase or concept text alone never identifies an operation.",
+          "source": "c2"
+        },
+        {
+          "text": "No negated vector is used to encode negation.",
+          "source": "c3"
+        },
+        {
+          "text": "Unit tests run offline with a deterministic fake embedder and make no semantic quality claim.",
+          "source": "c4"
+        },
+        {
+          "text": "Selection uses only the select split; the verdict uses only the confirm split and the criterion recorded before embedding.",
+          "source": "c5"
+        }
+      ]
+    },
+    "testStrategy": {
+      "testFramework": "pytest",
+      "testLevels": [
+        {
+          "level": "unit",
+          "purpose": "Prove arithmetic, scoring, validation, caching and backend response checks offline.",
+          "subjects": [
+            "composition formulas, C2 at 1.0 equals C0, zero-norm rejection",
+            "symmetric query composition never uses the expected modality or phase",
+            "ranking, ties, confusion matrix, pairwise accuracy, margins, neutral share",
+            "variant selection tie-break and confirm-split verdict",
+            "probe loading and each validation failure",
+            "cache key changes with digest, dimension, convention and text; corrupt entry recovery",
+            "Ollama backend against a stubbed transport: batching, order, bad responses, digest mismatch, non-loopback URL",
+            "import direction between packages and the absence of Ollama knowledge outside embeddings/ollama.py"
+          ],
+          "fixturesNeeded": [
+            "deterministic fake embedder",
+            "small synthetic probe set"
+          ]
+        },
+        {
+          "level": "integration",
+          "purpose": "Run the whole experiment offline with the fake embedder and check the written artifacts.",
+          "subjects": [
+            "collapse run writes run record and report",
+            "C5 control yields all ties",
+            "draft run states no verdict",
+            "existing run directory is not overwritten"
+          ],
+          "fixturesNeeded": [
+            "temporary run and cache directories"
+          ]
+        },
+        {
+          "level": "live",
+          "purpose": "Check the real local model contract before a measured run.",
+          "subjects": [
+            "dimensions 256, 512 and 1024 return unit vectors in input order"
+          ],
+          "fixturesNeeded": [
+            "running Ollama with qwen3-embedding:0.6b"
+          ]
+        }
+      ],
+      "acceptanceMapping": [
+        {
+          "criterionId": "ac1",
+          "provingTests": [
+            "composition formulas, C2 at 1.0 equals C0, zero-norm rejection",
+            "symmetric query composition never uses the expected modality or phase",
+            "collapse run writes run record and report"
+          ]
+        },
+        {
+          "criterionId": "ac2",
+          "provingTests": [
+            "ranking, ties, confusion matrix, pairwise accuracy, margins, neutral share",
+            "variant selection tie-break and confirm-split verdict"
+          ]
+        },
+        {
+          "criterionId": "ac3",
+          "provingTests": [
+            "probe loading and each validation failure",
+            "draft run states no verdict"
+          ]
+        },
+        {
+          "criterionId": "ac4",
+          "provingTests": [
+            "Ollama backend against a stubbed transport: batching, order, bad responses, digest mismatch, non-loopback URL",
+            "dimensions 256, 512 and 1024 return unit vectors in input order"
+          ]
+        },
+        {
+          "criterionId": "ac5",
+          "provingTests": [
+            "import direction between packages and the absence of Ollama knowledge outside embeddings/ollama.py"
+          ]
+        }
+      ]
+    },
+    "migration": {
+      "stateBefore": "A scaffold package exporting a hello stub, one import test, no runtime dependencies and no persisted data.",
+      "stateAfter": "Layered packages for the collapse test, numpy as a runtime dependency, a versioned probe set under data/probes, and run outputs under runs/.",
+      "migrationSteps": [
+        {
+          "order": 1,
+          "action": "Add numpy to project dependencies and update the lock file.",
+          "rollbackable": true
+        },
+        {
+          "order": 2,
+          "action": "Add the new packages and tests, and remove the hello stub.",
+          "rollbackable": true
+        },
+        {
+          "order": 3,
+          "action": "Add runs/ to the ignore list and add the draft probe set.",
+          "rollbackable": true
+        }
+      ],
+      "backwardCompat": "The hello stub is removed; nothing in the repository other than the package itself uses it, and the import test keeps passing.",
+      "zeroDowntime": true,
+      "dataRewriteRequired": false
+    },
+    "alternativesConsidered": [
+      {
+        "id": "a1",
+        "name": "Single experiment script",
+        "oneLineSummary": "One script reads a probe file, calls Ollama, composes, scores and prints a report.",
+        "approach": "A single module under the source package holds the probe records, the HTTP call, an in-memory cache, the composition formulas, the metrics and the report writing, with one test file for the formulas.",
+        "pros": [
+          "Fastest route to the first numbers",
+          "No new runtime dependency beyond numpy"
+        ],
+        "cons": [
+          "Breaks the non-negotiable separation of concerns and package modularity rule",
+          "Nothing is reusable by milestones M1 and M2"
+        ],
+        "costEstimate": "S",
+        "reasonRejected": "Violates the non-negotiable separation of concerns and package modularity rule."
+      },
+      {
+        "id": "a2",
+        "name": "Layered packages for this test only",
+        "oneLineSummary": "Small one-responsibility packages with one-way dependencies, containing only what the collapse test needs.",
+        "approach": "Packages: domain (operation and probe records, no project imports); probes (load and validate the versioned probe set); embeddings (Embedder protocol, Ollama backend, disk cache wrapper, each its own module); composition (pure functions turning component vectors into method vectors, plus the text rendering each method needs); evaluation (pure ranking, confusion, margin and criterion functions); experiments (orchestrates one collapse run from a config); reporting (writes run artifacts and the report); cli (wiring only).",
+        "pros": [
+          "Meets the modularity rule in code and package structure",
+          "Pure composition and evaluation are testable offline with a deterministic fake embedder",
+          "M2 can reuse embeddings, composition and evaluation without change of boundaries"
+        ],
+        "cons": [
+          "More files than the experiment strictly needs to produce numbers",
+          "Interfaces are chosen before M2 requirements are exercised"
+        ],
+        "costEstimate": "M"
+      },
+      {
+        "id": "a3",
+        "name": "General benchmark framework",
+        "oneLineSummary": "A task-agnostic experiment framework with registries, covering entity, operation and retrieval tasks, with the collapse test as its first plugin.",
+        "approach": "The a2 packages plus a method and task registry, a generic benchmark runner over the v0.1 fixture, scorer integration and BM25 and R0 baselines, with the collapse test registered as one task.",
+        "pros": [
+          "Later milestones plug into one runner",
+          "Baselines available immediately"
+        ],
+        "cons": [
+          "Covers M2 scope this story was not asked to build",
+          "Registry abstractions designed with only one real task"
+        ],
+        "costEstimate": "L",
+        "reasonRejected": "Adds the M2 runner, scorer and baselines, which are outside this story."
+      }
+    ],
+    "chosenAlternative": "a2",
+    "openQuestions": [],
+    "componentDependencyDefinition": {
+      "narrative": "Allowed import directions between the new packages. Anything not drawn is forbidden, which the import-direction test enforces.",
+      "components": [
+        {
+          "id": "domain",
+          "label": "domain",
+          "description": "Records and enums; imports nothing from the project.",
+          "path": "src/agent_pfc/domain"
+        },
+        {
+          "id": "probes",
+          "label": "probes",
+          "description": "Loads and validates the probe set.",
+          "path": "src/agent_pfc/probes"
+        },
+        {
+          "id": "embeddings",
+          "label": "embeddings",
+          "description": "Embedder protocol, Ollama backend, cache and errors.",
+          "path": "src/agent_pfc/embeddings"
+        },
+        {
+          "id": "composition",
+          "label": "composition",
+          "description": "Text rendering and pure vector composition.",
+          "path": "src/agent_pfc/composition"
+        },
+        {
+          "id": "evaluation",
+          "label": "evaluation",
+          "description": "Pure ranking, margin, neutral and verdict functions.",
+          "path": "src/agent_pfc/evaluation"
+        },
+        {
+          "id": "experiments",
+          "label": "experiments",
+          "description": "Orchestrates one collapse run with an injected embedder.",
+          "path": "src/agent_pfc/experiments"
+        },
+        {
+          "id": "reporting",
+          "label": "reporting",
+          "description": "Writes run records and the report.",
+          "path": "src/agent_pfc/reporting"
+        },
+        {
+          "id": "cli",
+          "label": "cli",
+          "description": "Wiring only.",
+          "path": "src/agent_pfc/cli.py"
+        }
+      ],
+      "dependencies": [
+        {
+          "from": "probes",
+          "to": "domain"
+        },
+        {
+          "from": "composition",
+          "to": "domain"
+        },
+        {
+          "from": "evaluation",
+          "to": "domain"
+        },
+        {
+          "from": "experiments",
+          "to": "domain"
+        },
+        {
+          "from": "experiments",
+          "to": "composition"
+        },
+        {
+          "from": "experiments",
+          "to": "evaluation"
+        },
+        {
+          "from": "experiments",
+          "to": "embeddings",
+          "label": "protocol only"
+        },
+        {
+          "from": "reporting",
+          "to": "domain"
+        },
+        {
+          "from": "reporting",
+          "to": "evaluation",
+          "label": "result types"
+        },
+        {
+          "from": "reporting",
+          "to": "experiments",
+          "label": "run result"
+        },
+        {
+          "from": "cli",
+          "to": "domain"
+        },
+        {
+          "from": "cli",
+          "to": "probes"
+        },
+        {
+          "from": "cli",
+          "to": "embeddings",
+          "label": "constructs backend"
+        },
+        {
+          "from": "cli",
+          "to": "experiments"
+        },
+        {
+          "from": "cli",
+          "to": "reporting"
+        }
+      ]
+    },
+    "companions": [
+      {
+        "kind": "diagram-mermaid",
+        "relPath": "docs/standalone/test-modality-collapse-operation-embeddings-E2026112621527188/S001/component-dependency.html",
+        "title": "Component dependencies"
+      }
+    ]
+  },
+  "citations": [
+    {
+      "id": "c1",
+      "kind": "doc",
+      "ref": "docs/PFC_PYTHON_PROJECT_CONTEXT.md:366-374"
+    },
+    {
+      "id": "c2",
+      "kind": "doc",
+      "ref": "docs/PFC_PYTHON_PROJECT_CONTEXT.md:113-125"
+    },
+    {
+      "id": "c3",
+      "kind": "doc",
+      "ref": "docs/PFC_PYTHON_PROJECT_CONTEXT.md:194-212"
+    },
+    {
+      "id": "c4",
+      "kind": "doc",
+      "ref": "docs/PFC_PYTHON_PROJECT_CONTEXT.md:518-529"
+    },
+    {
+      "id": "c5",
+      "kind": "step-output",
+      "ref": "s4"
+    },
+    {
+      "id": "c6",
+      "kind": "analyze-bundle",
+      "ref": "s1"
+    }
+  ]
+}
