@@ -1,0 +1,476 @@
+{
+  "meta": {
+    "workflow": "plan",
+    "runId": "wf-1795689121087-dqtcl3",
+    "repoPath": "/Users/subhagho/work/projects/agent-pfc",
+    "createdAt": "2026-11-26T10:34:10.851Z",
+    "epicCreatedAt": "2026-11-26T09:22:28.532Z",
+    "standalone": true,
+    "attribution": {
+      "outputs": [
+        {
+          "role": "(client)",
+          "tier": "core",
+          "runner": "cli-claude",
+          "model": "claude-sonnet-5-5"
+        }
+      ]
+    },
+    "elapsedMs": 129588,
+    "repoIndexedAt": null,
+    "schemaVersion": 1,
+    "epicHash": "2152718849ceb87c",
+    "epicSlug": "test-modality-collapse-operation-embeddings",
+    "storyId": "s1",
+    "lldRunId": "wf-1795685420064-vbz7yv",
+    "lldEffectiveHash": "67fcbde13b3d942d5f8243ed5ba8423a65dc53037fac63986b09d1f8acb20b16",
+    "authoredBy": "controller",
+    "lifecycle": {
+      "status": "approved",
+      "revision": {
+        "number": 1,
+        "contentHash": "babe46315395f592e888bbbf558d5a917f5eaff0d3ca19d665ce628ed8546ed6",
+        "at": "2026-11-26T10:34:10.891Z",
+        "by": {
+          "id": "insrc:system",
+          "kind": "system",
+          "properties": {}
+        }
+      },
+      "signoffs": [],
+      "approval": {
+        "revision": 1,
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        },
+        "at": "2026-11-26T10:40:01.989Z"
+      }
+    },
+    "revision": 1,
+    "envelope": {
+      "description": "",
+      "references": [],
+      "attachments": []
+    },
+    "rangeBase": "37b5a3cc18a54f79175ed2eef3f0447584c72652"
+  },
+  "body": {
+    "summary": {
+      "prose": "Building this story means creating the project's first real code: a small set of one-responsibility packages for records, embedding, composition, scoring, probe loading, orchestration, reporting and the command line, all testable offline with a fake embedder. It ends with a draft probe set of 100 operations and 300 queries for the user to review. No pass or fail verdict exists until that review happens and the run is made against the local model.",
+      "audience": "technical"
+    },
+    "tasks": [
+      {
+        "id": "t1",
+        "title": "Domain records and package foundation",
+        "summary": "Add numpy through uv, remove the hello stub, ignore the runs directory, add the domain package with the modality and phase table, split, ProbeOperation, ProbeQuery, ProbeSet (records, reviewed flag, file hashes), MethodVariant, QueryTrack and PassCriterion, and add the import-direction test that encodes the allowed dependency table.",
+        "size": "M",
+        "order": 1,
+        "dependsOn": [],
+        "acceptanceChecks": [
+          "numpy is the only new runtime dependency and uv.lock is updated",
+          "The hello stub is gone and the import test passes",
+          "runs/ is in the ignore list",
+          "domain imports nothing from the project",
+          "The import-direction test fails on any import outside the LLD table, including a deliberately forbidden example it is checked against",
+          "The phase table gives +1, +2, +1, -1, -1 for required, strict_required, permitted, not_required, prohibited",
+          "An operation is identified by concept and modality, never by phase or concept alone"
+        ],
+        "derivedFrom": [
+          "c1",
+          "c2"
+        ],
+        "tests": [
+          {
+            "level": "unit",
+            "name": "import direction between packages follows the allowed table and rejects a forbidden example"
+          },
+          {
+            "level": "unit",
+            "name": "modality phase table and operation identity by concept and modality"
+          }
+        ]
+      },
+      {
+        "id": "t2",
+        "title": "Embeddings protocol, errors and disk cache",
+        "summary": "Add the Embedder protocol and the EncoderFingerprint record in embeddings/protocol.py, EmbeddingBackendError, a disk cache wrapper keyed by fingerprint and text with atomic writes and read validation, and a deterministic fake embedder for tests. The fingerprint lives here because embeddings may import no other project package.",
+        "size": "M",
+        "order": 2,
+        "dependsOn": [
+          "t1"
+        ],
+        "acceptanceChecks": [
+          "The fingerprint holds model name, digest, quantization, backend name and version, dimension, text convention and dtype",
+          "Cache key changes when digest, dimension, text convention or text changes",
+          "A corrupt or truncated entry is discarded and encoded again",
+          "Entries are written through a temporary file and atomic rename",
+          "Empty or whitespace input raises ValueError",
+          "Duplicate inputs return identical rows in input order",
+          "embeddings imports no other project package"
+        ],
+        "derivedFrom": [
+          "c1",
+          "c2"
+        ],
+        "tests": [
+          {
+            "level": "unit",
+            "name": "cache key changes with digest, dimension, convention and text; corrupt entry recovery"
+          },
+          {
+            "level": "unit",
+            "name": "empty input rejection and duplicate inputs in order"
+          }
+        ]
+      },
+      {
+        "id": "t3",
+        "title": "Ollama backend",
+        "summary": "Add the Ollama embedder in embeddings/ollama.py using the standard library HTTP client: loopback-only base URL, local model list and digest check before encoding, batches of at most 32, and response checks for count, shape, finiteness and norm. Add the live contract test for dimensions 256, 512 and 1024.",
+        "size": "M",
+        "order": 3,
+        "dependsOn": [
+          "t2"
+        ],
+        "acceptanceChecks": [
+          "Stubbed-transport tests cover batching, order, bad responses, digest mismatch and a non-loopback URL",
+          "An unreachable server, an error status and a model missing from the local list each raise EmbeddingBackendError naming the endpoint and model",
+          "No partial result is returned and nothing from a bad batch is cached",
+          "Live test passes against qwen3-embedding:0.6b at all three dimensions and is skipped with a stated reason when Ollama is unavailable",
+          "No module outside embeddings/ollama.py holds Ollama knowledge apart from the command line constructing it"
+        ],
+        "derivedFrom": [
+          "c1",
+          "c2"
+        ],
+        "tests": [
+          {
+            "level": "unit",
+            "name": "Ollama backend against a stubbed transport: batching, order, bad responses, digest mismatch, non-loopback URL"
+          },
+          {
+            "level": "unit",
+            "name": "absence of Ollama knowledge outside embeddings/ollama.py"
+          },
+          {
+            "level": "live",
+            "name": "dimensions 256, 512 and 1024 return unit vectors in input order"
+          }
+        ]
+      },
+      {
+        "id": "t4",
+        "title": "Composition",
+        "summary": "Add rendering that builds the stored and symmetric-query texts for each method from domain records, and pure vector arithmetic for C0, C1, C2, C4 and C5 with normalization and zero-norm rejection.",
+        "size": "M",
+        "order": 4,
+        "dependsOn": [
+          "t1"
+        ],
+        "acceptanceChecks": [
+          "Formulas match the LLD for every method and weight",
+          "C2 at weight 1.0 equals C0",
+          "A norm at or below 1e-12 raises ValueError naming the method and weight",
+          "Symmetric query composition never uses the expected modality or phase, and the C4 query text has no Phase field",
+          "No negated vector is used",
+          "composition imports only domain and reads no files and calls no model"
+        ],
+        "derivedFrom": [
+          "c1",
+          "c2"
+        ],
+        "tests": [
+          {
+            "level": "unit",
+            "name": "composition formulas, C2 at 1.0 equals C0, zero-norm rejection"
+          },
+          {
+            "level": "unit",
+            "name": "symmetric query composition never uses the expected modality or phase"
+          }
+        ]
+      },
+      {
+        "id": "t5",
+        "title": "Evaluation",
+        "summary": "Add the CollapseResult types and pure functions for modality ranking with ties, the 5x5 confusion matrix with a tie column, pairwise accuracy, margins and worst cases, the neutral top-five share, variant selection on the select split and the verdict on the confirm split.",
+        "size": "M",
+        "order": 5,
+        "dependsOn": [
+          "t1"
+        ],
+        "acceptanceChecks": [
+          "Scores within 1e-6 count as a tie and a wrong answer",
+          "Accuracy, confusion, the ten pairwise accuracies, margins and neutral share match hand-computed examples",
+          "A split with no queries for a modality pair is an error, never a perfect score",
+          "Selection order is accuracy, worst pair, smallest dimension, then method id and weight, using only select results",
+          "The verdict uses only the chosen variant on confirm results against 0.95 and 0.90 on the natural track",
+          "evaluation imports only domain"
+        ],
+        "derivedFrom": [
+          "c1",
+          "c2"
+        ],
+        "tests": [
+          {
+            "level": "unit",
+            "name": "ranking, ties, confusion matrix, pairwise accuracy, margins, neutral share"
+          },
+          {
+            "level": "unit",
+            "name": "variant selection tie-break and confirm-split verdict"
+          }
+        ]
+      },
+      {
+        "id": "t6",
+        "title": "Probe loading and validation",
+        "summary": "Add the probes package that loads operations.jsonl, queries.jsonl and manifest.json into a domain ProbeSet and validates fields, unique ids, five modalities per concept, phase table, split per concept, queries for every modality pair in each split, query text distinct from stored text and manifest hashes, reporting every failure together.",
+        "size": "M",
+        "order": 6,
+        "dependsOn": [
+          "t1"
+        ],
+        "acceptanceChecks": [
+          "Each validation failure has a test using a small synthetic probe set",
+          "A split lacking queries for any modality pair is rejected",
+          "All failures are listed in one error",
+          "The reviewed_by_user flag is returned to the caller",
+          "probes imports only domain and reads nothing from the benchmark archive"
+        ],
+        "derivedFrom": [
+          "c1",
+          "c2"
+        ],
+        "tests": [
+          {
+            "level": "unit",
+            "name": "probe loading and each validation failure"
+          }
+        ]
+      },
+      {
+        "id": "t7",
+        "title": "Experiment orchestration",
+        "summary": "Add the run config holding the pass criterion, variants, weights and dimensions, and the collapse run that takes a ProbeSet and injected embedders, composes both tracks, evaluates both splits, checks the C5 control, applies draft or verdict rules and returns a run result carrying the config and encoder fingerprints.",
+        "size": "M",
+        "order": 7,
+        "dependsOn": [
+          "t2",
+          "t4",
+          "t5"
+        ],
+        "acceptanceChecks": [
+          "The criterion is fixed in the config before the first encode call and is unchanged in the run result",
+          "C5 results that are not all ties fail the run as a harness error",
+          "An unreviewed probe set runs only with the draft option and yields no verdict",
+          "C2 at 1.0 is computed once and C3 is reported as identical to C1",
+          "Natural and symmetric results are never mixed",
+          "experiments uses only the embedder protocol from embeddings and does not import probes or reporting"
+        ],
+        "derivedFrom": [
+          "c1",
+          "c2"
+        ],
+        "tests": [
+          {
+            "level": "integration",
+            "name": "C5 control yields all ties"
+          },
+          {
+            "level": "integration",
+            "name": "draft run states no verdict"
+          }
+        ]
+      },
+      {
+        "id": "t8",
+        "title": "Reporting and command line",
+        "summary": "Add the run record and Markdown report writers under runs/ and the command line that loads the probes, builds the cache and Ollama embedders, opens the run through reporting so the directory, criterion and config are written first, runs the experiment, then writes the results. Add a project script entry point.",
+        "size": "M",
+        "order": 8,
+        "dependsOn": [
+          "t3",
+          "t6",
+          "t7"
+        ],
+        "acceptanceChecks": [
+          "An offline end-to-end test with the fake embedder writes the run record and report",
+          "An existing run directory stops the command before any embedding and is not overwritten",
+          "The criterion appears in the run record before any embedding happens",
+          "A draft report is labelled draft and states no verdict",
+          "Backend and validation errors end the command with a clear message and no verdict",
+          "The command line holds wiring only and reporting does not import embeddings"
+        ],
+        "derivedFrom": [
+          "c1",
+          "c2"
+        ],
+        "tests": [
+          {
+            "level": "integration",
+            "name": "collapse run writes run record and report"
+          },
+          {
+            "level": "integration",
+            "name": "existing run directory is not overwritten"
+          },
+          {
+            "level": "integration",
+            "name": "criterion is recorded before embedding and errors end with no verdict"
+          }
+        ]
+      },
+      {
+        "id": "t9",
+        "title": "Probe concepts and stored operations",
+        "summary": "Author data/probes/modality_collapse_v1/operations.jsonl with 20 operation concepts, all five modalities each, and 10 select and 10 confirm concepts.",
+        "size": "M",
+        "order": 9,
+        "dependsOn": [
+          "t6"
+        ],
+        "acceptanceChecks": [
+          "100 operations, one per concept and modality, with phases matching the table",
+          "10 select and 10 confirm concepts, assigned before any run",
+          "No concept used in the earlier preliminary modality probe is in the confirm split",
+          "The benchmark archive is not opened while authoring"
+        ],
+        "derivedFrom": [
+          "c1",
+          "c2"
+        ],
+        "tests": [
+          {
+            "level": "unit",
+            "name": "committed probe operations have 100 records, five modalities per concept and a 10 and 10 split"
+          }
+        ]
+      },
+      {
+        "id": "t10",
+        "title": "Draft queries and manifest for user review",
+        "summary": "Author queries.jsonl with three natural paraphrases per concept and modality (300 queries) and a synonym term each, the manifest with reviewed_by_user false, and a separate list of ambiguous wording for the user to decide.",
+        "size": "M",
+        "order": 10,
+        "dependsOn": [
+          "t9"
+        ],
+        "acceptanceChecks": [
+          "The set passes validation with 100 operations and 300 queries split 10 and 10 by concept",
+          "The manifest has reviewed_by_user false and only the user's explicit review changes it",
+          "Words that fit more than one modality are excluded or listed for the user to assign",
+          "No query copies a stored text, and the benchmark archive is not opened while authoring",
+          "No embedding result is used to write or edit a query"
+        ],
+        "derivedFrom": [
+          "c1",
+          "c2"
+        ],
+        "tests": [
+          {
+            "level": "unit",
+            "name": "committed probe set passes validation with 300 queries"
+          }
+        ]
+      }
+    ],
+    "testStrategyCoverage": [
+      {
+        "lldStrategyItem": "composition formulas, C2 at 1.0 equals C0, zero-norm rejection",
+        "coveredByTaskIds": [
+          "t4"
+        ]
+      },
+      {
+        "lldStrategyItem": "symmetric query composition never uses the expected modality or phase",
+        "coveredByTaskIds": [
+          "t4"
+        ]
+      },
+      {
+        "lldStrategyItem": "ranking, ties, confusion matrix, pairwise accuracy, margins, neutral share",
+        "coveredByTaskIds": [
+          "t5"
+        ]
+      },
+      {
+        "lldStrategyItem": "variant selection tie-break and confirm-split verdict",
+        "coveredByTaskIds": [
+          "t5"
+        ]
+      },
+      {
+        "lldStrategyItem": "probe loading and each validation failure",
+        "coveredByTaskIds": [
+          "t6"
+        ]
+      },
+      {
+        "lldStrategyItem": "cache key changes with digest, dimension, convention and text; corrupt entry recovery",
+        "coveredByTaskIds": [
+          "t2"
+        ]
+      },
+      {
+        "lldStrategyItem": "Ollama backend against a stubbed transport: batching, order, bad responses, digest mismatch, non-loopback URL",
+        "coveredByTaskIds": [
+          "t3"
+        ]
+      },
+      {
+        "lldStrategyItem": "import direction between packages and the absence of Ollama knowledge outside embeddings/ollama.py",
+        "coveredByTaskIds": [
+          "t1",
+          "t3"
+        ]
+      },
+      {
+        "lldStrategyItem": "collapse run writes run record and report",
+        "coveredByTaskIds": [
+          "t8"
+        ]
+      },
+      {
+        "lldStrategyItem": "C5 control yields all ties",
+        "coveredByTaskIds": [
+          "t7"
+        ]
+      },
+      {
+        "lldStrategyItem": "draft run states no verdict",
+        "coveredByTaskIds": [
+          "t7"
+        ]
+      },
+      {
+        "lldStrategyItem": "existing run directory is not overwritten",
+        "coveredByTaskIds": [
+          "t8"
+        ]
+      },
+      {
+        "lldStrategyItem": "dimensions 256, 512 and 1024 return unit vectors in input order",
+        "coveredByTaskIds": [
+          "t3"
+        ]
+      }
+    ]
+  },
+  "citations": [
+    {
+      "id": "c1",
+      "kind": "prior-artifact",
+      "ref": "LLD s1 contractDetails, dataModelChanges, errorPaths, testStrategy and migration"
+    },
+    {
+      "id": "c2",
+      "kind": "doc",
+      "ref": "CLAUDE.md",
+      "quotedText": "Separation of concerns and modularity are the prime directive."
+    }
+  ]
+}
