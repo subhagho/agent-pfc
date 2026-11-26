@@ -10,3 +10,5 @@ dist/
 .coverage
 .env
 .DS_Store
+.insrc/journal/
+runs/

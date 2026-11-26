@@ -1,2 +1,1 @@
-def hello() -> str:
-    return "Hello from agent-pfc!"
+"""agent-pfc: an action memory for coding agents."""
