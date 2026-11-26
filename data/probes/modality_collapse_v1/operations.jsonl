@@ -1,0 +1,100 @@
+{"concept": "input validation", "modality": "required", "phase": 1, "phase_modality_text": "required", "contextual_text": "input validation is required", "split": "select"}
+{"concept": "input validation", "modality": "strict_required", "phase": 2, "phase_modality_text": "strictly required, with no exceptions", "contextual_text": "input validation is strictly required, with no exceptions", "split": "select"}
+{"concept": "input validation", "modality": "permitted", "phase": 1, "phase_modality_text": "permitted", "contextual_text": "input validation is permitted", "split": "select"}
+{"concept": "input validation", "modality": "not_required", "phase": -1, "phase_modality_text": "not required", "contextual_text": "input validation is not required", "split": "select"}
+{"concept": "input validation", "modality": "prohibited", "phase": -1, "phase_modality_text": "prohibited", "contextual_text": "input validation is prohibited", "split": "select"}
+{"concept": "pagination", "modality": "required", "phase": 1, "phase_modality_text": "required", "contextual_text": "pagination is required", "split": "select"}
+{"concept": "pagination", "modality": "strict_required", "phase": 2, "phase_modality_text": "strictly required, with no exceptions", "contextual_text": "pagination is strictly required, with no exceptions", "split": "select"}
+{"concept": "pagination", "modality": "permitted", "phase": 1, "phase_modality_text": "permitted", "contextual_text": "pagination is permitted", "split": "select"}
+{"concept": "pagination", "modality": "not_required", "phase": -1, "phase_modality_text": "not required", "contextual_text": "pagination is not required", "split": "select"}
+{"concept": "pagination", "modality": "prohibited", "phase": -1, "phase_modality_text": "prohibited", "contextual_text": "pagination is prohibited", "split": "select"}
+{"concept": "rate limiting", "modality": "required", "phase": 1, "phase_modality_text": "required", "contextual_text": "rate limiting is required", "split": "select"}
+{"concept": "rate limiting", "modality": "strict_required", "phase": 2, "phase_modality_text": "strictly required, with no exceptions", "contextual_text": "rate limiting is strictly required, with no exceptions", "split": "select"}
+{"concept": "rate limiting", "modality": "permitted", "phase": 1, "phase_modality_text": "permitted", "contextual_text": "rate limiting is permitted", "split": "select"}
+{"concept": "rate limiting", "modality": "not_required", "phase": -1, "phase_modality_text": "not required", "contextual_text": "rate limiting is not required", "split": "select"}
+{"concept": "rate limiting", "modality": "prohibited", "phase": -1, "phase_modality_text": "prohibited", "contextual_text": "rate limiting is prohibited", "split": "select"}
+{"concept": "schema migration", "modality": "required", "phase": 1, "phase_modality_text": "required", "contextual_text": "schema migration is required", "split": "select"}
+{"concept": "schema migration", "modality": "strict_required", "phase": 2, "phase_modality_text": "strictly required, with no exceptions", "contextual_text": "schema migration is strictly required, with no exceptions", "split": "select"}
+{"concept": "schema migration", "modality": "permitted", "phase": 1, "phase_modality_text": "permitted", "contextual_text": "schema migration is permitted", "split": "select"}
+{"concept": "schema migration", "modality": "not_required", "phase": -1, "phase_modality_text": "not required", "contextual_text": "schema migration is not required", "split": "select"}
+{"concept": "schema migration", "modality": "prohibited", "phase": -1, "phase_modality_text": "prohibited", "contextual_text": "schema migration is prohibited", "split": "select"}
+{"concept": "feature flagging", "modality": "required", "phase": 1, "phase_modality_text": "required", "contextual_text": "feature flagging is required", "split": "select"}
+{"concept": "feature flagging", "modality": "strict_required", "phase": 2, "phase_modality_text": "strictly required, with no exceptions", "contextual_text": "feature flagging is strictly required, with no exceptions", "split": "select"}
+{"concept": "feature flagging", "modality": "permitted", "phase": 1, "phase_modality_text": "permitted", "contextual_text": "feature flagging is permitted", "split": "select"}
+{"concept": "feature flagging", "modality": "not_required", "phase": -1, "phase_modality_text": "not required", "contextual_text": "feature flagging is not required", "split": "select"}
+{"concept": "feature flagging", "modality": "prohibited", "phase": -1, "phase_modality_text": "prohibited", "contextual_text": "feature flagging is prohibited", "split": "select"}
+{"concept": "deduplication", "modality": "required", "phase": 1, "phase_modality_text": "required", "contextual_text": "deduplication is required", "split": "select"}
+{"concept": "deduplication", "modality": "strict_required", "phase": 2, "phase_modality_text": "strictly required, with no exceptions", "contextual_text": "deduplication is strictly required, with no exceptions", "split": "select"}
+{"concept": "deduplication", "modality": "permitted", "phase": 1, "phase_modality_text": "permitted", "contextual_text": "deduplication is permitted", "split": "select"}
+{"concept": "deduplication", "modality": "not_required", "phase": -1, "phase_modality_text": "not required", "contextual_text": "deduplication is not required", "split": "select"}
+{"concept": "deduplication", "modality": "prohibited", "phase": -1, "phase_modality_text": "prohibited", "contextual_text": "deduplication is prohibited", "split": "select"}
+{"concept": "batching", "modality": "required", "phase": 1, "phase_modality_text": "required", "contextual_text": "batching is required", "split": "select"}
+{"concept": "batching", "modality": "strict_required", "phase": 2, "phase_modality_text": "strictly required, with no exceptions", "contextual_text": "batching is strictly required, with no exceptions", "split": "select"}
+{"concept": "batching", "modality": "permitted", "phase": 1, "phase_modality_text": "permitted", "contextual_text": "batching is permitted", "split": "select"}
+{"concept": "batching", "modality": "not_required", "phase": -1, "phase_modality_text": "not required", "contextual_text": "batching is not required", "split": "select"}
+{"concept": "batching", "modality": "prohibited", "phase": -1, "phase_modality_text": "prohibited", "contextual_text": "batching is prohibited", "split": "select"}
+{"concept": "anonymization", "modality": "required", "phase": 1, "phase_modality_text": "required", "contextual_text": "anonymization is required", "split": "select"}
+{"concept": "anonymization", "modality": "strict_required", "phase": 2, "phase_modality_text": "strictly required, with no exceptions", "contextual_text": "anonymization is strictly required, with no exceptions", "split": "select"}
+{"concept": "anonymization", "modality": "permitted", "phase": 1, "phase_modality_text": "permitted", "contextual_text": "anonymization is permitted", "split": "select"}
+{"concept": "anonymization", "modality": "not_required", "phase": -1, "phase_modality_text": "not required", "contextual_text": "anonymization is not required", "split": "select"}
+{"concept": "anonymization", "modality": "prohibited", "phase": -1, "phase_modality_text": "prohibited", "contextual_text": "anonymization is prohibited", "split": "select"}
+{"concept": "API versioning", "modality": "required", "phase": 1, "phase_modality_text": "required", "contextual_text": "API versioning is required", "split": "select"}
+{"concept": "API versioning", "modality": "strict_required", "phase": 2, "phase_modality_text": "strictly required, with no exceptions", "contextual_text": "API versioning is strictly required, with no exceptions", "split": "select"}
+{"concept": "API versioning", "modality": "permitted", "phase": 1, "phase_modality_text": "permitted", "contextual_text": "API versioning is permitted", "split": "select"}
+{"concept": "API versioning", "modality": "not_required", "phase": -1, "phase_modality_text": "not required", "contextual_text": "API versioning is not required", "split": "select"}
+{"concept": "API versioning", "modality": "prohibited", "phase": -1, "phase_modality_text": "prohibited", "contextual_text": "API versioning is prohibited", "split": "select"}
+{"concept": "health checks", "modality": "required", "phase": 1, "phase_modality_text": "required", "contextual_text": "health checks are required", "split": "select"}
+{"concept": "health checks", "modality": "strict_required", "phase": 2, "phase_modality_text": "strictly required, with no exceptions", "contextual_text": "health checks are strictly required, with no exceptions", "split": "select"}
+{"concept": "health checks", "modality": "permitted", "phase": 1, "phase_modality_text": "permitted", "contextual_text": "health checks are permitted", "split": "select"}
+{"concept": "health checks", "modality": "not_required", "phase": -1, "phase_modality_text": "not required", "contextual_text": "health checks are not required", "split": "select"}
+{"concept": "health checks", "modality": "prohibited", "phase": -1, "phase_modality_text": "prohibited", "contextual_text": "health checks are prohibited", "split": "select"}
+{"concept": "backups", "modality": "required", "phase": 1, "phase_modality_text": "required", "contextual_text": "backups are required", "split": "confirm"}
+{"concept": "backups", "modality": "strict_required", "phase": 2, "phase_modality_text": "strictly required, with no exceptions", "contextual_text": "backups are strictly required, with no exceptions", "split": "confirm"}
+{"concept": "backups", "modality": "permitted", "phase": 1, "phase_modality_text": "permitted", "contextual_text": "backups are permitted", "split": "confirm"}
+{"concept": "backups", "modality": "not_required", "phase": -1, "phase_modality_text": "not required", "contextual_text": "backups are not required", "split": "confirm"}
+{"concept": "backups", "modality": "prohibited", "phase": -1, "phase_modality_text": "prohibited", "contextual_text": "backups are prohibited", "split": "confirm"}
+{"concept": "code review", "modality": "required", "phase": 1, "phase_modality_text": "required", "contextual_text": "code review is required", "split": "confirm"}
+{"concept": "code review", "modality": "strict_required", "phase": 2, "phase_modality_text": "strictly required, with no exceptions", "contextual_text": "code review is strictly required, with no exceptions", "split": "confirm"}
+{"concept": "code review", "modality": "permitted", "phase": 1, "phase_modality_text": "permitted", "contextual_text": "code review is permitted", "split": "confirm"}
+{"concept": "code review", "modality": "not_required", "phase": -1, "phase_modality_text": "not required", "contextual_text": "code review is not required", "split": "confirm"}
+{"concept": "code review", "modality": "prohibited", "phase": -1, "phase_modality_text": "prohibited", "contextual_text": "code review is prohibited", "split": "confirm"}
+{"concept": "load testing", "modality": "required", "phase": 1, "phase_modality_text": "required", "contextual_text": "load testing is required", "split": "confirm"}
+{"concept": "load testing", "modality": "strict_required", "phase": 2, "phase_modality_text": "strictly required, with no exceptions", "contextual_text": "load testing is strictly required, with no exceptions", "split": "confirm"}
+{"concept": "load testing", "modality": "permitted", "phase": 1, "phase_modality_text": "permitted", "contextual_text": "load testing is permitted", "split": "confirm"}
+{"concept": "load testing", "modality": "not_required", "phase": -1, "phase_modality_text": "not required", "contextual_text": "load testing is not required", "split": "confirm"}
+{"concept": "load testing", "modality": "prohibited", "phase": -1, "phase_modality_text": "prohibited", "contextual_text": "load testing is prohibited", "split": "confirm"}
+{"concept": "data masking", "modality": "required", "phase": 1, "phase_modality_text": "required", "contextual_text": "data masking is required", "split": "confirm"}
+{"concept": "data masking", "modality": "strict_required", "phase": 2, "phase_modality_text": "strictly required, with no exceptions", "contextual_text": "data masking is strictly required, with no exceptions", "split": "confirm"}
+{"concept": "data masking", "modality": "permitted", "phase": 1, "phase_modality_text": "permitted", "contextual_text": "data masking is permitted", "split": "confirm"}
+{"concept": "data masking", "modality": "not_required", "phase": -1, "phase_modality_text": "not required", "contextual_text": "data masking is not required", "split": "confirm"}
+{"concept": "data masking", "modality": "prohibited", "phase": -1, "phase_modality_text": "prohibited", "contextual_text": "data masking is prohibited", "split": "confirm"}
+{"concept": "request signing", "modality": "required", "phase": 1, "phase_modality_text": "required", "contextual_text": "request signing is required", "split": "confirm"}
+{"concept": "request signing", "modality": "strict_required", "phase": 2, "phase_modality_text": "strictly required, with no exceptions", "contextual_text": "request signing is strictly required, with no exceptions", "split": "confirm"}
+{"concept": "request signing", "modality": "permitted", "phase": 1, "phase_modality_text": "permitted", "contextual_text": "request signing is permitted", "split": "confirm"}
+{"concept": "request signing", "modality": "not_required", "phase": -1, "phase_modality_text": "not required", "contextual_text": "request signing is not required", "split": "confirm"}
+{"concept": "request signing", "modality": "prohibited", "phase": -1, "phase_modality_text": "prohibited", "contextual_text": "request signing is prohibited", "split": "confirm"}
+{"concept": "dependency pinning", "modality": "required", "phase": 1, "phase_modality_text": "required", "contextual_text": "dependency pinning is required", "split": "confirm"}
+{"concept": "dependency pinning", "modality": "strict_required", "phase": 2, "phase_modality_text": "strictly required, with no exceptions", "contextual_text": "dependency pinning is strictly required, with no exceptions", "split": "confirm"}
+{"concept": "dependency pinning", "modality": "permitted", "phase": 1, "phase_modality_text": "permitted", "contextual_text": "dependency pinning is permitted", "split": "confirm"}
+{"concept": "dependency pinning", "modality": "not_required", "phase": -1, "phase_modality_text": "not required", "contextual_text": "dependency pinning is not required", "split": "confirm"}
+{"concept": "dependency pinning", "modality": "prohibited", "phase": -1, "phase_modality_text": "prohibited", "contextual_text": "dependency pinning is prohibited", "split": "confirm"}
+{"concept": "rollback", "modality": "required", "phase": 1, "phase_modality_text": "required", "contextual_text": "rollback is required", "split": "confirm"}
+{"concept": "rollback", "modality": "strict_required", "phase": 2, "phase_modality_text": "strictly required, with no exceptions", "contextual_text": "rollback is strictly required, with no exceptions", "split": "confirm"}
+{"concept": "rollback", "modality": "permitted", "phase": 1, "phase_modality_text": "permitted", "contextual_text": "rollback is permitted", "split": "confirm"}
+{"concept": "rollback", "modality": "not_required", "phase": -1, "phase_modality_text": "not required", "contextual_text": "rollback is not required", "split": "confirm"}
+{"concept": "rollback", "modality": "prohibited", "phase": -1, "phase_modality_text": "prohibited", "contextual_text": "rollback is prohibited", "split": "confirm"}
+{"concept": "sharding", "modality": "required", "phase": 1, "phase_modality_text": "required", "contextual_text": "sharding is required", "split": "confirm"}
+{"concept": "sharding", "modality": "strict_required", "phase": 2, "phase_modality_text": "strictly required, with no exceptions", "contextual_text": "sharding is strictly required, with no exceptions", "split": "confirm"}
+{"concept": "sharding", "modality": "permitted", "phase": 1, "phase_modality_text": "permitted", "contextual_text": "sharding is permitted", "split": "confirm"}
+{"concept": "sharding", "modality": "not_required", "phase": -1, "phase_modality_text": "not required", "contextual_text": "sharding is not required", "split": "confirm"}
+{"concept": "sharding", "modality": "prohibited", "phase": -1, "phase_modality_text": "prohibited", "contextual_text": "sharding is prohibited", "split": "confirm"}
+{"concept": "deprecation warnings", "modality": "required", "phase": 1, "phase_modality_text": "required", "contextual_text": "deprecation warnings are required", "split": "confirm"}
+{"concept": "deprecation warnings", "modality": "strict_required", "phase": 2, "phase_modality_text": "strictly required, with no exceptions", "contextual_text": "deprecation warnings are strictly required, with no exceptions", "split": "confirm"}
+{"concept": "deprecation warnings", "modality": "permitted", "phase": 1, "phase_modality_text": "permitted", "contextual_text": "deprecation warnings are permitted", "split": "confirm"}
+{"concept": "deprecation warnings", "modality": "not_required", "phase": -1, "phase_modality_text": "not required", "contextual_text": "deprecation warnings are not required", "split": "confirm"}
+{"concept": "deprecation warnings", "modality": "prohibited", "phase": -1, "phase_modality_text": "prohibited", "contextual_text": "deprecation warnings are prohibited", "split": "confirm"}
+{"concept": "connection pooling", "modality": "required", "phase": 1, "phase_modality_text": "required", "contextual_text": "connection pooling is required", "split": "confirm"}
+{"concept": "connection pooling", "modality": "strict_required", "phase": 2, "phase_modality_text": "strictly required, with no exceptions", "contextual_text": "connection pooling is strictly required, with no exceptions", "split": "confirm"}
+{"concept": "connection pooling", "modality": "permitted", "phase": 1, "phase_modality_text": "permitted", "contextual_text": "connection pooling is permitted", "split": "confirm"}
+{"concept": "connection pooling", "modality": "not_required", "phase": -1, "phase_modality_text": "not required", "contextual_text": "connection pooling is not required", "split": "confirm"}
+{"concept": "connection pooling", "modality": "prohibited", "phase": -1, "phase_modality_text": "prohibited", "contextual_text": "connection pooling is prohibited", "split": "confirm"}
