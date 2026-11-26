@@ -1,0 +1,11 @@
+{
+  "counts": {
+    "operations": 100,
+    "queries": 300
+  },
+  "sha256": {
+    "operations.jsonl": "4085397dbe33bd387757f1be168c55ece0ecee867d3872189751e5537768782d",
+    "queries.jsonl": "bc0e3d3f84411315d726089ac1dc32d86731c8bfb47c41010e70cce580a552a6"
+  },
+  "reviewed_by_user": false
+}

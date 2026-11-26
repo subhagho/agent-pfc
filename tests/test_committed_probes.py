@@ -1,10 +1,12 @@
 """The probe set committed under data/probes."""
 
 import json
+import re
 from collections import Counter
 from pathlib import Path
 
 from agent_pfc.domain import PHASE_BY_MODALITY, Modality
+from agent_pfc.probes.loading import load_probe_set
 
 DIRECTORY = Path(__file__).parents[1] / "data/probes/modality_collapse_v1"
 # Concepts whose embeddings were seen in the preliminary modality probe.
@@ -20,6 +22,14 @@ SEEN_BEFORE = {
     "compression",
     "notification",
 }
+
+
+# Words that fit several modalities, and the stored modality words.
+EXCLUDED = re.compile(
+    r"\b(optional(ly)?|should|recommended|essential|critical|discouraged|may not"
+    r"|required|permitted|prohibited)\b",
+    re.IGNORECASE,
+)
 
 
 def _records(name: str) -> list[dict]:
@@ -41,3 +51,18 @@ def test_committed_operations() -> None:
     assert len(splits) == 20
     assert Counter(split for _, split in splits) == {"select": 10, "confirm": 10}
     assert not SEEN_BEFORE & concepts
+
+
+def test_committed_probe_set_is_valid() -> None:
+    probes = load_probe_set(DIRECTORY)
+    assert len(probes.operations) == 100 and len(probes.queries) == 300
+
+    per_operation = Counter(q.expected_key for q in probes.queries)
+    assert len(per_operation) == 100 and set(per_operation.values()) == {3}
+    splits = {o.concept: o.split for o in probes.operations}
+    assert Counter(splits[q.concept] for q in probes.queries) == {
+        "select": 150,
+        "confirm": 150,
+    }
+    assert len({q.text.casefold() for q in probes.queries}) == 300
+    assert not [q.id for q in probes.queries if EXCLUDED.search(q.text)]

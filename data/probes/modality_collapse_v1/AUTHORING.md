@@ -86,3 +86,11 @@ Author's statement, which the files cannot prove: the benchmark archive was not
 opened while authoring this probe set. The author had inspected the benchmark's
 dev split earlier, during the scope review, so the concepts are not independent
 of that knowledge in the way a second author's would be.
+
+## Queries
+
+`queries.jsonl` was written by hand by the same author, one list per concept and
+modality, with synonym terms assigned by position. Author's statement, which the
+files cannot prove: no embedding of any query was computed or looked at while
+writing or editing them. The committed set has not been embedded by any run at
+the time of this record. The benchmark archive was not opened.

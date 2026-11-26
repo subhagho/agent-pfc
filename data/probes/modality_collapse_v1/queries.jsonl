@@ -1,0 +1,300 @@
+{"id": "input-validation-required-1", "concept": "input validation", "modality": "required", "text": "Every endpoint in this service has to check the data it receives.", "synonym_term": "mandatory"}
+{"id": "input-validation-required-2", "concept": "input validation", "modality": "required", "text": "We are obliged to validate user input before it reaches the handler.", "synonym_term": "obligatory"}
+{"id": "input-validation-required-3", "concept": "input validation", "modality": "required", "text": "A new form cannot be merged until its fields are validated.", "synonym_term": "compulsory"}
+{"id": "input-validation-strict_required-1", "concept": "input validation", "modality": "strict_required", "text": "Validating input is non-negotiable; no team gets a waiver.", "synonym_term": "non-negotiable"}
+{"id": "input-validation-strict_required-2", "concept": "input validation", "modality": "strict_required", "text": "Under no circumstances may unchecked data enter the system, even for internal callers.", "synonym_term": "mandatory without exception"}
+{"id": "input-validation-strict_required-3", "concept": "input validation", "modality": "strict_required", "text": "Skipping input checks is never acceptable, not even for a hotfix.", "synonym_term": "never to be waived"}
+{"id": "input-validation-permitted-1", "concept": "input validation", "modality": "permitted", "text": "You may add extra checks on incoming fields if you find them useful.", "synonym_term": "allowed"}
+{"id": "input-validation-permitted-2", "concept": "input validation", "modality": "permitted", "text": "Go ahead and validate inputs in the client as well, that is allowed.", "synonym_term": "acceptable"}
+{"id": "input-validation-permitted-3", "concept": "input validation", "modality": "permitted", "text": "Teams are welcome to introduce their own input checks.", "synonym_term": "authorized"}
+{"id": "input-validation-not_required-1", "concept": "input validation", "modality": "not_required", "text": "There is no need to validate values that our own compiler generated.", "synonym_term": "unnecessary"}
+{"id": "input-validation-not_required-2", "concept": "input validation", "modality": "not_required", "text": "This internal script can ship without checking its arguments.", "synonym_term": "not needed"}
+{"id": "input-validation-not_required-3", "concept": "input validation", "modality": "not_required", "text": "Nobody is asking you to verify input in the throwaway prototype.", "synonym_term": "not mandatory"}
+{"id": "input-validation-prohibited-1", "concept": "input validation", "modality": "prohibited", "text": "Do not validate input inside the database layer.", "synonym_term": "forbidden"}
+{"id": "input-validation-prohibited-2", "concept": "input validation", "modality": "prohibited", "text": "Adding input checks to the generated client is forbidden.", "synonym_term": "banned"}
+{"id": "input-validation-prohibited-3", "concept": "input validation", "modality": "prohibited", "text": "We have banned ad hoc validation in the view templates.", "synonym_term": "disallowed"}
+{"id": "pagination-required-1", "concept": "pagination", "modality": "required", "text": "List endpoints have to return their results in pages.", "synonym_term": "mandatory"}
+{"id": "pagination-required-2", "concept": "pagination", "modality": "required", "text": "Any query that returns many rows needs to be paginated.", "synonym_term": "obligatory"}
+{"id": "pagination-required-3", "concept": "pagination", "modality": "required", "text": "The review will block a collection API that lacks page parameters.", "synonym_term": "compulsory"}
+{"id": "pagination-strict_required-1", "concept": "pagination", "modality": "strict_required", "text": "Returning an unbounded list is never tolerated, whatever the deadline.", "synonym_term": "non-negotiable"}
+{"id": "pagination-strict_required-2", "concept": "pagination", "modality": "strict_required", "text": "Paging is non-negotiable on every collection endpoint, internal ones included.", "synonym_term": "mandatory without exception"}
+{"id": "pagination-strict_required-3", "concept": "pagination", "modality": "strict_required", "text": "No exemption will be granted: results are paged, full stop.", "synonym_term": "never to be waived"}
+{"id": "pagination-permitted-1", "concept": "pagination", "modality": "permitted", "text": "Feel free to page the audit view if it helps.", "synonym_term": "allowed"}
+{"id": "pagination-permitted-2", "concept": "pagination", "modality": "permitted", "text": "The export screen is allowed to split its results into pages.", "synonym_term": "acceptable"}
+{"id": "pagination-permitted-3", "concept": "pagination", "modality": "permitted", "text": "You may offer cursor paging on this endpoint.", "synonym_term": "authorized"}
+{"id": "pagination-not_required-1", "concept": "pagination", "modality": "not_required", "text": "The country list is tiny, so there is no need to page it.", "synonym_term": "unnecessary"}
+{"id": "pagination-not_required-2", "concept": "pagination", "modality": "not_required", "text": "This endpoint can return everything at once without page support.", "synonym_term": "not needed"}
+{"id": "pagination-not_required-3", "concept": "pagination", "modality": "not_required", "text": "We do not insist on paging for the settings screen.", "synonym_term": "not mandatory"}
+{"id": "pagination-prohibited-1", "concept": "pagination", "modality": "prohibited", "text": "Do not paginate the full data export.", "synonym_term": "forbidden"}
+{"id": "pagination-prohibited-2", "concept": "pagination", "modality": "prohibited", "text": "Splitting the ledger download into pages is forbidden.", "synonym_term": "banned"}
+{"id": "pagination-prohibited-3", "concept": "pagination", "modality": "prohibited", "text": "Page parameters are banned on the snapshot endpoint.", "synonym_term": "disallowed"}
+{"id": "rate-limiting-required-1", "concept": "rate limiting", "modality": "required", "text": "Public APIs have to throttle each client.", "synonym_term": "mandatory"}
+{"id": "rate-limiting-required-2", "concept": "rate limiting", "modality": "required", "text": "Our gateway is obliged to cap the request rate per key.", "synonym_term": "obligatory"}
+{"id": "rate-limiting-required-3", "concept": "rate limiting", "modality": "required", "text": "A new external endpoint needs a request quota before launch.", "synonym_term": "compulsory"}
+{"id": "rate-limiting-strict_required-1", "concept": "rate limiting", "modality": "strict_required", "text": "The login route is throttled without exception; nobody can switch it off.", "synonym_term": "non-negotiable"}
+{"id": "rate-limiting-strict_required-2", "concept": "rate limiting", "modality": "strict_required", "text": "Capping request rates is non-negotiable, even for our biggest customer.", "synonym_term": "mandatory without exception"}
+{"id": "rate-limiting-strict_required-3", "concept": "rate limiting", "modality": "strict_required", "text": "Never expose an unthrottled public route, no matter who asks.", "synonym_term": "never to be waived"}
+{"id": "rate-limiting-permitted-1", "concept": "rate limiting", "modality": "permitted", "text": "You may throttle the reporting endpoint if load becomes a problem.", "synonym_term": "allowed"}
+{"id": "rate-limiting-permitted-2", "concept": "rate limiting", "modality": "permitted", "text": "Teams are allowed to set their own request quotas.", "synonym_term": "acceptable"}
+{"id": "rate-limiting-permitted-3", "concept": "rate limiting", "modality": "permitted", "text": "It is fine to cap traffic on the sandbox.", "synonym_term": "authorized"}
+{"id": "rate-limiting-not_required-1", "concept": "rate limiting", "modality": "not_required", "text": "Internal health probes do not need a request cap.", "synonym_term": "unnecessary"}
+{"id": "rate-limiting-not_required-2", "concept": "rate limiting", "modality": "not_required", "text": "The admin tool can go live without throttling.", "synonym_term": "not needed"}
+{"id": "rate-limiting-not_required-3", "concept": "rate limiting", "modality": "not_required", "text": "There is no obligation to limit request rates in the test environment.", "synonym_term": "not mandatory"}
+{"id": "rate-limiting-prohibited-1", "concept": "rate limiting", "modality": "prohibited", "text": "Do not throttle the payment callback.", "synonym_term": "forbidden"}
+{"id": "rate-limiting-prohibited-2", "concept": "rate limiting", "modality": "prohibited", "text": "Placing a request cap on the emergency endpoint is forbidden.", "synonym_term": "banned"}
+{"id": "rate-limiting-prohibited-3", "concept": "rate limiting", "modality": "prohibited", "text": "We have ruled out per-client quotas on the internal event bus.", "synonym_term": "disallowed"}
+{"id": "schema-migration-required-1", "concept": "schema migration", "modality": "required", "text": "Any change to a table has to go through a migration script.", "synonym_term": "mandatory"}
+{"id": "schema-migration-required-2", "concept": "schema migration", "modality": "required", "text": "Releases that alter columns need an accompanying migration.", "synonym_term": "obligatory"}
+{"id": "schema-migration-required-3", "concept": "schema migration", "modality": "required", "text": "The team is obliged to migrate the schema before deploying this model.", "synonym_term": "compulsory"}
+{"id": "schema-migration-strict_required-1", "concept": "schema migration", "modality": "strict_required", "text": "Altering tables outside a migration is never excused, even during an incident.", "synonym_term": "non-negotiable"}
+{"id": "schema-migration-strict_required-2", "concept": "schema migration", "modality": "strict_required", "text": "Every structural database change goes through a migration, with zero waivers.", "synonym_term": "mandatory without exception"}
+{"id": "schema-migration-strict_required-3", "concept": "schema migration", "modality": "strict_required", "text": "It is non-negotiable that the schema evolves only through migration files.", "synonym_term": "never to be waived"}
+{"id": "schema-migration-permitted-1", "concept": "schema migration", "modality": "permitted", "text": "You are welcome to restructure the tables in this release.", "synonym_term": "allowed"}
+{"id": "schema-migration-permitted-2", "concept": "schema migration", "modality": "permitted", "text": "A migration may be included in the patch version.", "synonym_term": "acceptable"}
+{"id": "schema-migration-permitted-3", "concept": "schema migration", "modality": "permitted", "text": "Changing the database layout during this sprint is allowed.", "synonym_term": "authorized"}
+{"id": "schema-migration-not_required-1", "concept": "schema migration", "modality": "not_required", "text": "Adding this index needs no migration step.", "synonym_term": "unnecessary"}
+{"id": "schema-migration-not_required-2", "concept": "schema migration", "modality": "not_required", "text": "The feature can ship while the old table layout stays untouched.", "synonym_term": "not needed"}
+{"id": "schema-migration-not_required-3", "concept": "schema migration", "modality": "not_required", "text": "Nobody has to migrate the scratch database.", "synonym_term": "not mandatory"}
+{"id": "schema-migration-prohibited-1", "concept": "schema migration", "modality": "prohibited", "text": "Do not run schema changes during the sales freeze.", "synonym_term": "forbidden"}
+{"id": "schema-migration-prohibited-2", "concept": "schema migration", "modality": "prohibited", "text": "Migrating the legacy tables is forbidden.", "synonym_term": "banned"}
+{"id": "schema-migration-prohibited-3", "concept": "schema migration", "modality": "prohibited", "text": "Structural changes to the shared database are banned for this team.", "synonym_term": "disallowed"}
+{"id": "feature-flagging-required-1", "concept": "feature flagging", "modality": "required", "text": "New checkout behaviour has to sit behind a flag.", "synonym_term": "mandatory"}
+{"id": "feature-flagging-required-2", "concept": "feature flagging", "modality": "required", "text": "Risky changes need a feature toggle before release.", "synonym_term": "obligatory"}
+{"id": "feature-flagging-required-3", "concept": "feature flagging", "modality": "required", "text": "We are obliged to gate this rollout with a flag.", "synonym_term": "compulsory"}
+{"id": "feature-flagging-strict_required-1", "concept": "feature flagging", "modality": "strict_required", "text": "Unflagged launches are never tolerated, however small the change.", "synonym_term": "non-negotiable"}
+{"id": "feature-flagging-strict_required-2", "concept": "feature flagging", "modality": "strict_required", "text": "Gating new behaviour behind a toggle is non-negotiable for every team.", "synonym_term": "mandatory without exception"}
+{"id": "feature-flagging-strict_required-3", "concept": "feature flagging", "modality": "strict_required", "text": "No release manager can waive the feature flag on payment changes.", "synonym_term": "never to be waived"}
+{"id": "feature-flagging-permitted-1", "concept": "feature flagging", "modality": "permitted", "text": "Feel free to hide the new banner behind a toggle.", "synonym_term": "allowed"}
+{"id": "feature-flagging-permitted-2", "concept": "feature flagging", "modality": "permitted", "text": "You may use flags to stage this change.", "synonym_term": "acceptable"}
+{"id": "feature-flagging-permitted-3", "concept": "feature flagging", "modality": "permitted", "text": "Wrapping the experiment in a switch is allowed.", "synonym_term": "authorized"}
+{"id": "feature-flagging-not_required-1", "concept": "feature flagging", "modality": "not_required", "text": "A copy fix does not need a toggle.", "synonym_term": "unnecessary"}
+{"id": "feature-flagging-not_required-2", "concept": "feature flagging", "modality": "not_required", "text": "This bug fix can go out without a feature switch.", "synonym_term": "not needed"}
+{"id": "feature-flagging-not_required-3", "concept": "feature flagging", "modality": "not_required", "text": "There is no need to flag changes to the developer docs.", "synonym_term": "not mandatory"}
+{"id": "feature-flagging-prohibited-1", "concept": "feature flagging", "modality": "prohibited", "text": "Do not put the security patch behind a toggle.", "synonym_term": "forbidden"}
+{"id": "feature-flagging-prohibited-2", "concept": "feature flagging", "modality": "prohibited", "text": "Feature switches in the cryptography module are forbidden.", "synonym_term": "banned"}
+{"id": "feature-flagging-prohibited-3", "concept": "feature flagging", "modality": "prohibited", "text": "We have banned new flags in the billing core.", "synonym_term": "disallowed"}
+{"id": "deduplication-required-1", "concept": "deduplication", "modality": "required", "text": "The consumer has to discard repeated events.", "synonym_term": "mandatory"}
+{"id": "deduplication-required-2", "concept": "deduplication", "modality": "required", "text": "Imported contacts need duplicate removal before saving.", "synonym_term": "obligatory"}
+{"id": "deduplication-required-3", "concept": "deduplication", "modality": "required", "text": "We are obliged to filter out repeated messages in this pipeline.", "synonym_term": "compulsory"}
+{"id": "deduplication-strict_required-1", "concept": "deduplication", "modality": "strict_required", "text": "A duplicate charge is never acceptable, so repeats are filtered without exception.", "synonym_term": "non-negotiable"}
+{"id": "deduplication-strict_required-2", "concept": "deduplication", "modality": "strict_required", "text": "Removing repeated records is non-negotiable in the ledger feed.", "synonym_term": "mandatory without exception"}
+{"id": "deduplication-strict_required-3", "concept": "deduplication", "modality": "strict_required", "text": "No source is exempt from duplicate filtering, whatever its reputation.", "synonym_term": "never to be waived"}
+{"id": "deduplication-permitted-1", "concept": "deduplication", "modality": "permitted", "text": "You may collapse identical log lines.", "synonym_term": "allowed"}
+{"id": "deduplication-permitted-2", "concept": "deduplication", "modality": "permitted", "text": "It is fine to drop repeated alerts if they get noisy.", "synonym_term": "acceptable"}
+{"id": "deduplication-permitted-3", "concept": "deduplication", "modality": "permitted", "text": "The importer is allowed to merge duplicate rows.", "synonym_term": "authorized"}
+{"id": "deduplication-not_required-1", "concept": "deduplication", "modality": "not_required", "text": "The source already guarantees unique records, so there is no need to filter repeats.", "synonym_term": "unnecessary"}
+{"id": "deduplication-not_required-2", "concept": "deduplication", "modality": "not_required", "text": "This job can run without removing duplicates.", "synonym_term": "not needed"}
+{"id": "deduplication-not_required-3", "concept": "deduplication", "modality": "not_required", "text": "Nobody expects duplicate filtering from the debug stream.", "synonym_term": "not mandatory"}
+{"id": "deduplication-prohibited-1", "concept": "deduplication", "modality": "prohibited", "text": "Do not deduplicate the audit trail.", "synonym_term": "forbidden"}
+{"id": "deduplication-prohibited-2", "concept": "deduplication", "modality": "prohibited", "text": "Merging repeated transactions is forbidden.", "synonym_term": "banned"}
+{"id": "deduplication-prohibited-3", "concept": "deduplication", "modality": "prohibited", "text": "Dropping identical events from the raw archive is banned.", "synonym_term": "disallowed"}
+{"id": "batching-required-1", "concept": "batching", "modality": "required", "text": "Writes to the warehouse have to be grouped into batches.", "synonym_term": "mandatory"}
+{"id": "batching-required-2", "concept": "batching", "modality": "required", "text": "The sync job needs to send records in bulk.", "synonym_term": "obligatory"}
+{"id": "batching-required-3", "concept": "batching", "modality": "required", "text": "We are obliged to combine these calls into grouped requests.", "synonym_term": "compulsory"}
+{"id": "batching-strict_required-1", "concept": "batching", "modality": "strict_required", "text": "Sending rows one at a time is never accepted here, even for a single customer.", "synonym_term": "non-negotiable"}
+{"id": "batching-strict_required-2", "concept": "batching", "modality": "strict_required", "text": "Grouping writes is non-negotiable for every producer, with no waiver.", "synonym_term": "mandatory without exception"}
+{"id": "batching-strict_required-3", "concept": "batching", "modality": "strict_required", "text": "No caller gets to bypass bulk submission, whatever the urgency.", "synonym_term": "never to be waived"}
+{"id": "batching-permitted-1", "concept": "batching", "modality": "permitted", "text": "You may group the notifications into one request.", "synonym_term": "allowed"}
+{"id": "batching-permitted-2", "concept": "batching", "modality": "permitted", "text": "Bulk inserts are allowed if they simplify the code.", "synonym_term": "acceptable"}
+{"id": "batching-permitted-3", "concept": "batching", "modality": "permitted", "text": "Feel free to buffer events and send them together.", "synonym_term": "authorized"}
+{"id": "batching-not_required-1", "concept": "batching", "modality": "not_required", "text": "Low-volume jobs do not need to group their writes.", "synonym_term": "unnecessary"}
+{"id": "batching-not_required-2", "concept": "batching", "modality": "not_required", "text": "This worker can send records individually; bulk mode is not something we ask for.", "synonym_term": "not needed"}
+{"id": "batching-not_required-3", "concept": "batching", "modality": "not_required", "text": "There is no need to buffer these calls.", "synonym_term": "not mandatory"}
+{"id": "batching-prohibited-1", "concept": "batching", "modality": "prohibited", "text": "Do not batch password reset messages.", "synonym_term": "forbidden"}
+{"id": "batching-prohibited-2", "concept": "batching", "modality": "prohibited", "text": "Grouping payment authorisations into one call is forbidden.", "synonym_term": "banned"}
+{"id": "batching-prohibited-3", "concept": "batching", "modality": "prohibited", "text": "Bulk submission to the partner API is banned.", "synonym_term": "disallowed"}
+{"id": "anonymization-required-1", "concept": "anonymization", "modality": "required", "text": "Analytics datasets have to be stripped of personal identity.", "synonym_term": "mandatory"}
+{"id": "anonymization-required-2", "concept": "anonymization", "modality": "required", "text": "We are obliged to anonymise records before sharing them.", "synonym_term": "obligatory"}
+{"id": "anonymization-required-3", "concept": "anonymization", "modality": "required", "text": "A research export needs identities removed first.", "synonym_term": "compulsory"}
+{"id": "anonymization-strict_required-1", "concept": "anonymization", "modality": "strict_required", "text": "Identifiable data never leaves the vault, and no executive can override that.", "synonym_term": "non-negotiable"}
+{"id": "anonymization-strict_required-2", "concept": "anonymization", "modality": "strict_required", "text": "Anonymising shared records is non-negotiable in every single case.", "synonym_term": "mandatory without exception"}
+{"id": "anonymization-strict_required-3", "concept": "anonymization", "modality": "strict_required", "text": "No deadline justifies releasing data that still identifies people.", "synonym_term": "never to be waived"}
+{"id": "anonymization-permitted-1", "concept": "anonymization", "modality": "permitted", "text": "You may anonymise the demo dataset if you like.", "synonym_term": "allowed"}
+{"id": "anonymization-permitted-2", "concept": "anonymization", "modality": "permitted", "text": "Removing identities from internal reports is allowed.", "synonym_term": "acceptable"}
+{"id": "anonymization-permitted-3", "concept": "anonymization", "modality": "permitted", "text": "Teams are welcome to scrub names from their samples.", "synonym_term": "authorized"}
+{"id": "anonymization-not_required-1", "concept": "anonymization", "modality": "not_required", "text": "Synthetic records do not need identities removed.", "synonym_term": "unnecessary"}
+{"id": "anonymization-not_required-2", "concept": "anonymization", "modality": "not_required", "text": "This report can use the data as it is, without anonymising it.", "synonym_term": "not needed"}
+{"id": "anonymization-not_required-3", "concept": "anonymization", "modality": "not_required", "text": "There is no obligation to scrub aggregate totals.", "synonym_term": "not mandatory"}
+{"id": "anonymization-prohibited-1", "concept": "anonymization", "modality": "prohibited", "text": "Do not anonymise the legal hold copy.", "synonym_term": "forbidden"}
+{"id": "anonymization-prohibited-2", "concept": "anonymization", "modality": "prohibited", "text": "Stripping identities from the fraud investigation records is forbidden.", "synonym_term": "banned"}
+{"id": "anonymization-prohibited-3", "concept": "anonymization", "modality": "prohibited", "text": "We have banned anonymising data in the billing system.", "synonym_term": "disallowed"}
+{"id": "api-versioning-required-1", "concept": "API versioning", "modality": "required", "text": "Breaking changes have to ship under a new API version.", "synonym_term": "mandatory"}
+{"id": "api-versioning-required-2", "concept": "API versioning", "modality": "required", "text": "Public endpoints need a version number.", "synonym_term": "obligatory"}
+{"id": "api-versioning-required-3", "concept": "API versioning", "modality": "required", "text": "We are obliged to version this interface before partners use it.", "synonym_term": "compulsory"}
+{"id": "api-versioning-strict_required-1", "concept": "API versioning", "modality": "strict_required", "text": "Changing a published contract without a new version is never excused.", "synonym_term": "non-negotiable"}
+{"id": "api-versioning-strict_required-2", "concept": "API versioning", "modality": "strict_required", "text": "Versioning the public API is non-negotiable, for every partner and every release.", "synonym_term": "mandatory without exception"}
+{"id": "api-versioning-strict_required-3", "concept": "API versioning", "modality": "strict_required", "text": "No team may be exempted from putting versions on external interfaces.", "synonym_term": "never to be waived"}
+{"id": "api-versioning-permitted-1", "concept": "API versioning", "modality": "permitted", "text": "You may introduce a second version of the internal API.", "synonym_term": "allowed"}
+{"id": "api-versioning-permitted-2", "concept": "API versioning", "modality": "permitted", "text": "It is fine to number the experimental endpoints.", "synonym_term": "acceptable"}
+{"id": "api-versioning-permitted-3", "concept": "API versioning", "modality": "permitted", "text": "Adding a version prefix to this route is allowed.", "synonym_term": "authorized"}
+{"id": "api-versioning-not_required-1", "concept": "API versioning", "modality": "not_required", "text": "An internal function call does not need a version scheme.", "synonym_term": "unnecessary"}
+{"id": "api-versioning-not_required-2", "concept": "API versioning", "modality": "not_required", "text": "This additive change can be released without a new API version.", "synonym_term": "not needed"}
+{"id": "api-versioning-not_required-3", "concept": "API versioning", "modality": "not_required", "text": "There is no need to number the private endpoints.", "synonym_term": "not mandatory"}
+{"id": "api-versioning-prohibited-1", "concept": "API versioning", "modality": "prohibited", "text": "Do not create another version of the authentication API.", "synonym_term": "forbidden"}
+{"id": "api-versioning-prohibited-2", "concept": "API versioning", "modality": "prohibited", "text": "Adding version prefixes to the webhook paths is forbidden.", "synonym_term": "banned"}
+{"id": "api-versioning-prohibited-3", "concept": "API versioning", "modality": "prohibited", "text": "We have ruled out maintaining parallel API versions.", "synonym_term": "disallowed"}
+{"id": "health-checks-required-1", "concept": "health checks", "modality": "required", "text": "Each service has to expose a liveness endpoint.", "synonym_term": "mandatory"}
+{"id": "health-checks-required-2", "concept": "health checks", "modality": "required", "text": "The load balancer needs a readiness probe from every instance.", "synonym_term": "obligatory"}
+{"id": "health-checks-required-3", "concept": "health checks", "modality": "required", "text": "New workers are obliged to report their health.", "synonym_term": "compulsory"}
+{"id": "health-checks-strict_required-1", "concept": "health checks", "modality": "strict_required", "text": "A service without a health probe is never deployed, without a single exception.", "synonym_term": "non-negotiable"}
+{"id": "health-checks-strict_required-2", "concept": "health checks", "modality": "strict_required", "text": "Health reporting is non-negotiable, even for temporary services.", "synonym_term": "mandatory without exception"}
+{"id": "health-checks-strict_required-3", "concept": "health checks", "modality": "strict_required", "text": "No waiver exists for liveness probes in production.", "synonym_term": "never to be waived"}
+{"id": "health-checks-permitted-1", "concept": "health checks", "modality": "permitted", "text": "You may add a deeper readiness probe.", "synonym_term": "allowed"}
+{"id": "health-checks-permitted-2", "concept": "health checks", "modality": "permitted", "text": "Exposing a status endpoint on the batch tool is allowed.", "synonym_term": "acceptable"}
+{"id": "health-checks-permitted-3", "concept": "health checks", "modality": "permitted", "text": "Feel free to report dependency health too.", "synonym_term": "authorized"}
+{"id": "health-checks-not_required-1", "concept": "health checks", "modality": "not_required", "text": "A one-off script does not need a status endpoint.", "synonym_term": "unnecessary"}
+{"id": "health-checks-not_required-2", "concept": "health checks", "modality": "not_required", "text": "This job can run without any liveness probe.", "synonym_term": "not needed"}
+{"id": "health-checks-not_required-3", "concept": "health checks", "modality": "not_required", "text": "There is no need for readiness reporting on the local mock.", "synonym_term": "not mandatory"}
+{"id": "health-checks-prohibited-1", "concept": "health checks", "modality": "prohibited", "text": "Do not add a health endpoint to the public gateway.", "synonym_term": "forbidden"}
+{"id": "health-checks-prohibited-2", "concept": "health checks", "modality": "prohibited", "text": "Probing the licensed third-party server for status is forbidden.", "synonym_term": "banned"}
+{"id": "health-checks-prohibited-3", "concept": "health checks", "modality": "prohibited", "text": "Dependency checks inside the liveness probe are banned.", "synonym_term": "disallowed"}
+{"id": "backups-required-1", "concept": "backups", "modality": "required", "text": "The customer database has to be copied to a safe place on a schedule.", "synonym_term": "mandatory"}
+{"id": "backups-required-2", "concept": "backups", "modality": "required", "text": "Each production store needs a backup plan.", "synonym_term": "obligatory"}
+{"id": "backups-required-3", "concept": "backups", "modality": "required", "text": "We are obliged to keep recoverable copies of this data.", "synonym_term": "compulsory"}
+{"id": "backups-strict_required-1", "concept": "backups", "modality": "strict_required", "text": "Running production without recoverable copies is never acceptable, whatever the cost.", "synonym_term": "non-negotiable"}
+{"id": "backups-strict_required-2", "concept": "backups", "modality": "strict_required", "text": "Backing up the ledger is non-negotiable and cannot be waived by anyone.", "synonym_term": "mandatory without exception"}
+{"id": "backups-strict_required-3", "concept": "backups", "modality": "strict_required", "text": "No environment holding customer data is exempt from being backed up.", "synonym_term": "never to be waived"}
+{"id": "backups-permitted-1", "concept": "backups", "modality": "permitted", "text": "You may take an extra snapshot before the upgrade.", "synonym_term": "allowed"}
+{"id": "backups-permitted-2", "concept": "backups", "modality": "permitted", "text": "Copying the development database for safekeeping is allowed.", "synonym_term": "acceptable"}
+{"id": "backups-permitted-3", "concept": "backups", "modality": "permitted", "text": "Feel free to back up your sandbox.", "synonym_term": "authorized"}
+{"id": "backups-not_required-1", "concept": "backups", "modality": "not_required", "text": "The cache can be rebuilt, so there is no need to back it up.", "synonym_term": "unnecessary"}
+{"id": "backups-not_required-2", "concept": "backups", "modality": "not_required", "text": "Scratch tables can live without any backup.", "synonym_term": "not needed"}
+{"id": "backups-not_required-3", "concept": "backups", "modality": "not_required", "text": "Nobody has to snapshot the test fixtures.", "synonym_term": "not mandatory"}
+{"id": "backups-prohibited-1", "concept": "backups", "modality": "prohibited", "text": "Do not back up the decrypted secrets.", "synonym_term": "forbidden"}
+{"id": "backups-prohibited-2", "concept": "backups", "modality": "prohibited", "text": "Copying session tokens into snapshots is forbidden.", "synonym_term": "banned"}
+{"id": "backups-prohibited-3", "concept": "backups", "modality": "prohibited", "text": "Taking backups of the restricted dataset onto laptops is banned.", "synonym_term": "disallowed"}
+{"id": "code-review-required-1", "concept": "code review", "modality": "required", "text": "Changes have to be reviewed by a colleague before merging.", "synonym_term": "mandatory"}
+{"id": "code-review-required-2", "concept": "code review", "modality": "required", "text": "Each pull request needs a second pair of eyes.", "synonym_term": "obligatory"}
+{"id": "code-review-required-3", "concept": "code review", "modality": "required", "text": "We are obliged to get approval from a reviewer on this repository.", "synonym_term": "compulsory"}
+{"id": "code-review-strict_required-1", "concept": "code review", "modality": "strict_required", "text": "Nobody merges unreviewed code, not even the most senior engineer during an outage.", "synonym_term": "non-negotiable"}
+{"id": "code-review-strict_required-2", "concept": "code review", "modality": "strict_required", "text": "Peer review is non-negotiable for every commit to the main branch.", "synonym_term": "mandatory without exception"}
+{"id": "code-review-strict_required-3", "concept": "code review", "modality": "strict_required", "text": "No change is exempt from a reviewer, however trivial.", "synonym_term": "never to be waived"}
+{"id": "code-review-permitted-1", "concept": "code review", "modality": "permitted", "text": "You may ask a colleague to look over your prototype.", "synonym_term": "allowed"}
+{"id": "code-review-permitted-2", "concept": "code review", "modality": "permitted", "text": "Requesting an extra reviewer is allowed.", "synonym_term": "acceptable"}
+{"id": "code-review-permitted-3", "concept": "code review", "modality": "permitted", "text": "Feel free to have another team read the change.", "synonym_term": "authorized"}
+{"id": "code-review-not_required-1", "concept": "code review", "modality": "not_required", "text": "Automated dependency bumps do not need a human reviewer.", "synonym_term": "unnecessary"}
+{"id": "code-review-not_required-2", "concept": "code review", "modality": "not_required", "text": "Your personal experiment branch can be merged without anyone reading it.", "synonym_term": "not needed"}
+{"id": "code-review-not_required-3", "concept": "code review", "modality": "not_required", "text": "There is no need for peer approval on typo fixes in notes.", "synonym_term": "not mandatory"}
+{"id": "code-review-prohibited-1", "concept": "code review", "modality": "prohibited", "text": "Do not send the embargoed security fix to the public review queue.", "synonym_term": "forbidden"}
+{"id": "code-review-prohibited-2", "concept": "code review", "modality": "prohibited", "text": "Authors are forbidden from approving their own changes through the review tool.", "synonym_term": "banned"}
+{"id": "code-review-prohibited-3", "concept": "code review", "modality": "prohibited", "text": "Review of the vendored third-party sources is ruled out; nobody is to open such requests.", "synonym_term": "disallowed"}
+{"id": "load-testing-required-1", "concept": "load testing", "modality": "required", "text": "The new service has to be tested under heavy traffic before launch.", "synonym_term": "mandatory"}
+{"id": "load-testing-required-2", "concept": "load testing", "modality": "required", "text": "A capacity change needs a stress run.", "synonym_term": "obligatory"}
+{"id": "load-testing-required-3", "concept": "load testing", "modality": "required", "text": "We are obliged to measure how it behaves at peak volume.", "synonym_term": "compulsory"}
+{"id": "load-testing-strict_required-1", "concept": "load testing", "modality": "strict_required", "text": "Launching without a stress run is never allowed, even if marketing has announced the date.", "synonym_term": "non-negotiable"}
+{"id": "load-testing-strict_required-2", "concept": "load testing", "modality": "strict_required", "text": "Testing at peak traffic is non-negotiable for all customer-facing services.", "synonym_term": "mandatory without exception"}
+{"id": "load-testing-strict_required-3", "concept": "load testing", "modality": "strict_required", "text": "No release on the checkout path skips performance testing, without exception.", "synonym_term": "never to be waived"}
+{"id": "load-testing-permitted-1", "concept": "load testing", "modality": "permitted", "text": "You may stress the staging cluster this week.", "synonym_term": "allowed"}
+{"id": "load-testing-permitted-2", "concept": "load testing", "modality": "permitted", "text": "Running a traffic simulation on the new endpoint is allowed.", "synonym_term": "acceptable"}
+{"id": "load-testing-permitted-3", "concept": "load testing", "modality": "permitted", "text": "Feel free to benchmark it under load.", "synonym_term": "authorized"}
+{"id": "load-testing-not_required-1", "concept": "load testing", "modality": "not_required", "text": "A documentation site does not need a stress run.", "synonym_term": "unnecessary"}
+{"id": "load-testing-not_required-2", "concept": "load testing", "modality": "not_required", "text": "This small internal tool can launch without being tested under traffic.", "synonym_term": "not needed"}
+{"id": "load-testing-not_required-3", "concept": "load testing", "modality": "not_required", "text": "There is no need to simulate peak volume for a config change.", "synonym_term": "not mandatory"}
+{"id": "load-testing-prohibited-1", "concept": "load testing", "modality": "prohibited", "text": "Do not generate stress traffic against the production database.", "synonym_term": "forbidden"}
+{"id": "load-testing-prohibited-2", "concept": "load testing", "modality": "prohibited", "text": "Hammering a partner's servers with simulated users is forbidden.", "synonym_term": "banned"}
+{"id": "load-testing-prohibited-3", "concept": "load testing", "modality": "prohibited", "text": "Peak traffic simulations are banned during business hours.", "synonym_term": "disallowed"}
+{"id": "data-masking-required-1", "concept": "data masking", "modality": "required", "text": "Card numbers have to be hidden on support screens.", "synonym_term": "mandatory"}
+{"id": "data-masking-required-2", "concept": "data masking", "modality": "required", "text": "Logs that show account details need the sensitive parts obscured.", "synonym_term": "obligatory"}
+{"id": "data-masking-required-3", "concept": "data masking", "modality": "required", "text": "We are obliged to mask personal fields in this view.", "synonym_term": "compulsory"}
+{"id": "data-masking-strict_required-1", "concept": "data masking", "modality": "strict_required", "text": "A full card number is never displayed to anyone, with no override for managers.", "synonym_term": "non-negotiable"}
+{"id": "data-masking-strict_required-2", "concept": "data masking", "modality": "strict_required", "text": "Obscuring secrets in output is non-negotiable in every environment.", "synonym_term": "mandatory without exception"}
+{"id": "data-masking-strict_required-3", "concept": "data masking", "modality": "strict_required", "text": "No screen is exempt from hiding sensitive fields, whatever the support case.", "synonym_term": "never to be waived"}
+{"id": "data-masking-permitted-1", "concept": "data masking", "modality": "permitted", "text": "You may blur names in the demo screenshots.", "synonym_term": "allowed"}
+{"id": "data-masking-permitted-2", "concept": "data masking", "modality": "permitted", "text": "Hiding part of the email address in this list is allowed.", "synonym_term": "acceptable"}
+{"id": "data-masking-permitted-3", "concept": "data masking", "modality": "permitted", "text": "Feel free to obscure internal identifiers too.", "synonym_term": "authorized"}
+{"id": "data-masking-not_required-1", "concept": "data masking", "modality": "not_required", "text": "Public product codes do not need to be hidden.", "synonym_term": "unnecessary"}
+{"id": "data-masking-not_required-2", "concept": "data masking", "modality": "not_required", "text": "This table can show the values in full, masking is unnecessary.", "synonym_term": "not needed"}
+{"id": "data-masking-not_required-3", "concept": "data masking", "modality": "not_required", "text": "There is no obligation to obscure fake test data.", "synonym_term": "not mandatory"}
+{"id": "data-masking-prohibited-1", "concept": "data masking", "modality": "prohibited", "text": "Do not mask the fields in the regulator's evidence export.", "synonym_term": "forbidden"}
+{"id": "data-masking-prohibited-2", "concept": "data masking", "modality": "prohibited", "text": "Obscuring the transaction reference is forbidden.", "synonym_term": "banned"}
+{"id": "data-masking-prohibited-3", "concept": "data masking", "modality": "prohibited", "text": "We have banned partial hiding of values in the reconciliation report.", "synonym_term": "disallowed"}
+{"id": "request-signing-required-1", "concept": "request signing", "modality": "required", "text": "Calls to the settlement service have to carry a signature.", "synonym_term": "mandatory"}
+{"id": "request-signing-required-2", "concept": "request signing", "modality": "required", "text": "Webhooks we send need to be cryptographically signed.", "synonym_term": "obligatory"}
+{"id": "request-signing-required-3", "concept": "request signing", "modality": "required", "text": "We are obliged to sign outgoing API calls.", "synonym_term": "compulsory"}
+{"id": "request-signing-strict_required-1", "concept": "request signing", "modality": "strict_required", "text": "An unsigned payment call is never accepted, and nobody can disable the check.", "synonym_term": "non-negotiable"}
+{"id": "request-signing-strict_required-2", "concept": "request signing", "modality": "strict_required", "text": "Signing requests is non-negotiable between all of our services.", "synonym_term": "mandatory without exception"}
+{"id": "request-signing-strict_required-3", "concept": "request signing", "modality": "strict_required", "text": "No integration partner is exempt from signed calls, without exception.", "synonym_term": "never to be waived"}
+{"id": "request-signing-permitted-1", "concept": "request signing", "modality": "permitted", "text": "You may sign requests to the internal metrics service.", "synonym_term": "allowed"}
+{"id": "request-signing-permitted-2", "concept": "request signing", "modality": "permitted", "text": "Adding a signature header to these calls is allowed.", "synonym_term": "acceptable"}
+{"id": "request-signing-permitted-3", "concept": "request signing", "modality": "permitted", "text": "Feel free to sign the sandbox traffic.", "synonym_term": "authorized"}
+{"id": "request-signing-not_required-1", "concept": "request signing", "modality": "not_required", "text": "Public read-only calls do not need a signature.", "synonym_term": "unnecessary"}
+{"id": "request-signing-not_required-2", "concept": "request signing", "modality": "not_required", "text": "The local mock accepts traffic without any signing.", "synonym_term": "not needed"}
+{"id": "request-signing-not_required-3", "concept": "request signing", "modality": "not_required", "text": "There is no need to sign calls that stay inside one process.", "synonym_term": "not mandatory"}
+{"id": "request-signing-prohibited-1", "concept": "request signing", "modality": "prohibited", "text": "Do not sign requests with the root key.", "synonym_term": "forbidden"}
+{"id": "request-signing-prohibited-2", "concept": "request signing", "modality": "prohibited", "text": "Attaching signatures to calls sent to the legacy proxy is forbidden.", "synonym_term": "banned"}
+{"id": "request-signing-prohibited-3", "concept": "request signing", "modality": "prohibited", "text": "Client-side signing in the browser is banned.", "synonym_term": "disallowed"}
+{"id": "dependency-pinning-required-1", "concept": "dependency pinning", "modality": "required", "text": "Third-party libraries have to be locked to exact versions.", "synonym_term": "mandatory"}
+{"id": "dependency-pinning-required-2", "concept": "dependency pinning", "modality": "required", "text": "The build needs a lock file with fixed releases.", "synonym_term": "obligatory"}
+{"id": "dependency-pinning-required-3", "concept": "dependency pinning", "modality": "required", "text": "We are obliged to pin every package this service imports.", "synonym_term": "compulsory"}
+{"id": "dependency-pinning-strict_required-1", "concept": "dependency pinning", "modality": "strict_required", "text": "Floating versions are never tolerated in production builds, for any library.", "synonym_term": "non-negotiable"}
+{"id": "dependency-pinning-strict_required-2", "concept": "dependency pinning", "modality": "strict_required", "text": "Locking dependency versions is non-negotiable, even for a quick patch.", "synonym_term": "mandatory without exception"}
+{"id": "dependency-pinning-strict_required-3", "concept": "dependency pinning", "modality": "strict_required", "text": "No package escapes the version lock, whatever its maintainer promises.", "synonym_term": "never to be waived"}
+{"id": "dependency-pinning-permitted-1", "concept": "dependency pinning", "modality": "permitted", "text": "You may fix the versions in your example project.", "synonym_term": "allowed"}
+{"id": "dependency-pinning-permitted-2", "concept": "dependency pinning", "modality": "permitted", "text": "Locking this development tool to one release is allowed.", "synonym_term": "acceptable"}
+{"id": "dependency-pinning-permitted-3", "concept": "dependency pinning", "modality": "permitted", "text": "Feel free to freeze the packages for the demo.", "synonym_term": "authorized"}
+{"id": "dependency-pinning-not_required-1", "concept": "dependency pinning", "modality": "not_required", "text": "A throwaway notebook does not need locked library versions.", "synonym_term": "unnecessary"}
+{"id": "dependency-pinning-not_required-2", "concept": "dependency pinning", "modality": "not_required", "text": "This sample can depend on the latest releases without a lock file.", "synonym_term": "not needed"}
+{"id": "dependency-pinning-not_required-3", "concept": "dependency pinning", "modality": "not_required", "text": "There is no need to freeze versions of the linters.", "synonym_term": "not mandatory"}
+{"id": "dependency-pinning-prohibited-1", "concept": "dependency pinning", "modality": "prohibited", "text": "Do not pin the security scanner to an old release.", "synonym_term": "forbidden"}
+{"id": "dependency-pinning-prohibited-2", "concept": "dependency pinning", "modality": "prohibited", "text": "Freezing the certificate bundle at one version is forbidden.", "synonym_term": "banned"}
+{"id": "dependency-pinning-prohibited-3", "concept": "dependency pinning", "modality": "prohibited", "text": "Exact version locks are banned in our published library.", "synonym_term": "disallowed"}
+{"id": "rollback-required-1", "concept": "rollback", "modality": "required", "text": "Every release has to have a way back to the previous version.", "synonym_term": "mandatory"}
+{"id": "rollback-required-2", "concept": "rollback", "modality": "required", "text": "A deployment plan needs a tested revert step.", "synonym_term": "obligatory"}
+{"id": "rollback-required-3", "concept": "rollback", "modality": "required", "text": "We are obliged to be able to undo this change.", "synonym_term": "compulsory"}
+{"id": "rollback-strict_required-1", "concept": "rollback", "modality": "strict_required", "text": "Shipping something that cannot be reverted is never permissible, even under pressure.", "synonym_term": "non-negotiable"}
+{"id": "rollback-strict_required-2", "concept": "rollback", "modality": "strict_required", "text": "A working path back is non-negotiable for every production deployment.", "synonym_term": "mandatory without exception"}
+{"id": "rollback-strict_required-3", "concept": "rollback", "modality": "strict_required", "text": "No release is excused from being reversible, without exception.", "synonym_term": "never to be waived"}
+{"id": "rollback-permitted-1", "concept": "rollback", "modality": "permitted", "text": "You may revert the release if the graphs look odd.", "synonym_term": "allowed"}
+{"id": "rollback-permitted-2", "concept": "rollback", "modality": "permitted", "text": "Undoing yesterday's deployment is allowed.", "synonym_term": "acceptable"}
+{"id": "rollback-permitted-3", "concept": "rollback", "modality": "permitted", "text": "Feel free to go back to the earlier build.", "synonym_term": "authorized"}
+{"id": "rollback-not_required-1", "concept": "rollback", "modality": "not_required", "text": "A static page update does not need a revert plan.", "synonym_term": "unnecessary"}
+{"id": "rollback-not_required-2", "concept": "rollback", "modality": "not_required", "text": "This experiment can be deployed without preparing a way back.", "synonym_term": "not needed"}
+{"id": "rollback-not_required-3", "concept": "rollback", "modality": "not_required", "text": "There is no need to rehearse undoing the config tweak.", "synonym_term": "not mandatory"}
+{"id": "rollback-prohibited-1", "concept": "rollback", "modality": "prohibited", "text": "Do not revert the database upgrade once data has been written.", "synonym_term": "forbidden"}
+{"id": "rollback-prohibited-2", "concept": "rollback", "modality": "prohibited", "text": "Going back to the vulnerable build is forbidden.", "synonym_term": "banned"}
+{"id": "rollback-prohibited-3", "concept": "rollback", "modality": "prohibited", "text": "Automatic undo of payment releases is banned.", "synonym_term": "disallowed"}
+{"id": "sharding-required-1", "concept": "sharding", "modality": "required", "text": "The events table has to be split across several database nodes.", "synonym_term": "mandatory"}
+{"id": "sharding-required-2", "concept": "sharding", "modality": "required", "text": "At this volume the store needs to be partitioned by customer.", "synonym_term": "obligatory"}
+{"id": "sharding-required-3", "concept": "sharding", "modality": "required", "text": "We are obliged to distribute tenant data over separate shards.", "synonym_term": "compulsory"}
+{"id": "sharding-strict_required-1", "concept": "sharding", "modality": "strict_required", "text": "Keeping all tenants on one node is never acceptable for this system, no matter the quarter.", "synonym_term": "non-negotiable"}
+{"id": "sharding-strict_required-2", "concept": "sharding", "modality": "strict_required", "text": "Partitioning the ledger across nodes is non-negotiable and cannot be deferred.", "synonym_term": "mandatory without exception"}
+{"id": "sharding-strict_required-3", "concept": "sharding", "modality": "strict_required", "text": "No large table is exempt from being split between servers.", "synonym_term": "never to be waived"}
+{"id": "sharding-permitted-1", "concept": "sharding", "modality": "permitted", "text": "You may partition the metrics store if it grows.", "synonym_term": "allowed"}
+{"id": "sharding-permitted-2", "concept": "sharding", "modality": "permitted", "text": "Splitting this collection across nodes is allowed.", "synonym_term": "acceptable"}
+{"id": "sharding-permitted-3", "concept": "sharding", "modality": "permitted", "text": "Feel free to distribute the search index.", "synonym_term": "authorized"}
+{"id": "sharding-not_required-1", "concept": "sharding", "modality": "not_required", "text": "A table of a few thousand rows does not need partitioning.", "synonym_term": "unnecessary"}
+{"id": "sharding-not_required-2", "concept": "sharding", "modality": "not_required", "text": "The service can run on a single node without splitting its data.", "synonym_term": "not needed"}
+{"id": "sharding-not_required-3", "concept": "sharding", "modality": "not_required", "text": "There is no need to distribute the lookup tables.", "synonym_term": "not mandatory"}
+{"id": "sharding-prohibited-1", "concept": "sharding", "modality": "prohibited", "text": "Do not split the accounting database across nodes.", "synonym_term": "forbidden"}
+{"id": "sharding-prohibited-2", "concept": "sharding", "modality": "prohibited", "text": "Partitioning the configuration store is forbidden.", "synonym_term": "banned"}
+{"id": "sharding-prohibited-3", "concept": "sharding", "modality": "prohibited", "text": "We have banned manual shards in application code.", "synonym_term": "disallowed"}
+{"id": "deprecation-warnings-required-1", "concept": "deprecation warnings", "modality": "required", "text": "Old methods have to tell callers they are going away.", "synonym_term": "mandatory"}
+{"id": "deprecation-warnings-required-2", "concept": "deprecation warnings", "modality": "required", "text": "Before removing an endpoint we need to announce it with a warning.", "synonym_term": "obligatory"}
+{"id": "deprecation-warnings-required-3", "concept": "deprecation warnings", "modality": "required", "text": "We are obliged to emit a notice when the legacy function is used.", "synonym_term": "compulsory"}
+{"id": "deprecation-warnings-strict_required-1", "concept": "deprecation warnings", "modality": "strict_required", "text": "Nothing is removed without prior notice to callers, and no maintainer can waive that.", "synonym_term": "non-negotiable"}
+{"id": "deprecation-warnings-strict_required-2", "concept": "deprecation warnings", "modality": "strict_required", "text": "Warning users of retiring features is non-negotiable in every library release.", "synonym_term": "mandatory without exception"}
+{"id": "deprecation-warnings-strict_required-3", "concept": "deprecation warnings", "modality": "strict_required", "text": "No public symbol is exempt from a sunset notice, whatever the schedule.", "synonym_term": "never to be waived"}
+{"id": "deprecation-warnings-permitted-1", "concept": "deprecation warnings", "modality": "permitted", "text": "You may log a notice when the old flag is used.", "synonym_term": "allowed"}
+{"id": "deprecation-warnings-permitted-2", "concept": "deprecation warnings", "modality": "permitted", "text": "Adding a sunset message to the internal helper is allowed.", "synonym_term": "acceptable"}
+{"id": "deprecation-warnings-permitted-3", "concept": "deprecation warnings", "modality": "permitted", "text": "Feel free to warn callers ahead of time.", "synonym_term": "authorized"}
+{"id": "deprecation-warnings-not_required-1", "concept": "deprecation warnings", "modality": "not_required", "text": "An unreleased method can be removed without any sunset notice.", "synonym_term": "unnecessary"}
+{"id": "deprecation-warnings-not_required-2", "concept": "deprecation warnings", "modality": "not_required", "text": "Private helpers do not need to warn before they disappear.", "synonym_term": "not needed"}
+{"id": "deprecation-warnings-not_required-3", "concept": "deprecation warnings", "modality": "not_required", "text": "There is no need to announce removal of dead test code.", "synonym_term": "not mandatory"}
+{"id": "deprecation-warnings-prohibited-1", "concept": "deprecation warnings", "modality": "prohibited", "text": "Do not print sunset notices in the command's machine-readable output.", "synonym_term": "forbidden"}
+{"id": "deprecation-warnings-prohibited-2", "concept": "deprecation warnings", "modality": "prohibited", "text": "Emitting removal warnings from the hot loop is forbidden.", "synonym_term": "banned"}
+{"id": "deprecation-warnings-prohibited-3", "concept": "deprecation warnings", "modality": "prohibited", "text": "We have banned deprecation messages in the stable branch.", "synonym_term": "disallowed"}
+{"id": "connection-pooling-required-1", "concept": "connection pooling", "modality": "required", "text": "Database clients have to reuse connections from a shared pool.", "synonym_term": "mandatory"}
+{"id": "connection-pooling-required-2", "concept": "connection pooling", "modality": "required", "text": "The service needs a connection pool before it takes traffic.", "synonym_term": "obligatory"}
+{"id": "connection-pooling-required-3", "concept": "connection pooling", "modality": "required", "text": "We are obliged to pool our sessions to the database.", "synonym_term": "compulsory"}
+{"id": "connection-pooling-strict_required-1", "concept": "connection pooling", "modality": "strict_required", "text": "Opening a fresh connection per query is never accepted, in any service.", "synonym_term": "non-negotiable"}
+{"id": "connection-pooling-strict_required-2", "concept": "connection pooling", "modality": "strict_required", "text": "Reusing pooled connections is non-negotiable, with no carve-out for batch jobs.", "synonym_term": "mandatory without exception"}
+{"id": "connection-pooling-strict_required-3", "concept": "connection pooling", "modality": "strict_required", "text": "No client of the primary database is exempt from pooling.", "synonym_term": "never to be waived"}
+{"id": "connection-pooling-permitted-1", "concept": "connection pooling", "modality": "permitted", "text": "You may keep a pool of HTTP connections here.", "synonym_term": "allowed"}
+{"id": "connection-pooling-permitted-2", "concept": "connection pooling", "modality": "permitted", "text": "Sharing sessions through a pool is allowed in this worker.", "synonym_term": "acceptable"}
+{"id": "connection-pooling-permitted-3", "concept": "connection pooling", "modality": "permitted", "text": "Feel free to reuse connections to the cache.", "synonym_term": "authorized"}
+{"id": "connection-pooling-not_required-1", "concept": "connection pooling", "modality": "not_required", "text": "A nightly script does not need a connection pool.", "synonym_term": "unnecessary"}
+{"id": "connection-pooling-not_required-2", "concept": "connection pooling", "modality": "not_required", "text": "This tool can open a single connection and skip pooling.", "synonym_term": "not needed"}
+{"id": "connection-pooling-not_required-3", "concept": "connection pooling", "modality": "not_required", "text": "There is no need to pool calls to the local file store.", "synonym_term": "not mandatory"}
+{"id": "connection-pooling-prohibited-1", "concept": "connection pooling", "modality": "prohibited", "text": "Do not pool connections that carry user-specific credentials.", "synonym_term": "forbidden"}
+{"id": "connection-pooling-prohibited-2", "concept": "connection pooling", "modality": "prohibited", "text": "Reusing sessions across tenants through a pool is forbidden.", "synonym_term": "banned"}
+{"id": "connection-pooling-prohibited-3", "concept": "connection pooling", "modality": "prohibited", "text": "Connection pools are banned in the serverless handler.", "synonym_term": "disallowed"}
