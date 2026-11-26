@@ -26,8 +26,8 @@ ALLOWED: dict[str, frozenset[str]] = {
 
 
 # Standard-library routes to importing a module by name, or to running code.
-LOADER_MODULES = frozenset({"importlib", "runpy", "pkgutil"})
-DYNAMIC_BUILTINS = frozenset({"__import__", "exec", "eval"})
+LOADER_MODULES = frozenset({"builtins", "importlib", "pkgutil", "runpy"})
+DYNAMIC_BUILTINS = frozenset({"__builtins__", "__import__", "eval", "exec"})
 
 
 def _imported_names(module: str, is_package: bool, source: str) -> list[str]:
@@ -127,6 +127,8 @@ def test_import_direction_rejects_forbidden_examples() -> None:
         ("agent_pfc.domain.probe", "from importlib.util import find_spec"),
         ("agent_pfc.domain.probe", "import runpy"),
         ("agent_pfc.domain.probe", "exec('from agent_pfc import probes')"),
+        ("agent_pfc.domain.probe", "from builtins import __import__ as load\nload('x')"),
+        ("agent_pfc.domain.probe", "__builtins__['__imp' 'ort__']('x')"),
         ("agent_pfc.helpers", ""),
     ]
     for module, source in forbidden:
