@@ -1,6 +1,6 @@
 # agent-pfc requirements
 
-Version 0.4. 27 November 2026.
+Version 0.5. 27 November 2026.
 
 This document says what the system must do. Design is done separately, one module at a time.
 
@@ -36,13 +36,13 @@ Not in scope:
 | ID | Requirement | Status |
 |---|---|---|
 | E1 | Each entry is an **instruction** (how something must be done, including design decisions) or a **data point** (a fact about the project or its environment). The two are kept distinct. | Agreed |
-| E2 | Entries are short, normalized rules or facts, not verbose statements. | Agreed |
+| E2 | Entries are short, normalized rules or facts, not verbose statements. An entry's text is at most 500 characters. | Agreed |
 | E3 | Memory is project centric: an entry belongs to the project whose history produced it. | Agreed |
 | E4 | An entry keeps its scope, negation and conditions through normalization. | Agreed |
 | E5 | One entry holds one rule or fact. | Agreed |
-| E6 | An entry records its source text, session, time, author and the models that produced it. | Agreed |
+| E6 | An entry records its source (agent, session, session file, position and time) and the models that produced it. The original wording is not stored. | Agreed |
 | E7 | An entry is created only from what the user states or accepts. An agent's unaccepted proposal is not an entry. | Agreed |
-| E8 | A newer decision replaces the outdated entry. The old one is retired, not erased. | Agreed |
+| E8 | A newer decision replaces the outdated entry. The old one is retired, not erased. An entry can also be retired with no replacement. A retired entry is not reactivated. | Agreed |
 | E9 | A rule already stored is not stored again. | Agreed |
 
 E1: that design decisions count as instructions is agreed.
@@ -65,7 +65,9 @@ E1: that design decisions count as instructions is agreed.
 | C12 | When sessions overlap, the later message wins. | Proposed |
 | C13 | Support Claude Code history first, then Codex. | Proposed |
 | C14 | A history reader reports records it does not recognise instead of skipping them silently. | Proposed |
-| C15 | Raw chat history stays on the user's machine. Only entries and short source quotes reach the memory server. | Proposed |
+| C15 | Raw chat history stays on the user's machine. Only entries and source references reach the memory server. | Proposed |
+| C16 | The local model breaks each turn into simple directives and facts, one per entry, each keeping the condition or scope that applies to it. A turn is not stored whole as one entry. | Agreed |
+| C17 | A setting, off by default, turns on local archiving of Claude sessions, so that an entry's source can be looked up after the agent deletes its history. Remote archiving may follow. | Agreed |
 
 ## 5. Querying
 
@@ -116,11 +118,12 @@ E1: that design decisions count as instructions is agreed.
 | N1 | Separation of concerns and modularity are the prime directive, in code and in package structure. | Agreed |
 | N2 | Model runtime, storage and history formats sit behind interfaces so each can be replaced. | Proposed |
 | N3 | A core, built first, provides the domain types, service contract and base infrastructure that the other modules share. | Agreed |
-| N4 | The core is a set of packages with one responsibility each, not a catch-all. It depends on no other module. | Agreed |
+| N4 | The core is a set of packages with one responsibility each. It depends on no other module. | Agreed |
 | N5 | Base infrastructure covers configuration, logging, error types, file locations, project identity and shared interfaces. | Agreed |
 | N6 | The core includes the HTTP client for the memory server, used by every module that calls it. | Agreed |
 | N7 | Process lifecycle is a separate module with its own design, outside the core. | Agreed |
 | N8 | Process lifecycle covers startup, shutdown, health checks and single-instance locking for the server, daemon and worker. | Proposed |
+| N9 | Shared code goes in `common` and `utils` packages, organized into modules by subject. | Agreed |
 
 ## 9. Quality targets
 
@@ -164,6 +167,8 @@ Small, throwaway tests on one Apple M3 Pro. They are indications, not acceptance
 
 Proposed breakdown and order. Each gets its own design.
 
+Module 1 is tracked as insrc Epic `690f38931e7d3b57` (`docs/epics/core-base-infrastructure-E20261126690f3893/`). It supersedes Epic `3b5f9aa550b6fe9d`, whose documents are history and must not be designed against.
+
 Module 1 comes first because the others build on it. Its contents are:
 
 | Part | Responsibility |
@@ -180,14 +185,14 @@ Module 1 comes first because the others build on it. Its contents are:
 
 | Order | Module | Covers |
 |---|---|---|
-| 1 | Core and base infrastructure | E1 to E9, V6, N1 to N6 |
+| 1 | Core and base infrastructure | E1 to E9, V6, N1 to N6, N9 |
 | 2 | Model management | M1 to M4, M9 |
 | 3 | Model runtime | M5, M6 |
 | 4 | Store | V2, V3, M10, Q10 |
 | 5 | Process lifecycle | N7, N8, C11 |
 | 6 | Memory server | V1, V3 to V7 |
 | 7 | MCP adapter | Q1 to Q9 |
-| 8 | History readers | C3, C8, C9, C13 to C15 |
-| 9 | Parser | C5, C6, E4, E5, E7 to E9 |
+| 8 | History readers | C3, C8, C9, C13 to C15, C17 |
+| 9 | Parser | C5, C6, C16, E4, E5, E7 to E9 |
 | 10 | Daemon | C2, C4, C7, C10, C12 |
 | 11 | Installer | M6 to M8, S4 |

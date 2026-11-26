@@ -19,10 +19,10 @@ Read first: `docs/REQUIREMENTS.md`. Design is done one module at a time, in the 
 
 **Separation of concerns and modularity are the prime directive.** They apply to the package structure as much as to the code.
 
-- Each package and module has one responsibility. No catch-all `utils` modules.
-- `core/common` holds only shared definitions (types, failure types and interfaces): no logic that does I/O, no helper functions, and no imports from the rest of the project. Each module in it has one subject.
+- Each package and module has one responsibility.
+- Shared code goes in `common` and `utils` packages, organized into modules by subject.
 - Layers depend on explicit interfaces (protocols) and domain types. Backend-specific details, such as llama.cpp or LanceDB, stay inside their backend.
-- Dependencies point one way. Domain models depend on nothing else in the project; the CLI only wires parts together.
+- Dependencies point one way. Domain models depend on nothing in the project outside `common` and `utils`; the CLI only wires parts together.
 - Keep pure logic apart from I/O. Core logic does not read files, call models or access the store directly.
 - Designs state these boundaries, and a violation fails review.
 

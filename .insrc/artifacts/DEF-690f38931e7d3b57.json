@@ -1,0 +1,702 @@
+{
+  "meta": {
+    "workflow": "define",
+    "runId": "wf-1795721493255-zdhioi",
+    "repoPath": "/Users/subhagho/work/projects/agent-pfc",
+    "createdAt": "2026-11-26T19:34:25.496Z",
+    "epicCreatedAt": "2026-11-26T19:34:25.496Z",
+    "attribution": {
+      "outputs": [
+        {
+          "role": "(client)",
+          "tier": "core",
+          "runner": "cli-claude",
+          "model": "claude-sonnet-5-5"
+        }
+      ]
+    },
+    "elapsedMs": 172233,
+    "repoIndexedAt": null,
+    "schemaVersion": 1,
+    "epicHash": "690f38931e7d3b57",
+    "epicSlug": "core-base-infrastructure",
+    "authoredBy": "controller",
+    "lifecycle": {
+      "status": "approved",
+      "revision": {
+        "number": 1,
+        "contentHash": "adaffe58e354950ab82a290bdfe58c60ae479329168c2d5f59158cc4e2978178",
+        "at": "2026-11-26T19:34:25.518Z",
+        "by": {
+          "id": "insrc:system",
+          "kind": "system",
+          "properties": {}
+        }
+      },
+      "signoffs": [],
+      "approval": {
+        "revision": 1,
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        },
+        "at": "2026-11-26T19:39:07.178Z"
+      }
+    },
+    "revision": 1,
+    "envelope": {
+      "description": "",
+      "references": [],
+      "attachments": []
+    }
+  },
+  "body": {
+    "title": "core-base-infrastructure",
+    "summary": {
+      "prose": "This Epic gives every later part of agent-pfc one shared vocabulary and one set of basics: what is remembered, how the memory server is asked for it, and how settings, logs, errors, files and projects are handled. Later modules can then be designed and tested one at a time against agreed boundaries.",
+      "audience": "product"
+    },
+    "flavor": "new-capability",
+    "problem": "agent-pfc is made of several separately designed modules that run in more than one process and must agree on what a memory entry, a project, a session source and a checkpoint are, how a request to the memory server is expressed and versioned, how settings and files are found on Linux, macOS and Windows, and how failures are reported. Almost none of this exists: the code holds only an embedding interface, its cache, one error type and a test of import direction. Without an agreed shared foundation, each later module would define these for itself, the definitions would diverge, and the rule that every package has one responsibility with dependencies pointing one way could not be held.",
+    "nonGoals": [
+      {
+        "text": "Process startup, shutdown, health checks and single-instance locking.",
+        "rationale": "Process lifecycle is a separate module with its own design."
+      },
+      {
+        "text": "Access token and request origin checks.",
+        "rationale": "They are designed with the memory server and were left out of the core."
+      },
+      {
+        "text": "Shared test support such as fake models or an in-memory store.",
+        "rationale": "Left out of the core by the project owner."
+      },
+      {
+        "text": "Implementing model download, model runtime, store, memory server, MCP adapter, history readers, parser, daemon, installer or session archiving.",
+        "rationale": "Each belongs to a module designed after the core; the core holds only the archiving setting."
+      },
+      {
+        "text": "Storing the original wording of the messages an entry came from.",
+        "rationale": "The owner decided it grows the data without adding correctness."
+      },
+      {
+        "text": "A general-purpose reasoning engine or controls on destructive agent actions.",
+        "rationale": "Out of scope for the project; destructive actions belong in the agent harness."
+      }
+    ],
+    "assumptions": [
+      {
+        "text": "The embedding interface and cache that remain may be reused, moved or replaced as part of defining the model runtime interfaces.",
+        "confidence": "med",
+        "source": "c5"
+      },
+      {
+        "text": "A first set of platforms of macOS on Apple silicon, Linux x64 and ARM64, and Windows x64 guides file location behaviour; only macOS can be verified on the current machine.",
+        "confidence": "med",
+        "source": "c6"
+      },
+      {
+        "text": "A session history file is only appended to, so a position in it keeps referring to the same message.",
+        "confidence": "med",
+        "source": "c10"
+      }
+    ],
+    "constraints": [
+      {
+        "id": "k1",
+        "text": "Separation of concerns and modularity apply to code and package structure, and a violation fails review.",
+        "type": "convention",
+        "source": "c1"
+      },
+      {
+        "id": "k2",
+        "text": "The core is a set of single-responsibility packages that depends on no other module.",
+        "type": "invariant",
+        "source": "c2"
+      },
+      {
+        "id": "k3",
+        "text": "Dependencies point one way and domain definitions depend on nothing in the project outside the common and utils packages; the existing import-direction test enforces the declared table.",
+        "type": "invariant",
+        "source": "c3"
+      },
+      {
+        "id": "k4",
+        "text": "The memory server HTTP API is versioned.",
+        "type": "contract",
+        "source": "c4"
+      },
+      {
+        "id": "k5",
+        "text": "Entries are instructions or data points, short and normalized with at most 500 characters of text, one rule or fact each, scoped to one project, keeping scope, negation and conditions; the original wording is not stored; replaced entries are retired, not erased, and a stored rule is not stored again.",
+        "type": "contract",
+        "source": "c7"
+      },
+      {
+        "id": "k6",
+        "text": "agent-pfc is a standalone Python system supporting Linux, macOS and Windows, with no dependency on Ollama.",
+        "type": "stakeholder",
+        "source": "c8"
+      },
+      {
+        "id": "k7",
+        "text": "Requirements marked Proposed are not treated as settled in design.",
+        "type": "convention",
+        "source": "c9"
+      },
+      {
+        "id": "k8",
+        "text": "Shared code goes in common and utils packages, organized into modules by subject.",
+        "type": "stakeholder",
+        "source": "c11"
+      }
+    ],
+    "stories": [
+      {
+        "id": "s1",
+        "title": "Define memory entries and shared failures",
+        "userValue": "Every module author works with one definition of what is remembered and one way of reporting failures.",
+        "sizeEstimate": "M",
+        "functionalRequirements": [
+          {
+            "statement": "A memory entry is either an instruction or a data point and belongs to exactly one project."
+          },
+          {
+            "statement": "An entry carries its source reference (agent, session, session file, position and time), the named entities tagged in its text, its producing models and whether it is active or retired."
+          },
+          {
+            "statement": "Sources, projects and session checkpoints have one shared definition."
+          },
+          {
+            "statement": "Failures raised across modules belong to shared, distinguishable kinds with a message a user can act on."
+          },
+          {
+            "statement": "An entry can be retired, with or without a replacement, and is not reactivated."
+          }
+        ],
+        "acceptanceCriteria": [
+          {
+            "id": "ac1",
+            "given": "an entry whose kind or project is empty",
+            "when": "a module tries to create it",
+            "then": "it is rejected with a failure naming what is missing",
+            "operationalizes": [
+              "k5"
+            ]
+          },
+          {
+            "id": "ac2",
+            "given": "an active entry",
+            "when": "it is retired, with or without a replacement",
+            "then": "that same entry becomes retired, remains available, is distinguishable from active ones and cannot be reactivated or retired again",
+            "operationalizes": [
+              "k5"
+            ]
+          },
+          {
+            "id": "ac3",
+            "given": "a rule with a negation and a scope",
+            "when": "it is held as an entry",
+            "then": "its text keeps both and the entry records the source it came from without the original wording",
+            "operationalizes": [
+              "k5"
+            ]
+          },
+          {
+            "id": "ac4",
+            "given": "the shared domain definitions",
+            "when": "the import direction check runs",
+            "then": "they depend on nothing in the project outside the common and utils packages",
+            "operationalizes": [
+              "k2",
+              "k3",
+              "k8"
+            ]
+          },
+          {
+            "id": "ac5",
+            "given": "an entry text longer than 500 characters",
+            "when": "a module tries to create the entry",
+            "then": "it is rejected with a failure naming the text",
+            "operationalizes": [
+              "k5"
+            ]
+          },
+          {
+            "id": "ac6",
+            "given": "a tagged name that does not match the entry text at its position",
+            "when": "a module tries to create the entry",
+            "then": "it is rejected with a failure naming the tagged names",
+            "operationalizes": [
+              "k5"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "s2",
+        "title": "Load settings, locate files and record activity",
+        "userValue": "An operator can configure agent-pfc and find its files and logs the same way in every process on every supported platform.",
+        "sizeEstimate": "M",
+        "dependsOn": [
+          "s1"
+        ],
+        "functionalRequirements": [
+          {
+            "statement": "Configuration, data, models and logs have defined locations on Linux, macOS and Windows."
+          },
+          {
+            "statement": "Settings, including the embedding and extraction models and whether sessions are archived, are loaded from configuration."
+          },
+          {
+            "statement": "Invalid settings are reported clearly and are never silently replaced."
+          },
+          {
+            "statement": "Every process records its activity in one consistent way."
+          }
+        ],
+        "acceptanceCriteria": [
+          {
+            "id": "ac1",
+            "given": "any supported platform",
+            "when": "a process asks where its configuration, data, models or logs belong",
+            "then": "it receives the location appropriate to that platform",
+            "operationalizes": [
+              "k6"
+            ]
+          },
+          {
+            "id": "ac2",
+            "given": "a configuration naming the embedding and extraction models",
+            "when": "settings are loaded",
+            "then": "those choices are available to the modules that need them",
+            "operationalizes": [
+              "k2"
+            ]
+          },
+          {
+            "id": "ac3",
+            "given": "a configuration with an unknown or malformed setting",
+            "when": "settings are loaded",
+            "then": "loading fails with a message naming the setting and the file",
+            "operationalizes": [
+              "k1"
+            ]
+          },
+          {
+            "id": "ac4",
+            "given": "two different processes",
+            "when": "each records an event",
+            "then": "both records have the same shape and identify the process that wrote them",
+            "operationalizes": [
+              "k1"
+            ]
+          },
+          {
+            "id": "ac5",
+            "given": "a configuration that does not mention session archiving",
+            "when": "settings are loaded",
+            "then": "session archiving is off",
+            "operationalizes": [
+              "k2"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "s3",
+        "title": "Identify the project of a session or query",
+        "userValue": "A coding agent receives only knowledge that belongs to the project it is working on, however that project is reached.",
+        "sizeEstimate": "S",
+        "dependsOn": [
+          "s1"
+        ],
+        "functionalRequirements": [
+          {
+            "statement": "A session history and a query are assigned to a project by one shared rule."
+          },
+          {
+            "statement": "A location whose project cannot be determined is reported rather than assigned to another project."
+          }
+        ],
+        "acceptanceCriteria": [
+          {
+            "id": "ac1",
+            "given": "a session and a query made from the same project",
+            "when": "each is identified",
+            "then": "both resolve to the same project",
+            "operationalizes": [
+              "k5"
+            ]
+          },
+          {
+            "id": "ac2",
+            "given": "two unrelated projects",
+            "when": "each is identified",
+            "then": "they resolve to different projects",
+            "operationalizes": [
+              "k5"
+            ]
+          },
+          {
+            "id": "ac3",
+            "given": "a location whose project cannot be determined",
+            "when": "it is identified",
+            "then": "the caller is told so and no entry is attributed to a guessed project",
+            "operationalizes": [
+              "k5"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "s4",
+        "title": "Ask the memory server through one versioned contract",
+        "userValue": "Authors of the MCP adapter, daemon and worker call the memory server in one agreed way, and the server author knows exactly what to answer.",
+        "sizeEstimate": "L",
+        "dependsOn": [
+          "s1",
+          "s2",
+          "s3"
+        ],
+        "functionalRequirements": [
+          {
+            "statement": "Requests to the memory server and its answers have one versioned definition covering querying and updating entries."
+          },
+          {
+            "statement": "One shared client is the way modules call the memory server."
+          },
+          {
+            "statement": "A server that is unreachable, answers with a failure or speaks an incompatible version is reported as such."
+          },
+          {
+            "statement": "Updates are idempotent: a session's checkpoint decides where processing proceeds from, and submitting again without new turns changes nothing."
+          },
+          {
+            "statement": "A query can name the entities it is about alongside its text."
+          }
+        ],
+        "acceptanceCriteria": [
+          {
+            "id": "ac1",
+            "given": "a request that matches the contract",
+            "when": "it is sent through the shared client",
+            "then": "the caller receives an answer of the defined form",
+            "operationalizes": [
+              "k4"
+            ]
+          },
+          {
+            "id": "ac2",
+            "given": "a client and a server on incompatible contract versions",
+            "when": "the client calls the server",
+            "then": "the caller is told the versions are incompatible and no change is made",
+            "operationalizes": [
+              "k4"
+            ]
+          },
+          {
+            "id": "ac3",
+            "given": "a memory server that is not running",
+            "when": "a module calls it",
+            "then": "the caller receives a distinct unreachable failure",
+            "operationalizes": [
+              "k4"
+            ]
+          },
+          {
+            "id": "ac4",
+            "given": "a query that names no project",
+            "when": "it is checked against the contract",
+            "then": "it is rejected",
+            "operationalizes": [
+              "k5"
+            ]
+          },
+          {
+            "id": "ac5",
+            "given": "an update that the contract's checkpoint shows was already applied",
+            "when": "it is submitted again",
+            "then": "the answer says nothing changed",
+            "operationalizes": [
+              "k4",
+              "k5"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "s5",
+        "title": "Depend on models and storage through interfaces",
+        "userValue": "Authors of the model runtime and store can build and replace them without changing the modules that use them.",
+        "sizeEstimate": "M",
+        "dependsOn": [
+          "s1"
+        ],
+        "existingCapabilityRefs": [
+          "c5"
+        ],
+        "functionalRequirements": [
+          {
+            "statement": "Embedding text, extracting entries and storing entries are each reached through a shared interface that names no specific product."
+          },
+          {
+            "statement": "Vectors produced by different embedding models are distinguishable."
+          }
+        ],
+        "acceptanceCriteria": [
+          {
+            "id": "ac1",
+            "given": "a module that needs embeddings, extraction or storage",
+            "when": "it is built",
+            "then": "it depends only on the shared interface and not on a specific runtime or store",
+            "operationalizes": [
+              "k1",
+              "k3"
+            ]
+          },
+          {
+            "id": "ac2",
+            "given": "vectors from two different embedding models",
+            "when": "they are presented together through the interfaces",
+            "then": "the difference is detectable so they are not mixed",
+            "operationalizes": [
+              "k5"
+            ]
+          },
+          {
+            "id": "ac3",
+            "given": "the core packages",
+            "when": "the import direction check runs",
+            "then": "none of them depends on a module outside the core",
+            "operationalizes": [
+              "k2",
+              "k3"
+            ]
+          }
+        ]
+      }
+    ],
+    "openQuestions": [],
+    "functionalDefinition": {
+      "requirements": [
+        {
+          "id": "E20261126690f3893:FR001",
+          "statement": "The system has one definition of a memory entry that distinguishes instructions from data points, belongs to one project, and can carry its source reference, tagged named entities, producing models and active or retired state.",
+          "scope": "doc"
+        },
+        {
+          "id": "E20261126690f3893:FR002",
+          "statement": "The system has one versioned definition of what can be asked of the memory server and what it answers.",
+          "scope": "doc"
+        },
+        {
+          "id": "E20261126690f3893:FR003",
+          "statement": "Every module that calls the memory server does so through one shared client.",
+          "scope": "doc"
+        },
+        {
+          "id": "E20261126690f3893:FR004",
+          "statement": "Settings, including which models are used and whether sessions are archived, are loaded from configuration and rejected with a clear message when invalid.",
+          "scope": "doc"
+        },
+        {
+          "id": "E20261126690f3893:FR005",
+          "statement": "Every process records its activity and reports failures in one consistent way.",
+          "scope": "doc"
+        },
+        {
+          "id": "E20261126690f3893:FR006",
+          "statement": "The system finds its configuration, data, models and logs in the appropriate place on Linux, macOS and Windows.",
+          "scope": "doc"
+        },
+        {
+          "id": "E20261126690f3893:FR007",
+          "statement": "The system decides in one consistent way which project a session or query belongs to.",
+          "scope": "doc"
+        },
+        {
+          "id": "E20261126690f3893:FR008",
+          "statement": "Modules depend on the model runtime and the store only through interfaces, so each can be replaced.",
+          "scope": "doc"
+        },
+        {
+          "id": "E20261126690f3893:S001:FR001",
+          "statement": "A memory entry is either an instruction or a data point and belongs to exactly one project.",
+          "scope": "item",
+          "itemRef": "s1"
+        },
+        {
+          "id": "E20261126690f3893:S001:FR002",
+          "statement": "An entry carries its source reference (agent, session, session file, position and time), the named entities tagged in its text, its producing models and whether it is active or retired.",
+          "scope": "item",
+          "itemRef": "s1"
+        },
+        {
+          "id": "E20261126690f3893:S001:FR003",
+          "statement": "Sources, projects and session checkpoints have one shared definition.",
+          "scope": "item",
+          "itemRef": "s1"
+        },
+        {
+          "id": "E20261126690f3893:S001:FR004",
+          "statement": "Failures raised across modules belong to shared, distinguishable kinds with a message a user can act on.",
+          "scope": "item",
+          "itemRef": "s1"
+        },
+        {
+          "id": "E20261126690f3893:S001:FR005",
+          "statement": "An entry can be retired, with or without a replacement, and is not reactivated.",
+          "scope": "item",
+          "itemRef": "s1"
+        },
+        {
+          "id": "E20261126690f3893:S002:FR001",
+          "statement": "Configuration, data, models and logs have defined locations on Linux, macOS and Windows.",
+          "scope": "item",
+          "itemRef": "s2"
+        },
+        {
+          "id": "E20261126690f3893:S002:FR002",
+          "statement": "Settings, including the embedding and extraction models and whether sessions are archived, are loaded from configuration.",
+          "scope": "item",
+          "itemRef": "s2"
+        },
+        {
+          "id": "E20261126690f3893:S002:FR003",
+          "statement": "Invalid settings are reported clearly and are never silently replaced.",
+          "scope": "item",
+          "itemRef": "s2"
+        },
+        {
+          "id": "E20261126690f3893:S002:FR004",
+          "statement": "Every process records its activity in one consistent way.",
+          "scope": "item",
+          "itemRef": "s2"
+        },
+        {
+          "id": "E20261126690f3893:S003:FR001",
+          "statement": "A session history and a query are assigned to a project by one shared rule.",
+          "scope": "item",
+          "itemRef": "s3"
+        },
+        {
+          "id": "E20261126690f3893:S003:FR002",
+          "statement": "A location whose project cannot be determined is reported rather than assigned to another project.",
+          "scope": "item",
+          "itemRef": "s3"
+        },
+        {
+          "id": "E20261126690f3893:S004:FR001",
+          "statement": "Requests to the memory server and its answers have one versioned definition covering querying and updating entries.",
+          "scope": "item",
+          "itemRef": "s4"
+        },
+        {
+          "id": "E20261126690f3893:S004:FR002",
+          "statement": "One shared client is the way modules call the memory server.",
+          "scope": "item",
+          "itemRef": "s4"
+        },
+        {
+          "id": "E20261126690f3893:S004:FR003",
+          "statement": "A server that is unreachable, answers with a failure or speaks an incompatible version is reported as such.",
+          "scope": "item",
+          "itemRef": "s4"
+        },
+        {
+          "id": "E20261126690f3893:S004:FR004",
+          "statement": "Updates are idempotent: a session's checkpoint decides where processing proceeds from, and submitting again without new turns changes nothing.",
+          "scope": "item",
+          "itemRef": "s4"
+        },
+        {
+          "id": "E20261126690f3893:S004:FR005",
+          "statement": "A query can name the entities it is about alongside its text.",
+          "scope": "item",
+          "itemRef": "s4"
+        },
+        {
+          "id": "E20261126690f3893:S005:FR001",
+          "statement": "Embedding text, extracting entries and storing entries are each reached through a shared interface that names no specific product.",
+          "scope": "item",
+          "itemRef": "s5"
+        },
+        {
+          "id": "E20261126690f3893:S005:FR002",
+          "statement": "Vectors produced by different embedding models are distinguishable.",
+          "scope": "item",
+          "itemRef": "s5"
+        }
+      ]
+    }
+  },
+  "citations": [
+    {
+      "id": "c1",
+      "kind": "doc",
+      "ref": "docs/REQUIREMENTS.md",
+      "quotedText": "Separation of concerns and modularity are the prime directive, in code and in package structure."
+    },
+    {
+      "id": "c2",
+      "kind": "doc",
+      "ref": "docs/REQUIREMENTS.md",
+      "quotedText": "The core is a set of packages with one responsibility each. It depends on no other module."
+    },
+    {
+      "id": "c3",
+      "kind": "doc",
+      "ref": "CLAUDE.md",
+      "quotedText": "Dependencies point one way. Domain models depend on nothing in the project outside `common` and `utils`; the CLI only wires parts together."
+    },
+    {
+      "id": "c4",
+      "kind": "doc",
+      "ref": "docs/REQUIREMENTS.md",
+      "quotedText": "The HTTP API is versioned."
+    },
+    {
+      "id": "c5",
+      "kind": "code",
+      "ref": "src/agent_pfc/embeddings/protocol.py:26"
+    },
+    {
+      "id": "c6",
+      "kind": "doc",
+      "ref": "docs/REQUIREMENTS.md",
+      "quotedText": "First targets: macOS on Apple silicon, Linux x64 and ARM64, Windows x64."
+    },
+    {
+      "id": "c7",
+      "kind": "doc",
+      "ref": "docs/REQUIREMENTS.md",
+      "quotedText": "Entries are short, normalized rules or facts, not verbose statements. An entry's text is at most 500 characters."
+    },
+    {
+      "id": "c8",
+      "kind": "doc",
+      "ref": "docs/REQUIREMENTS.md",
+      "quotedText": "Support Linux, macOS and Windows."
+    },
+    {
+      "id": "c9",
+      "kind": "doc",
+      "ref": "CLAUDE.md",
+      "quotedText": "Do not design against a requirement marked Proposed as if it were settled."
+    },
+    {
+      "id": "c10",
+      "kind": "doc",
+      "ref": "docs/REQUIREMENTS.md",
+      "quotedText": "An entry records its source (agent, session, session file, position and time) and the models that produced it."
+    },
+    {
+      "id": "c11",
+      "kind": "doc",
+      "ref": "docs/REQUIREMENTS.md",
+      "quotedText": "Shared code goes in `common` and `utils` packages, organized into modules by subject."
+    }
+  ]
+}
