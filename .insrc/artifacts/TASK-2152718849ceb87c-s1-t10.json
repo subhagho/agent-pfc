@@ -1,0 +1,81 @@
+{
+  "meta": {
+    "workflow": "plan",
+    "runId": "store-36a005e4-8ed9-4536-b8c9-06e2da97eef2",
+    "repoPath": "/Users/subhagho/work/projects/agent-pfc",
+    "createdAt": "2026-11-26T10:40:02.772Z",
+    "epicCreatedAt": "2026-11-26T09:22:28.532Z",
+    "elapsedMs": 0,
+    "repoIndexedAt": null,
+    "schemaVersion": 1,
+    "epicHash": "2152718849ceb87c",
+    "storyId": "s1",
+    "envelope": {
+      "description": "Draft queries and manifest for user review",
+      "parent": {
+        "entityId": "STORY-2152718849ceb87c-s1",
+        "type": "STORY",
+        "relation": "derived-from"
+      },
+      "references": [
+        {
+          "entityId": "PLAN-2152718849ceb87c-s1",
+          "type": "PLAN",
+          "relation": "derived-from",
+          "fragment": "revision 1"
+        },
+        {
+          "entityId": "TASK-2152718849ceb87c-s1-t9",
+          "type": "TASK",
+          "relation": "depends-on"
+        }
+      ],
+      "attachments": []
+    },
+    "lifecycle": {
+      "status": "approved",
+      "revision": {
+        "number": 1,
+        "contentHash": "d4fc2851785cf09d9de00eb11591963ad52dd32aa34d50b7ab383d61bb12846a",
+        "at": "2026-11-26T10:40:02.772Z",
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        }
+      },
+      "signoffs": [],
+      "approval": {
+        "revision": 1,
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        },
+        "at": "2026-11-26T10:40:02.777Z"
+      }
+    },
+    "revision": 1
+  },
+  "body": {
+    "title": "Draft queries and manifest for user review",
+    "summary": "Author queries.jsonl with three natural paraphrases per concept and modality (300 queries) and a synonym term each, the manifest with reviewed_by_user false, and a separate list of ambiguous wording for the user to decide.",
+    "size": "M",
+    "order": 10,
+    "acceptanceChecks": [
+      "The set passes validation with 100 operations and 300 queries split 10 and 10 by concept",
+      "The manifest has reviewed_by_user false and only the user's explicit review changes it",
+      "Words that fit more than one modality are excluded or listed for the user to assign",
+      "No query copies a stored text, and the benchmark archive is not opened while authoring",
+      "No embedding result is used to write or edit a query"
+    ],
+    "tests": [
+      {
+        "level": "unit",
+        "name": "committed probe set passes validation with 300 queries"
+      }
+    ],
+    "planTaskId": "t10"
+  },
+  "citations": []
+}

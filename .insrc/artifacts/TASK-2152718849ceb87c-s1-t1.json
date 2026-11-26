@@ -1,0 +1,82 @@
+{
+  "meta": {
+    "workflow": "plan",
+    "runId": "store-959ae02b-92bf-45ea-b2aa-0f8d84a89ab8",
+    "repoPath": "/Users/subhagho/work/projects/agent-pfc",
+    "createdAt": "2026-11-26T10:40:02.689Z",
+    "epicCreatedAt": "2026-11-26T09:22:28.532Z",
+    "elapsedMs": 0,
+    "repoIndexedAt": null,
+    "schemaVersion": 1,
+    "epicHash": "2152718849ceb87c",
+    "storyId": "s1",
+    "envelope": {
+      "description": "Domain records and package foundation",
+      "parent": {
+        "entityId": "STORY-2152718849ceb87c-s1",
+        "type": "STORY",
+        "relation": "derived-from"
+      },
+      "references": [
+        {
+          "entityId": "PLAN-2152718849ceb87c-s1",
+          "type": "PLAN",
+          "relation": "derived-from",
+          "fragment": "revision 1"
+        }
+      ],
+      "attachments": []
+    },
+    "lifecycle": {
+      "status": "approved",
+      "revision": {
+        "number": 1,
+        "contentHash": "4a3cb7f792a006bb6edb15af391a1ec6297993c72f90baa17d8091b7a9af0eb4",
+        "at": "2026-11-26T10:40:02.691Z",
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        }
+      },
+      "signoffs": [],
+      "approval": {
+        "revision": 1,
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        },
+        "at": "2026-11-26T10:40:02.698Z"
+      }
+    },
+    "revision": 1
+  },
+  "body": {
+    "title": "Domain records and package foundation",
+    "summary": "Add numpy through uv, remove the hello stub, ignore the runs directory, add the domain package with the modality and phase table, split, ProbeOperation, ProbeQuery, ProbeSet (records, reviewed flag, file hashes), MethodVariant, QueryTrack and PassCriterion, and add the import-direction test that encodes the allowed dependency table.",
+    "size": "M",
+    "order": 1,
+    "acceptanceChecks": [
+      "numpy is the only new runtime dependency and uv.lock is updated",
+      "The hello stub is gone and the import test passes",
+      "runs/ is in the ignore list",
+      "domain imports nothing from the project",
+      "The import-direction test fails on any import outside the LLD table, including a deliberately forbidden example it is checked against",
+      "The phase table gives +1, +2, +1, -1, -1 for required, strict_required, permitted, not_required, prohibited",
+      "An operation is identified by concept and modality, never by phase or concept alone"
+    ],
+    "tests": [
+      {
+        "level": "unit",
+        "name": "import direction between packages follows the allowed table and rejects a forbidden example"
+      },
+      {
+        "level": "unit",
+        "name": "modality phase table and operation identity by concept and modality"
+      }
+    ],
+    "planTaskId": "t1"
+  },
+  "citations": []
+}

@@ -1,0 +1,80 @@
+{
+  "meta": {
+    "workflow": "plan",
+    "runId": "store-4e7f3d7f-8163-44f4-959b-b6152219a9be",
+    "repoPath": "/Users/subhagho/work/projects/agent-pfc",
+    "createdAt": "2026-11-26T10:40:02.762Z",
+    "epicCreatedAt": "2026-11-26T09:22:28.532Z",
+    "elapsedMs": 0,
+    "repoIndexedAt": null,
+    "schemaVersion": 1,
+    "epicHash": "2152718849ceb87c",
+    "storyId": "s1",
+    "envelope": {
+      "description": "Probe concepts and stored operations",
+      "parent": {
+        "entityId": "STORY-2152718849ceb87c-s1",
+        "type": "STORY",
+        "relation": "derived-from"
+      },
+      "references": [
+        {
+          "entityId": "PLAN-2152718849ceb87c-s1",
+          "type": "PLAN",
+          "relation": "derived-from",
+          "fragment": "revision 1"
+        },
+        {
+          "entityId": "TASK-2152718849ceb87c-s1-t6",
+          "type": "TASK",
+          "relation": "depends-on"
+        }
+      ],
+      "attachments": []
+    },
+    "lifecycle": {
+      "status": "approved",
+      "revision": {
+        "number": 1,
+        "contentHash": "62df9188633f7770eb0358f72d66517a85589429e8635689d8d456367641376c",
+        "at": "2026-11-26T10:40:02.762Z",
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        }
+      },
+      "signoffs": [],
+      "approval": {
+        "revision": 1,
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        },
+        "at": "2026-11-26T10:40:02.767Z"
+      }
+    },
+    "revision": 1
+  },
+  "body": {
+    "title": "Probe concepts and stored operations",
+    "summary": "Author data/probes/modality_collapse_v1/operations.jsonl with 20 operation concepts, all five modalities each, and 10 select and 10 confirm concepts.",
+    "size": "M",
+    "order": 9,
+    "acceptanceChecks": [
+      "100 operations, one per concept and modality, with phases matching the table",
+      "10 select and 10 confirm concepts, assigned before any run",
+      "No concept used in the earlier preliminary modality probe is in the confirm split",
+      "The benchmark archive is not opened while authoring"
+    ],
+    "tests": [
+      {
+        "level": "unit",
+        "name": "committed probe operations have 100 records, five modalities per concept and a 10 and 10 split"
+      }
+    ],
+    "planTaskId": "t9"
+  },
+  "citations": []
+}

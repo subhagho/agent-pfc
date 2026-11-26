@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "workflow": "plan",
+    "runId": "store-fdd141c4-c341-4ee6-afee-94e11fb8b921",
+    "repoPath": "/Users/subhagho/work/projects/agent-pfc",
+    "createdAt": "2026-11-26T10:40:02.712Z",
+    "epicCreatedAt": "2026-11-26T09:22:28.532Z",
+    "elapsedMs": 0,
+    "repoIndexedAt": null,
+    "schemaVersion": 1,
+    "epicHash": "2152718849ceb87c",
+    "storyId": "s1",
+    "envelope": {
+      "description": "Ollama backend",
+      "parent": {
+        "entityId": "STORY-2152718849ceb87c-s1",
+        "type": "STORY",
+        "relation": "derived-from"
+      },
+      "references": [
+        {
+          "entityId": "PLAN-2152718849ceb87c-s1",
+          "type": "PLAN",
+          "relation": "derived-from",
+          "fragment": "revision 1"
+        },
+        {
+          "entityId": "TASK-2152718849ceb87c-s1-t2",
+          "type": "TASK",
+          "relation": "depends-on"
+        }
+      ],
+      "attachments": []
+    },
+    "lifecycle": {
+      "status": "approved",
+      "revision": {
+        "number": 1,
+        "contentHash": "8ce485e6ed5d383893e58f0debbceb8810573858c82c3ac76a8dc83b26861028",
+        "at": "2026-11-26T10:40:02.712Z",
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        }
+      },
+      "signoffs": [],
+      "approval": {
+        "revision": 1,
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        },
+        "at": "2026-11-26T10:40:02.717Z"
+      }
+    },
+    "revision": 1
+  },
+  "body": {
+    "title": "Ollama backend",
+    "summary": "Add the Ollama embedder in embeddings/ollama.py using the standard library HTTP client: loopback-only base URL, local model list and digest check before encoding, batches of at most 32, and response checks for count, shape, finiteness and norm. Add the live contract test for dimensions 256, 512 and 1024.",
+    "size": "M",
+    "order": 3,
+    "acceptanceChecks": [
+      "Stubbed-transport tests cover batching, order, bad responses, digest mismatch and a non-loopback URL",
+      "An unreachable server, an error status and a model missing from the local list each raise EmbeddingBackendError naming the endpoint and model",
+      "No partial result is returned and nothing from a bad batch is cached",
+      "Live test passes against qwen3-embedding:0.6b at all three dimensions and is skipped with a stated reason when Ollama is unavailable",
+      "No module outside embeddings/ollama.py holds Ollama knowledge apart from the command line constructing it"
+    ],
+    "tests": [
+      {
+        "level": "unit",
+        "name": "Ollama backend against a stubbed transport: batching, order, bad responses, digest mismatch, non-loopback URL"
+      },
+      {
+        "level": "unit",
+        "name": "absence of Ollama knowledge outside embeddings/ollama.py"
+      },
+      {
+        "level": "live",
+        "name": "dimensions 256, 512 and 1024 return unit vectors in input order"
+      }
+    ],
+    "planTaskId": "t3"
+  },
+  "citations": []
+}

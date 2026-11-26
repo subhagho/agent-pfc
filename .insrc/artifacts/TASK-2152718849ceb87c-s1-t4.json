@@ -1,0 +1,86 @@
+{
+  "meta": {
+    "workflow": "plan",
+    "runId": "store-0bafd3ed-22f5-4e1e-9b5c-3807a402b1ed",
+    "repoPath": "/Users/subhagho/work/projects/agent-pfc",
+    "createdAt": "2026-11-26T10:40:02.722Z",
+    "epicCreatedAt": "2026-11-26T09:22:28.532Z",
+    "elapsedMs": 0,
+    "repoIndexedAt": null,
+    "schemaVersion": 1,
+    "epicHash": "2152718849ceb87c",
+    "storyId": "s1",
+    "envelope": {
+      "description": "Composition",
+      "parent": {
+        "entityId": "STORY-2152718849ceb87c-s1",
+        "type": "STORY",
+        "relation": "derived-from"
+      },
+      "references": [
+        {
+          "entityId": "PLAN-2152718849ceb87c-s1",
+          "type": "PLAN",
+          "relation": "derived-from",
+          "fragment": "revision 1"
+        },
+        {
+          "entityId": "TASK-2152718849ceb87c-s1-t1",
+          "type": "TASK",
+          "relation": "depends-on"
+        }
+      ],
+      "attachments": []
+    },
+    "lifecycle": {
+      "status": "approved",
+      "revision": {
+        "number": 1,
+        "contentHash": "555236fc7c439145c2d5249830b56291702ee7778222325d66209509304096a7",
+        "at": "2026-11-26T10:40:02.722Z",
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        }
+      },
+      "signoffs": [],
+      "approval": {
+        "revision": 1,
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        },
+        "at": "2026-11-26T10:40:02.725Z"
+      }
+    },
+    "revision": 1
+  },
+  "body": {
+    "title": "Composition",
+    "summary": "Add rendering that builds the stored and symmetric-query texts for each method from domain records, and pure vector arithmetic for C0, C1, C2, C4 and C5 with normalization and zero-norm rejection.",
+    "size": "M",
+    "order": 4,
+    "acceptanceChecks": [
+      "Formulas match the LLD for every method and weight",
+      "C2 at weight 1.0 equals C0",
+      "A norm at or below 1e-12 raises ValueError naming the method and weight",
+      "Symmetric query composition never uses the expected modality or phase, and the C4 query text has no Phase field",
+      "No negated vector is used",
+      "composition imports only domain and reads no files and calls no model"
+    ],
+    "tests": [
+      {
+        "level": "unit",
+        "name": "composition formulas, C2 at 1.0 equals C0, zero-norm rejection"
+      },
+      {
+        "level": "unit",
+        "name": "symmetric query composition never uses the expected modality or phase"
+      }
+    ],
+    "planTaskId": "t4"
+  },
+  "citations": []
+}

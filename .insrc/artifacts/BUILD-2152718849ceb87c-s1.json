@@ -1,0 +1,454 @@
+{
+  "meta": {
+    "envelope": {
+      "description": "",
+      "references": [],
+      "attachments": []
+    },
+    "lifecycle": {
+      "status": "draft",
+      "revision": {
+        "number": 17,
+        "contentHash": "f5d942c96e0e85e28ef49ec3e7158aee4ef5366c941dd4604968d735f7ccea75",
+        "at": "2026-11-26T11:13:36.517Z",
+        "by": {
+          "id": "insrc:build",
+          "kind": "system",
+          "properties": {}
+        }
+      },
+      "signoffs": []
+    },
+    "workflow": "build",
+    "runId": "store-0e71d612-e72d-4e33-9609-3e2c9bdf1305",
+    "repoPath": "/Users/subhagho/work/projects/agent-pfc",
+    "createdAt": "2026-11-26T10:41:28.039Z",
+    "epicCreatedAt": "2026-11-26T09:22:28.532Z",
+    "elapsedMs": 0,
+    "repoIndexedAt": null,
+    "schemaVersion": 1,
+    "epicHash": "2152718849ceb87c",
+    "storyId": "s1",
+    "revision": 17,
+    "updatedAt": "2026-11-26T11:12:48.059Z",
+    "authoredBy": "controller",
+    "standalone": true,
+    "epicSlug": "test-modality-collapse-operation-embeddings"
+  },
+  "body": {
+    "tasks": [
+      {
+        "id": "t1",
+        "passed": true
+      },
+      {
+        "id": "t2",
+        "passed": true
+      },
+      {
+        "id": "t3",
+        "passed": true
+      },
+      {
+        "id": "t4",
+        "passed": true
+      },
+      {
+        "id": "t5",
+        "passed": true
+      },
+      {
+        "id": "t6",
+        "passed": true
+      },
+      {
+        "id": "t7",
+        "passed": true
+      },
+      {
+        "id": "t8",
+        "passed": true
+      },
+      {
+        "id": "t9",
+        "passed": false
+      },
+      {
+        "id": "t10",
+        "passed": false
+      }
+    ],
+    "summary": "t10: wrote 300 draft queries (three per concept and modality) with synonym terms, the manifest with reviewed_by_user false, and REVIEW.md listing excluded words, queries with words that could fit more than one modality, repeated phrasing counts and open questions. Known weakness: most queries contain a recurring cue phrase of their modality. That the benchmark archive was not opened and that no embedding was used rests on the author's statement in AUTHORING.md; no run has been made on this set.",
+    "testRecord": {
+      "md": "docs/standalone/test-modality-collapse-operation-embeddings-E2026112621527188/S001/TESTS.md"
+    },
+    "changeLog": [
+      {
+        "target": {
+          "file": ".gitignore"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "pyproject.toml"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "src/agent_pfc/__init__.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "src/agent_pfc/domain/__init__.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "src/agent_pfc/domain/criterion.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "src/agent_pfc/domain/methods.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "src/agent_pfc/domain/modality.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "src/agent_pfc/domain/probe.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "tests/test_architecture.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "tests/test_domain.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "uv.lock"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "src/agent_pfc/embeddings/__init__.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "src/agent_pfc/embeddings/cache.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "src/agent_pfc/embeddings/errors.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "src/agent_pfc/embeddings/protocol.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "tests/fake_embedder.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "tests/test_embedding_cache.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "src/agent_pfc/embeddings/ollama.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "tests/test_backend_boundary.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "tests/test_ollama.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "tests/test_ollama_live.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "src/agent_pfc/composition/__init__.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "src/agent_pfc/composition/methods.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "src/agent_pfc/composition/rendering.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "tests/test_composition.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "src/agent_pfc/evaluation/__init__.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "src/agent_pfc/evaluation/margins.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "src/agent_pfc/evaluation/neutral.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "src/agent_pfc/evaluation/ranking.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "src/agent_pfc/evaluation/results.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "src/agent_pfc/evaluation/verdict.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "tests/test_evaluation.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "src/agent_pfc/probes/__init__.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "src/agent_pfc/probes/loading.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "src/agent_pfc/probes/validation.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "tests/probe_fixture.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "tests/test_probes.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "src/agent_pfc/experiments/__init__.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "src/agent_pfc/experiments/collapse.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "src/agent_pfc/experiments/config.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "tests/test_collapse_run.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "src/agent_pfc/cli.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "src/agent_pfc/reporting/__init__.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "src/agent_pfc/reporting/markdown.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "src/agent_pfc/reporting/run_record.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "tests/test_command_line.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "data/probes/modality_collapse_v1/operations.jsonl"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "tests/test_committed_probes.py"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "data/probes/modality_collapse_v1/AUTHORING.md"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "data/probes/modality_collapse_v1/REVIEW.md"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "data/probes/modality_collapse_v1/manifest.json"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      },
+      {
+        "target": {
+          "file": "data/probes/modality_collapse_v1/queries.jsonl"
+        },
+        "author": "insrc-build",
+        "timestamp": "2026-11-26T11:12:48.059Z"
+      }
+    ],
+    "commit": "510fafe"
+  },
+  "citations": []
+}

@@ -1,0 +1,907 @@
+{
+  "meta": {
+    "envelope": {
+      "description": "",
+      "references": [],
+      "attachments": []
+    },
+    "lifecycle": {
+      "status": "draft",
+      "revision": {
+        "number": 17,
+        "contentHash": "5719b3b35ed669b0cf9b958b9c8a1d28f17de5067aa8e98b63f6563d54d9f62e",
+        "at": "2026-11-26T11:12:48.072Z",
+        "by": {
+          "id": "insrc:build",
+          "kind": "system",
+          "properties": {}
+        }
+      },
+      "signoffs": []
+    },
+    "workflow": "tests",
+    "epicHash": "2152718849ceb87c",
+    "storyId": "s1",
+    "createdAt": "2026-11-26T10:41:28.039Z",
+    "updatedAt": "2026-11-26T11:12:48.059Z",
+    "standalone": true,
+    "epicCreatedAt": "2026-11-26T09:22:28.532Z",
+    "epicSlug": "test-modality-collapse-operation-embeddings",
+    "revision": 17
+  },
+  "body": {
+    "tasks": [
+      {
+        "taskId": "t1",
+        "commit": "1027190",
+        "ranAt": "2026-11-26T10:49:39.939Z",
+        "testsPassed": true,
+        "tests": [
+          {
+            "name": "import direction between packages follows the allowed table and rejects a forbidden example",
+            "level": "unit",
+            "source": "mapping",
+            "cases": [
+              {
+                "file": "tests/test_architecture.py",
+                "title": "test_import_direction_follows_allowed_table",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_architecture.py",
+                "title": "test_import_direction_rejects_forbidden_examples",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_architecture.py",
+                "title": "test_import_direction_accepts_allowed_examples",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_import.py",
+                "title": "test_import",
+                "result": "pass"
+              }
+            ],
+            "files": [],
+            "note": "Not checked per case: each case below takes the exit code of its file as its result."
+          },
+          {
+            "name": "modality phase table and operation identity by concept and modality",
+            "level": "unit",
+            "source": "mapping",
+            "cases": [
+              {
+                "file": "tests/test_domain.py",
+                "title": "test_modality_phase_table_and_operation_identity",
+                "result": "pass"
+              }
+            ],
+            "files": [],
+            "note": "Not checked per case: each case below takes the exit code of its file as its result."
+          }
+        ],
+        "files": [
+          {
+            "file": "tests/test_architecture.py",
+            "exitCode": 0,
+            "timedOut": false,
+            "durationMs": 475,
+            "titles": [],
+            "otherFailures": [],
+            "note": "judged by its exit code alone: its test cases are not checked individually"
+          },
+          {
+            "file": "tests/test_domain.py",
+            "exitCode": 0,
+            "timedOut": false,
+            "durationMs": 465,
+            "titles": [],
+            "otherFailures": [],
+            "note": "judged by its exit code alone: its test cases are not checked individually"
+          },
+          {
+            "file": "tests/test_import.py",
+            "exitCode": 0,
+            "timedOut": false,
+            "durationMs": 478,
+            "titles": [],
+            "otherFailures": [],
+            "note": "judged by its exit code alone: its test cases are not checked individually"
+          }
+        ],
+        "note": "tests/test_architecture.py: judged by its exit code alone: its test cases are not checked individually; tests/test_domain.py: judged by its exit code alone: its test cases are not checked individually; tests/test_import.py: judged by its exit code alone: its test cases are not checked individually"
+      },
+      {
+        "taskId": "t2",
+        "commit": "85b5dfb",
+        "ranAt": "2026-11-26T10:51:31.958Z",
+        "testsPassed": true,
+        "tests": [
+          {
+            "name": "cache key changes with digest, dimension, convention and text; corrupt entry recovery",
+            "level": "unit",
+            "source": "mapping",
+            "cases": [
+              {
+                "file": "tests/test_embedding_cache.py",
+                "title": "test_cache_key_changes_with_fingerprint_and_text",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_embedding_cache.py",
+                "title": "test_corrupt_entry_is_encoded_again",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_embedding_cache.py",
+                "title": "test_stored_entry_is_reused",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_embedding_cache.py",
+                "title": "test_entry_is_renamed_into_place",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_embedding_cache.py",
+                "title": "test_bad_batch_is_not_cached",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_architecture.py",
+                "title": "test_import_direction_follows_allowed_table",
+                "result": "pass"
+              }
+            ],
+            "files": [],
+            "note": "Not checked per case: each case below takes the exit code of its file as its result."
+          },
+          {
+            "name": "empty input rejection and duplicate inputs in order",
+            "level": "unit",
+            "source": "mapping",
+            "cases": [
+              {
+                "file": "tests/test_embedding_cache.py",
+                "title": "test_empty_input_is_rejected",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_embedding_cache.py",
+                "title": "test_duplicate_inputs_return_identical_rows_in_order",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_embedding_cache.py",
+                "title": "test_no_texts_give_no_rows",
+                "result": "pass"
+              }
+            ],
+            "files": [],
+            "note": "Not checked per case: each case below takes the exit code of its file as its result."
+          }
+        ],
+        "files": [
+          {
+            "file": "tests/test_architecture.py",
+            "exitCode": 0,
+            "timedOut": false,
+            "durationMs": 510,
+            "titles": [],
+            "otherFailures": [],
+            "note": "judged by its exit code alone: its test cases are not checked individually"
+          },
+          {
+            "file": "tests/test_embedding_cache.py",
+            "exitCode": 0,
+            "timedOut": false,
+            "durationMs": 593,
+            "titles": [],
+            "otherFailures": [],
+            "note": "judged by its exit code alone: its test cases are not checked individually"
+          }
+        ],
+        "note": "tests/test_architecture.py: judged by its exit code alone: its test cases are not checked individually; tests/test_embedding_cache.py: judged by its exit code alone: its test cases are not checked individually"
+      },
+      {
+        "taskId": "t3",
+        "commit": "ba201c6",
+        "ranAt": "2026-11-26T10:54:38.850Z",
+        "testsPassed": true,
+        "tests": [
+          {
+            "name": "Ollama backend against a stubbed transport: batching, order, bad responses, digest mismatch, non-loopback URL",
+            "level": "unit",
+            "source": "mapping",
+            "cases": [
+              {
+                "file": "tests/test_ollama.py",
+                "title": "test_batches_keep_order",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_ollama.py",
+                "title": "test_bad_response_is_rejected",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_ollama.py",
+                "title": "test_late_bad_batch_gives_no_result_and_no_cache",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_ollama.py",
+                "title": "test_digest_mismatch_stops_before_encoding",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_ollama.py",
+                "title": "test_non_loopback_url_is_rejected_without_a_request",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_ollama.py",
+                "title": "test_transport_failure_names_endpoint_and_model",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_ollama.py",
+                "title": "test_unreachable_server_over_real_http",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_ollama.py",
+                "title": "test_missing_model_names_endpoint_and_model",
+                "result": "pass"
+              }
+            ],
+            "files": [],
+            "note": "Not checked per case: each case below takes the exit code of its file as its result."
+          },
+          {
+            "name": "absence of Ollama knowledge outside embeddings/ollama.py",
+            "level": "unit",
+            "source": "mapping",
+            "cases": [
+              {
+                "file": "tests/test_backend_boundary.py",
+                "title": "test_only_the_backend_and_command_line_mention_ollama",
+                "result": "pass"
+              }
+            ],
+            "files": [],
+            "note": "Not checked per case: each case below takes the exit code of its file as its result."
+          },
+          {
+            "name": "dimensions 256, 512 and 1024 return unit vectors in input order",
+            "level": "live",
+            "source": "mapping",
+            "cases": [
+              {
+                "file": "tests/test_ollama_live.py",
+                "title": "test_live_unit_vectors_in_input_order",
+                "result": "pass"
+              }
+            ],
+            "files": [],
+            "note": "Not checked per case: each case below takes the exit code of its file as its result."
+          }
+        ],
+        "files": [
+          {
+            "file": "tests/test_backend_boundary.py",
+            "exitCode": 0,
+            "timedOut": false,
+            "durationMs": 614,
+            "titles": [],
+            "otherFailures": [],
+            "note": "judged by its exit code alone: its test cases are not checked individually"
+          },
+          {
+            "file": "tests/test_ollama.py",
+            "exitCode": 0,
+            "timedOut": false,
+            "durationMs": 576,
+            "titles": [],
+            "otherFailures": [],
+            "note": "judged by its exit code alone: its test cases are not checked individually"
+          },
+          {
+            "file": "tests/test_ollama_live.py",
+            "exitCode": 0,
+            "timedOut": false,
+            "durationMs": 6049,
+            "titles": [],
+            "otherFailures": [],
+            "note": "judged by its exit code alone: its test cases are not checked individually"
+          }
+        ],
+        "note": "tests/test_backend_boundary.py: judged by its exit code alone: its test cases are not checked individually; tests/test_ollama.py: judged by its exit code alone: its test cases are not checked individually; tests/test_ollama_live.py: judged by its exit code alone: its test cases are not checked individually"
+      },
+      {
+        "taskId": "t4",
+        "commit": "fb57a67",
+        "ranAt": "2026-11-26T10:56:41.324Z",
+        "testsPassed": true,
+        "tests": [
+          {
+            "name": "composition formulas, C2 at 1.0 equals C0, zero-norm rejection",
+            "level": "unit",
+            "source": "mapping",
+            "cases": [
+              {
+                "file": "tests/test_composition.py",
+                "title": "test_stored_texts_per_method",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_composition.py",
+                "title": "test_unweighted_formula",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_composition.py",
+                "title": "test_weighted_formulas",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_composition.py",
+                "title": "test_interpolation_at_one_equals_direct_contextual",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_composition.py",
+                "title": "test_zero_norm_is_rejected",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_composition.py",
+                "title": "test_weights_that_negate_or_do_not_apply_are_rejected",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_architecture.py",
+                "title": "test_import_direction_follows_allowed_table",
+                "result": "pass"
+              }
+            ],
+            "files": [],
+            "note": "Not checked per case: each case below takes the exit code of its file as its result."
+          },
+          {
+            "name": "symmetric query composition never uses the expected modality or phase",
+            "level": "unit",
+            "source": "mapping",
+            "cases": [
+              {
+                "file": "tests/test_composition.py",
+                "title": "test_symmetric_query_texts_per_method",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_composition.py",
+                "title": "test_symmetric_query_never_depends_on_expected_modality",
+                "result": "pass"
+              }
+            ],
+            "files": [],
+            "note": "Not checked per case: each case below takes the exit code of its file as its result."
+          }
+        ],
+        "files": [
+          {
+            "file": "tests/test_architecture.py",
+            "exitCode": 0,
+            "timedOut": false,
+            "durationMs": 538,
+            "titles": [],
+            "otherFailures": [],
+            "note": "judged by its exit code alone: its test cases are not checked individually"
+          },
+          {
+            "file": "tests/test_composition.py",
+            "exitCode": 0,
+            "timedOut": false,
+            "durationMs": 552,
+            "titles": [],
+            "otherFailures": [],
+            "note": "judged by its exit code alone: its test cases are not checked individually"
+          }
+        ],
+        "note": "tests/test_architecture.py: judged by its exit code alone: its test cases are not checked individually; tests/test_composition.py: judged by its exit code alone: its test cases are not checked individually"
+      },
+      {
+        "taskId": "t5",
+        "commit": "b92d4fb",
+        "ranAt": "2026-11-26T10:58:29.917Z",
+        "testsPassed": true,
+        "tests": [
+          {
+            "name": "ranking, ties, confusion matrix, pairwise accuracy, margins, neutral share",
+            "level": "unit",
+            "source": "mapping",
+            "cases": [
+              {
+                "file": "tests/test_evaluation.py",
+                "title": "test_ranking_and_ties",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_evaluation.py",
+                "title": "test_confusion_matrix_has_a_tie_column",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_evaluation.py",
+                "title": "test_pairwise_accuracy_over_ten_pairs",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_evaluation.py",
+                "title": "test_pair_without_queries_is_an_error",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_evaluation.py",
+                "title": "test_margins_and_worst_cases",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_evaluation.py",
+                "title": "test_score_queries_uses_the_query_concept",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_evaluation.py",
+                "title": "test_neutral_share",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_evaluation.py",
+                "title": "test_collapse_result_gathers_the_measures",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_architecture.py",
+                "title": "test_import_direction_follows_allowed_table",
+                "result": "pass"
+              }
+            ],
+            "files": [],
+            "note": "Not checked per case: each case below takes the exit code of its file as its result."
+          },
+          {
+            "name": "variant selection tie-break and confirm-split verdict",
+            "level": "unit",
+            "source": "mapping",
+            "cases": [
+              {
+                "file": "tests/test_evaluation.py",
+                "title": "test_selection_order",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_evaluation.py",
+                "title": "test_selection_ignores_confirm_and_symmetric_results",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_evaluation.py",
+                "title": "test_verdict_uses_the_chosen_variant_on_confirm",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_evaluation.py",
+                "title": "test_verdict_needs_one_confirm_result",
+                "result": "pass"
+              }
+            ],
+            "files": [],
+            "note": "Not checked per case: each case below takes the exit code of its file as its result."
+          }
+        ],
+        "files": [
+          {
+            "file": "tests/test_architecture.py",
+            "exitCode": 0,
+            "timedOut": false,
+            "durationMs": 663,
+            "titles": [],
+            "otherFailures": [],
+            "note": "judged by its exit code alone: its test cases are not checked individually"
+          },
+          {
+            "file": "tests/test_evaluation.py",
+            "exitCode": 0,
+            "timedOut": false,
+            "durationMs": 580,
+            "titles": [],
+            "otherFailures": [],
+            "note": "judged by its exit code alone: its test cases are not checked individually"
+          }
+        ],
+        "note": "tests/test_architecture.py: judged by its exit code alone: its test cases are not checked individually; tests/test_evaluation.py: judged by its exit code alone: its test cases are not checked individually"
+      },
+      {
+        "taskId": "t6",
+        "commit": "6f1233f",
+        "ranAt": "2026-11-26T11:01:54.736Z",
+        "testsPassed": true,
+        "tests": [
+          {
+            "name": "probe loading and each validation failure",
+            "level": "unit",
+            "source": "mapping",
+            "cases": [
+              {
+                "file": "tests/test_probes.py",
+                "title": "test_valid_set_is_loaded_with_review_flag",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_probes.py",
+                "title": "test_each_validation_failure",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_probes.py",
+                "title": "test_a_split_lacking_a_pair_is_rejected",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_probes.py",
+                "title": "test_manifest_failures",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_probes.py",
+                "title": "test_unreadable_manifest",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_probes.py",
+                "title": "test_edited_file_no_longer_matches_its_hash",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_probes.py",
+                "title": "test_all_failures_are_listed_together",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_probes.py",
+                "title": "test_missing_files_are_all_reported",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_architecture.py",
+                "title": "test_import_direction_follows_allowed_table",
+                "result": "pass"
+              }
+            ],
+            "files": [],
+            "note": "Not checked per case: each case below takes the exit code of its file as its result."
+          }
+        ],
+        "files": [
+          {
+            "file": "tests/test_architecture.py",
+            "exitCode": 0,
+            "timedOut": false,
+            "durationMs": 619,
+            "titles": [],
+            "otherFailures": [],
+            "note": "judged by its exit code alone: its test cases are not checked individually"
+          },
+          {
+            "file": "tests/test_probes.py",
+            "exitCode": 0,
+            "timedOut": false,
+            "durationMs": 663,
+            "titles": [],
+            "otherFailures": [],
+            "note": "judged by its exit code alone: its test cases are not checked individually"
+          }
+        ],
+        "note": "tests/test_architecture.py: judged by its exit code alone: its test cases are not checked individually; tests/test_probes.py: judged by its exit code alone: its test cases are not checked individually"
+      },
+      {
+        "taskId": "t7",
+        "commit": "581851e",
+        "ranAt": "2026-11-26T11:04:03.222Z",
+        "testsPassed": true,
+        "tests": [
+          {
+            "name": "C5 control yields all ties",
+            "level": "integration",
+            "source": "mapping",
+            "cases": [
+              {
+                "file": "tests/test_collapse_run.py",
+                "title": "test_control_yields_all_ties",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_collapse_run.py",
+                "title": "test_control_that_separates_modalities_fails_the_run",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_collapse_run.py",
+                "title": "test_default_config",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_collapse_run.py",
+                "title": "test_every_variant_track_split_and_dimension_once",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_collapse_run.py",
+                "title": "test_interpolation_at_one_and_c3_are_aliases",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_collapse_run.py",
+                "title": "test_tracks_are_computed_independently",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_architecture.py",
+                "title": "test_import_direction_follows_allowed_table",
+                "result": "pass"
+              }
+            ],
+            "files": [],
+            "note": "Not checked per case: each case below takes the exit code of its file as its result."
+          },
+          {
+            "name": "draft run states no verdict",
+            "level": "integration",
+            "source": "mapping",
+            "cases": [
+              {
+                "file": "tests/test_collapse_run.py",
+                "title": "test_draft_run_states_no_verdict",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_collapse_run.py",
+                "title": "test_unreviewed_set_needs_the_draft_option",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_collapse_run.py",
+                "title": "test_reviewed_run_states_a_verdict",
+                "result": "pass"
+              }
+            ],
+            "files": [],
+            "note": "Not checked per case: each case below takes the exit code of its file as its result."
+          }
+        ],
+        "files": [
+          {
+            "file": "tests/test_architecture.py",
+            "exitCode": 0,
+            "timedOut": false,
+            "durationMs": 555,
+            "titles": [],
+            "otherFailures": [],
+            "note": "judged by its exit code alone: its test cases are not checked individually"
+          },
+          {
+            "file": "tests/test_collapse_run.py",
+            "exitCode": 0,
+            "timedOut": false,
+            "durationMs": 770,
+            "titles": [],
+            "otherFailures": [],
+            "note": "judged by its exit code alone: its test cases are not checked individually"
+          }
+        ],
+        "note": "tests/test_architecture.py: judged by its exit code alone: its test cases are not checked individually; tests/test_collapse_run.py: judged by its exit code alone: its test cases are not checked individually"
+      },
+      {
+        "taskId": "t8",
+        "commit": "6b27f41",
+        "ranAt": "2026-11-26T11:07:53.309Z",
+        "testsPassed": true,
+        "tests": [
+          {
+            "name": "collapse run writes run record and report",
+            "level": "integration",
+            "source": "mapping",
+            "cases": [
+              {
+                "file": "tests/test_command_line.py",
+                "title": "test_run_writes_record_and_report",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_command_line.py",
+                "title": "test_draft_report_has_no_verdict",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_architecture.py",
+                "title": "test_import_direction_follows_allowed_table",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_backend_boundary.py",
+                "title": "test_only_the_backend_and_command_line_mention_ollama",
+                "result": "pass"
+              }
+            ],
+            "files": [],
+            "note": "Not checked per case: each case below takes the exit code of its file as its result."
+          },
+          {
+            "name": "existing run directory is not overwritten",
+            "level": "integration",
+            "source": "mapping",
+            "cases": [
+              {
+                "file": "tests/test_command_line.py",
+                "title": "test_existing_run_directory_is_not_overwritten",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_command_line.py",
+                "title": "test_real_backend_embeds_nothing_when_the_run_directory_exists",
+                "result": "pass"
+              }
+            ],
+            "files": [],
+            "note": "Not checked per case: each case below takes the exit code of its file as its result."
+          },
+          {
+            "name": "criterion is recorded before embedding and errors end with no verdict",
+            "level": "integration",
+            "source": "mapping",
+            "cases": [
+              {
+                "file": "tests/test_command_line.py",
+                "title": "test_criterion_is_recorded_before_any_embedding",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_command_line.py",
+                "title": "test_real_backend_embeds_only_after_the_criterion_is_recorded",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_command_line.py",
+                "title": "test_backend_failure_during_the_run_leaves_no_verdict",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_command_line.py",
+                "title": "test_unreachable_backend_stops_before_a_run_is_opened",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_command_line.py",
+                "title": "test_invalid_probes_stop_with_every_failure",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_command_line.py",
+                "title": "test_unreviewed_probes_need_the_draft_option",
+                "result": "pass"
+              },
+              {
+                "file": "tests/test_command_line.py",
+                "title": "test_run_id_must_be_a_directory_name",
+                "result": "pass"
+              }
+            ],
+            "files": [],
+            "note": "Not checked per case: each case below takes the exit code of its file as its result."
+          }
+        ],
+        "files": [
+          {
+            "file": "tests/test_architecture.py",
+            "exitCode": 0,
+            "timedOut": false,
+            "durationMs": 630,
+            "titles": [],
+            "otherFailures": [],
+            "note": "judged by its exit code alone: its test cases are not checked individually"
+          },
+          {
+            "file": "tests/test_backend_boundary.py",
+            "exitCode": 0,
+            "timedOut": false,
+            "durationMs": 546,
+            "titles": [],
+            "otherFailures": [],
+            "note": "judged by its exit code alone: its test cases are not checked individually"
+          },
+          {
+            "file": "tests/test_command_line.py",
+            "exitCode": 0,
+            "timedOut": false,
+            "durationMs": 2031,
+            "titles": [],
+            "otherFailures": [],
+            "note": "judged by its exit code alone: its test cases are not checked individually"
+          }
+        ],
+        "note": "tests/test_architecture.py: judged by its exit code alone: its test cases are not checked individually; tests/test_backend_boundary.py: judged by its exit code alone: its test cases are not checked individually; tests/test_command_line.py: judged by its exit code alone: its test cases are not checked individually"
+      },
+      {
+        "taskId": "t9",
+        "commit": "f9d7cf2",
+        "ranAt": "2026-11-26T11:10:16.090Z",
+        "testsPassed": true,
+        "tests": [
+          {
+            "name": "committed probe operations have 100 records, five modalities per concept and a 10 and 10 split",
+            "level": "unit",
+            "source": "mapping",
+            "cases": [
+              {
+                "file": "tests/test_committed_probes.py",
+                "title": "test_committed_operations",
+                "result": "pass"
+              }
+            ],
+            "files": [],
+            "note": "Not checked per case: each case below takes the exit code of its file as its result."
+          }
+        ],
+        "files": [
+          {
+            "file": "tests/test_committed_probes.py",
+            "exitCode": 0,
+            "timedOut": false,
+            "durationMs": 687,
+            "titles": [],
+            "otherFailures": [],
+            "note": "judged by its exit code alone: its test cases are not checked individually"
+          }
+        ],
+        "note": "tests/test_committed_probes.py: judged by its exit code alone: its test cases are not checked individually"
+      },
+      {
+        "taskId": "t10",
+        "commit": "510fafe",
+        "ranAt": "2026-11-26T11:12:48.059Z",
+        "testsPassed": true,
+        "tests": [
+          {
+            "name": "committed probe set passes validation with 300 queries",
+            "level": "unit",
+            "source": "mapping",
+            "cases": [
+              {
+                "file": "tests/test_committed_probes.py",
+                "title": "test_committed_probe_set_is_valid",
+                "result": "pass"
+              }
+            ],
+            "files": [],
+            "note": "Not checked per case: each case below takes the exit code of its file as its result."
+          }
+        ],
+        "files": [
+          {
+            "file": "tests/test_committed_probes.py",
+            "exitCode": 0,
+            "timedOut": false,
+            "durationMs": 512,
+            "titles": [],
+            "otherFailures": [],
+            "note": "judged by its exit code alone: its test cases are not checked individually"
+          }
+        ],
+        "note": "tests/test_committed_probes.py: judged by its exit code alone: its test cases are not checked individually"
+      }
+    ]
+  },
+  "citations": []
+}

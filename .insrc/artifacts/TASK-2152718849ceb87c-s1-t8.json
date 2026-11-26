@@ -1,0 +1,100 @@
+{
+  "meta": {
+    "workflow": "plan",
+    "runId": "store-e8aeba28-90a3-443e-aa81-903ac25f6e3e",
+    "repoPath": "/Users/subhagho/work/projects/agent-pfc",
+    "createdAt": "2026-11-26T10:40:02.751Z",
+    "epicCreatedAt": "2026-11-26T09:22:28.532Z",
+    "elapsedMs": 0,
+    "repoIndexedAt": null,
+    "schemaVersion": 1,
+    "epicHash": "2152718849ceb87c",
+    "storyId": "s1",
+    "envelope": {
+      "description": "Reporting and command line",
+      "parent": {
+        "entityId": "STORY-2152718849ceb87c-s1",
+        "type": "STORY",
+        "relation": "derived-from"
+      },
+      "references": [
+        {
+          "entityId": "PLAN-2152718849ceb87c-s1",
+          "type": "PLAN",
+          "relation": "derived-from",
+          "fragment": "revision 1"
+        },
+        {
+          "entityId": "TASK-2152718849ceb87c-s1-t3",
+          "type": "TASK",
+          "relation": "depends-on"
+        },
+        {
+          "entityId": "TASK-2152718849ceb87c-s1-t6",
+          "type": "TASK",
+          "relation": "depends-on"
+        },
+        {
+          "entityId": "TASK-2152718849ceb87c-s1-t7",
+          "type": "TASK",
+          "relation": "depends-on"
+        }
+      ],
+      "attachments": []
+    },
+    "lifecycle": {
+      "status": "approved",
+      "revision": {
+        "number": 1,
+        "contentHash": "4904c10ec889d12e2ef7b9253f01b5bd77daec83218f9cd76d76a72edea1761a",
+        "at": "2026-11-26T10:40:02.751Z",
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        }
+      },
+      "signoffs": [],
+      "approval": {
+        "revision": 1,
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        },
+        "at": "2026-11-26T10:40:02.757Z"
+      }
+    },
+    "revision": 1
+  },
+  "body": {
+    "title": "Reporting and command line",
+    "summary": "Add the run record and Markdown report writers under runs/ and the command line that loads the probes, builds the cache and Ollama embedders, opens the run through reporting so the directory, criterion and config are written first, runs the experiment, then writes the results. Add a project script entry point.",
+    "size": "M",
+    "order": 8,
+    "acceptanceChecks": [
+      "An offline end-to-end test with the fake embedder writes the run record and report",
+      "An existing run directory stops the command before any embedding and is not overwritten",
+      "The criterion appears in the run record before any embedding happens",
+      "A draft report is labelled draft and states no verdict",
+      "Backend and validation errors end the command with a clear message and no verdict",
+      "The command line holds wiring only and reporting does not import embeddings"
+    ],
+    "tests": [
+      {
+        "level": "integration",
+        "name": "collapse run writes run record and report"
+      },
+      {
+        "level": "integration",
+        "name": "existing run directory is not overwritten"
+      },
+      {
+        "level": "integration",
+        "name": "criterion is recorded before embedding and errors end with no verdict"
+      }
+    ],
+    "planTaskId": "t8"
+  },
+  "citations": []
+}

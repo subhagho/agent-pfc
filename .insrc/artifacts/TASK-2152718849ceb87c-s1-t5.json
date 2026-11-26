@@ -1,0 +1,86 @@
+{
+  "meta": {
+    "workflow": "plan",
+    "runId": "store-befb257d-3e91-48d7-93d7-00d62f14dc31",
+    "repoPath": "/Users/subhagho/work/projects/agent-pfc",
+    "createdAt": "2026-11-26T10:40:02.727Z",
+    "epicCreatedAt": "2026-11-26T09:22:28.532Z",
+    "elapsedMs": 0,
+    "repoIndexedAt": null,
+    "schemaVersion": 1,
+    "epicHash": "2152718849ceb87c",
+    "storyId": "s1",
+    "envelope": {
+      "description": "Evaluation",
+      "parent": {
+        "entityId": "STORY-2152718849ceb87c-s1",
+        "type": "STORY",
+        "relation": "derived-from"
+      },
+      "references": [
+        {
+          "entityId": "PLAN-2152718849ceb87c-s1",
+          "type": "PLAN",
+          "relation": "derived-from",
+          "fragment": "revision 1"
+        },
+        {
+          "entityId": "TASK-2152718849ceb87c-s1-t1",
+          "type": "TASK",
+          "relation": "depends-on"
+        }
+      ],
+      "attachments": []
+    },
+    "lifecycle": {
+      "status": "approved",
+      "revision": {
+        "number": 1,
+        "contentHash": "948946e43d440bd681de7611122f482f26491f01d39541def7cecfbecc6e92df",
+        "at": "2026-11-26T10:40:02.727Z",
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        }
+      },
+      "signoffs": [],
+      "approval": {
+        "revision": 1,
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        },
+        "at": "2026-11-26T10:40:02.730Z"
+      }
+    },
+    "revision": 1
+  },
+  "body": {
+    "title": "Evaluation",
+    "summary": "Add the CollapseResult types and pure functions for modality ranking with ties, the 5x5 confusion matrix with a tie column, pairwise accuracy, margins and worst cases, the neutral top-five share, variant selection on the select split and the verdict on the confirm split.",
+    "size": "M",
+    "order": 5,
+    "acceptanceChecks": [
+      "Scores within 1e-6 count as a tie and a wrong answer",
+      "Accuracy, confusion, the ten pairwise accuracies, margins and neutral share match hand-computed examples",
+      "A split with no queries for a modality pair is an error, never a perfect score",
+      "Selection order is accuracy, worst pair, smallest dimension, then method id and weight, using only select results",
+      "The verdict uses only the chosen variant on confirm results against 0.95 and 0.90 on the natural track",
+      "evaluation imports only domain"
+    ],
+    "tests": [
+      {
+        "level": "unit",
+        "name": "ranking, ties, confusion matrix, pairwise accuracy, margins, neutral share"
+      },
+      {
+        "level": "unit",
+        "name": "variant selection tie-break and confirm-split verdict"
+      }
+    ],
+    "planTaskId": "t5"
+  },
+  "citations": []
+}

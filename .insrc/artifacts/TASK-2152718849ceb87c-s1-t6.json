@@ -1,0 +1,81 @@
+{
+  "meta": {
+    "workflow": "plan",
+    "runId": "store-480c3191-0486-4056-b831-ffda412e517d",
+    "repoPath": "/Users/subhagho/work/projects/agent-pfc",
+    "createdAt": "2026-11-26T10:40:02.733Z",
+    "epicCreatedAt": "2026-11-26T09:22:28.532Z",
+    "elapsedMs": 0,
+    "repoIndexedAt": null,
+    "schemaVersion": 1,
+    "epicHash": "2152718849ceb87c",
+    "storyId": "s1",
+    "envelope": {
+      "description": "Probe loading and validation",
+      "parent": {
+        "entityId": "STORY-2152718849ceb87c-s1",
+        "type": "STORY",
+        "relation": "derived-from"
+      },
+      "references": [
+        {
+          "entityId": "PLAN-2152718849ceb87c-s1",
+          "type": "PLAN",
+          "relation": "derived-from",
+          "fragment": "revision 1"
+        },
+        {
+          "entityId": "TASK-2152718849ceb87c-s1-t1",
+          "type": "TASK",
+          "relation": "depends-on"
+        }
+      ],
+      "attachments": []
+    },
+    "lifecycle": {
+      "status": "approved",
+      "revision": {
+        "number": 1,
+        "contentHash": "87cabe3c54d90ea54a6ac1f57bb9bd70b09c652b11ddf2d0a96c96a34910a1d5",
+        "at": "2026-11-26T10:40:02.733Z",
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        }
+      },
+      "signoffs": [],
+      "approval": {
+        "revision": 1,
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        },
+        "at": "2026-11-26T10:40:02.738Z"
+      }
+    },
+    "revision": 1
+  },
+  "body": {
+    "title": "Probe loading and validation",
+    "summary": "Add the probes package that loads operations.jsonl, queries.jsonl and manifest.json into a domain ProbeSet and validates fields, unique ids, five modalities per concept, phase table, split per concept, queries for every modality pair in each split, query text distinct from stored text and manifest hashes, reporting every failure together.",
+    "size": "M",
+    "order": 6,
+    "acceptanceChecks": [
+      "Each validation failure has a test using a small synthetic probe set",
+      "A split lacking queries for any modality pair is rejected",
+      "All failures are listed in one error",
+      "The reviewed_by_user flag is returned to the caller",
+      "probes imports only domain and reads nothing from the benchmark archive"
+    ],
+    "tests": [
+      {
+        "level": "unit",
+        "name": "probe loading and each validation failure"
+      }
+    ],
+    "planTaskId": "t6"
+  },
+  "citations": []
+}

@@ -1,0 +1,96 @@
+{
+  "meta": {
+    "workflow": "plan",
+    "runId": "store-7e01c1c9-0b0e-4358-9810-b7ca5f4f437d",
+    "repoPath": "/Users/subhagho/work/projects/agent-pfc",
+    "createdAt": "2026-11-26T10:40:02.741Z",
+    "epicCreatedAt": "2026-11-26T09:22:28.532Z",
+    "elapsedMs": 0,
+    "repoIndexedAt": null,
+    "schemaVersion": 1,
+    "epicHash": "2152718849ceb87c",
+    "storyId": "s1",
+    "envelope": {
+      "description": "Experiment orchestration",
+      "parent": {
+        "entityId": "STORY-2152718849ceb87c-s1",
+        "type": "STORY",
+        "relation": "derived-from"
+      },
+      "references": [
+        {
+          "entityId": "PLAN-2152718849ceb87c-s1",
+          "type": "PLAN",
+          "relation": "derived-from",
+          "fragment": "revision 1"
+        },
+        {
+          "entityId": "TASK-2152718849ceb87c-s1-t2",
+          "type": "TASK",
+          "relation": "depends-on"
+        },
+        {
+          "entityId": "TASK-2152718849ceb87c-s1-t4",
+          "type": "TASK",
+          "relation": "depends-on"
+        },
+        {
+          "entityId": "TASK-2152718849ceb87c-s1-t5",
+          "type": "TASK",
+          "relation": "depends-on"
+        }
+      ],
+      "attachments": []
+    },
+    "lifecycle": {
+      "status": "approved",
+      "revision": {
+        "number": 1,
+        "contentHash": "49aa4112362f33444c0377b3f5c52874bb1df7362c41b6b626c31a51d9b56ec8",
+        "at": "2026-11-26T10:40:02.741Z",
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        }
+      },
+      "signoffs": [],
+      "approval": {
+        "revision": 1,
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        },
+        "at": "2026-11-26T10:40:02.746Z"
+      }
+    },
+    "revision": 1
+  },
+  "body": {
+    "title": "Experiment orchestration",
+    "summary": "Add the run config holding the pass criterion, variants, weights and dimensions, and the collapse run that takes a ProbeSet and injected embedders, composes both tracks, evaluates both splits, checks the C5 control, applies draft or verdict rules and returns a run result carrying the config and encoder fingerprints.",
+    "size": "M",
+    "order": 7,
+    "acceptanceChecks": [
+      "The criterion is fixed in the config before the first encode call and is unchanged in the run result",
+      "C5 results that are not all ties fail the run as a harness error",
+      "An unreviewed probe set runs only with the draft option and yields no verdict",
+      "C2 at 1.0 is computed once and C3 is reported as identical to C1",
+      "Natural and symmetric results are never mixed",
+      "experiments uses only the embedder protocol from embeddings and does not import probes or reporting"
+    ],
+    "tests": [
+      {
+        "level": "integration",
+        "name": "C5 control yields all ties"
+      },
+      {
+        "level": "integration",
+        "name": "draft run states no verdict"
+      }
+    ],
+    "planTaskId": "t7"
+  },
+  "citations": []
+}

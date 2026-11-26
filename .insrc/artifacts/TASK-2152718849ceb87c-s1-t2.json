@@ -1,0 +1,87 @@
+{
+  "meta": {
+    "workflow": "plan",
+    "runId": "store-eaf36729-1234-4bbb-8fce-89f70362215e",
+    "repoPath": "/Users/subhagho/work/projects/agent-pfc",
+    "createdAt": "2026-11-26T10:40:02.702Z",
+    "epicCreatedAt": "2026-11-26T09:22:28.532Z",
+    "elapsedMs": 0,
+    "repoIndexedAt": null,
+    "schemaVersion": 1,
+    "epicHash": "2152718849ceb87c",
+    "storyId": "s1",
+    "envelope": {
+      "description": "Embeddings protocol, errors and disk cache",
+      "parent": {
+        "entityId": "STORY-2152718849ceb87c-s1",
+        "type": "STORY",
+        "relation": "derived-from"
+      },
+      "references": [
+        {
+          "entityId": "PLAN-2152718849ceb87c-s1",
+          "type": "PLAN",
+          "relation": "derived-from",
+          "fragment": "revision 1"
+        },
+        {
+          "entityId": "TASK-2152718849ceb87c-s1-t1",
+          "type": "TASK",
+          "relation": "depends-on"
+        }
+      ],
+      "attachments": []
+    },
+    "lifecycle": {
+      "status": "approved",
+      "revision": {
+        "number": 1,
+        "contentHash": "3d5d8ade53c12e4e46da4bdccca91d0b525afb184f38eb183fb8e65b7ecb8d5d",
+        "at": "2026-11-26T10:40:02.702Z",
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        }
+      },
+      "signoffs": [],
+      "approval": {
+        "revision": 1,
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        },
+        "at": "2026-11-26T10:40:02.708Z"
+      }
+    },
+    "revision": 1
+  },
+  "body": {
+    "title": "Embeddings protocol, errors and disk cache",
+    "summary": "Add the Embedder protocol and the EncoderFingerprint record in embeddings/protocol.py, EmbeddingBackendError, a disk cache wrapper keyed by fingerprint and text with atomic writes and read validation, and a deterministic fake embedder for tests. The fingerprint lives here because embeddings may import no other project package.",
+    "size": "M",
+    "order": 2,
+    "acceptanceChecks": [
+      "The fingerprint holds model name, digest, quantization, backend name and version, dimension, text convention and dtype",
+      "Cache key changes when digest, dimension, text convention or text changes",
+      "A corrupt or truncated entry is discarded and encoded again",
+      "Entries are written through a temporary file and atomic rename",
+      "Empty or whitespace input raises ValueError",
+      "Duplicate inputs return identical rows in input order",
+      "embeddings imports no other project package"
+    ],
+    "tests": [
+      {
+        "level": "unit",
+        "name": "cache key changes with digest, dimension, convention and text; corrupt entry recovery"
+      },
+      {
+        "level": "unit",
+        "name": "empty input rejection and duplicate inputs in order"
+      }
+    ],
+    "planTaskId": "t2"
+  },
+  "citations": []
+}
