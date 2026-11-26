@@ -1,0 +1,666 @@
+{
+  "meta": {
+    "workflow": "design.epic",
+    "runId": "wf-1795722296902-sefs3g",
+    "repoPath": "/Users/subhagho/work/projects/agent-pfc",
+    "createdAt": "2026-11-26T19:47:09.844Z",
+    "epicCreatedAt": "2026-11-26T19:34:25.496Z",
+    "attribution": {
+      "outputs": [
+        {
+          "role": "(client)",
+          "tier": "core",
+          "runner": "cli-claude",
+          "model": "claude-sonnet-5-5"
+        }
+      ]
+    },
+    "elapsedMs": 132294,
+    "repoIndexedAt": null,
+    "schemaVersion": 1,
+    "epicHash": "690f38931e7d3b57",
+    "epicSlug": "core-base-infrastructure",
+    "authoredBy": "controller",
+    "lifecycle": {
+      "status": "approved",
+      "revision": {
+        "number": 1,
+        "contentHash": "3832fe8cc4d7344a5c504aba6db35ea3346a3564d55b7102fb36bfdf47c3e237",
+        "at": "2026-11-26T19:47:10.178Z",
+        "by": {
+          "id": "insrc:system",
+          "kind": "system",
+          "properties": {}
+        }
+      },
+      "signoffs": [],
+      "approval": {
+        "revision": 1,
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        },
+        "at": "2026-11-26T19:52:17.670Z"
+      }
+    },
+    "revision": 1,
+    "envelope": {
+      "description": "",
+      "references": [],
+      "attachments": []
+    }
+  },
+  "body": {
+    "summary": {
+      "prose": "Everything the later modules share lives under one core: shared definitions in common, shared functions in utils, and one package for each job that needs doing. Memory keeps normalized entries with a reference to where they came from, not the original wording. Updates are idempotent, and entries can be found by the official names tagged in them.",
+      "audience": "technical"
+    },
+    "frameworkSummary": "agent_pfc/core holds only subpackages. core/common holds the shared definitions and core/utils the shared functions, each divided into modules by subject. locations, config, activity, identity, client and cache/embedding each do one job. An import table enforced by test keeps dependencies pointing one way.",
+    "architectureShape": "Packages under agent_pfc/core and what each may import from the project. common: utils. utils: common. locations, identity and cache.embedding: common, utils. config: common, utils, locations. activity: common, utils, locations, config. client: common, utils, config, activity. common and utils may import each other as packages, never in a cycle between modules, and the import-direction test checks both rules. Modules of common are entries, checkpoints and failures (s1), locations, settings and activity shapes (s2), project resolution shape (s3), server contract (s4), and embedding, extraction and storage interfaces (s5). utils begins with the validation module that the definitions use (s1). core and core.cache are namespaces with no code of their own. Nothing under core may import anything in the project outside core. Later modules sit beside core.\n\nThe existing embeddings package is dissolved: its protocol and fingerprint move to common's embedding module, its checks to utils, its error becomes the backend failure kind, and its disk cache moves to cache/embedding with unchanged behaviour. The import-direction test is extended to packages nested two and three levels deep.\n\nEntries hold normalized text of at most 500 characters and a source reference to the session file and position; the original wording is not stored. Names are normalized by models, not by code: the extractor's implementation instructs the local model to split each turn into simple directives and facts, write each named entity's official name, keeping versions, reusing the project's known names, and tag it; the calling agent is steered to the same rule and sends official names with its query. The store keyword indexes only tagged entities and matches them loosely against the names of a query. The index is private to the store.",
+    "sharedContracts": [
+      {
+        "id": "sc1",
+        "name": "Memory definitions, checkpoints and failures",
+        "purpose": "One definition of entries and their named entities, sources, projects, session checkpoints and the failures modules raise.",
+        "ownedByStory": "s1",
+        "consumedByStories": [
+          "s2",
+          "s3",
+          "s4",
+          "s5"
+        ],
+        "assumptions": [
+          "c5"
+        ],
+        "interfaceSketch": "type EntryKind = 'instruction' | 'data_point'; type EntryStatus = 'active' | 'retired';\ninterface ProjectId { value: string }\n// A reference to where an entry came from. The original wording is not stored.\ninterface Source { agent: string; sessionId: string; file: string; position: number; spokenAt: string }\ninterface Provenance { extractionModel: string; embeddingModel: string }\n// An official name in an entry's text, such as a library, database or file. Valid only if text equals the entry text from start up to, not including, end.\ninterface NamedEntity { text: string; start: number; end: number }\n// text is normalized, uses official names and is at most 500 characters.\ninterface Entry { id: string; project: ProjectId; kind: EntryKind; text: string; entities: NamedEntity[]; sources: Source[]; provenance: Provenance; status: EntryStatus; replacedBy?: string; retire(replacedBy?: string): void }\n// retire changes this entry, once; nothing else about an entry changes. A retired entry is never reactivated, and retiring it again is invalid input.\n// An empty kind or project is invalid input naming the field.\ninterface Checkpoint { agent: string; sessionId: string; file: string; position: number; lastMessageId: string; lastMessageAt: string }\ntype FailureKind = 'invalid_input' | 'invalid_configuration' | 'unknown_project' | 'server_unreachable' | 'incompatible_version' | 'request_failed' | 'backend_failed';\ninterface Failure { kind: FailureKind; message: string }"
+      },
+      {
+        "id": "sc2",
+        "name": "Core layout and import table",
+        "purpose": "Which core packages exist and what each may import.",
+        "ownedByStory": "s1",
+        "consumedByStories": [
+          "s2",
+          "s3",
+          "s4",
+          "s5"
+        ],
+        "assumptions": [],
+        "interfaceSketch": "interface ImportTable { [packagePath: string]: string[] }\n// 'core.common': ['core.utils']; 'core.utils': ['core.common']\n// 'core.locations', 'core.identity', 'core.cache.embedding': ['core.common','core.utils']\n// 'core.config': ['core.common','core.utils','core.locations']\n// 'core.activity': ['core.common','core.utils','core.locations','core.config']\n// 'core.client': ['core.common','core.utils','core.config','core.activity']\n// No cycle between modules."
+      },
+      {
+        "id": "sc10",
+        "name": "Definition checks",
+        "purpose": "One implementation of each check that definitions, settings and requests apply to their values.",
+        "ownedByStory": "s1",
+        "consumedByStories": [
+          "s2",
+          "s3",
+          "s4",
+          "s5"
+        ],
+        "assumptions": [],
+        "interfaceSketch": "// Module core.utils.validation. Each check returns the accepted value or raises an invalid_input Failure naming the field.\ninterface Validation { requireText(field: string, value: unknown): string; requirePosition(field: string, value: unknown): number; requireOffsetTime(field: string, value: unknown): string }"
+      },
+      {
+        "id": "sc3",
+        "name": "File locations",
+        "purpose": "Where configuration, data, models and logs live on the current platform.",
+        "ownedByStory": "s2",
+        "consumedByStories": [
+          "s4"
+        ],
+        "assumptions": [],
+        "interfaceSketch": "interface Locations { configFile: string; dataDir: string; modelDir: string; logDir: string }"
+      },
+      {
+        "id": "sc4",
+        "name": "Settings",
+        "purpose": "Validated settings, including model choices, the server address and session archiving.",
+        "ownedByStory": "s2",
+        "consumedByStories": [
+          "s4"
+        ],
+        "assumptions": [],
+        "interfaceSketch": "interface ModelChoice { source: string; file: string }\n// archiveSessions is false when the configuration does not set it.\ninterface Settings { embeddingModel: ModelChoice; extractionModel: ModelChoice; server: { host: string; port: number }; archiveSessions: boolean }"
+      },
+      {
+        "id": "sc5",
+        "name": "Activity record",
+        "purpose": "One shape for what every process records.",
+        "ownedByStory": "s2",
+        "consumedByStories": [
+          "s4"
+        ],
+        "assumptions": [],
+        "interfaceSketch": "interface ActivityRecord { at: string; process: string; level: 'debug' | 'info' | 'warning' | 'error'; event: string; message: string }"
+      },
+      {
+        "id": "sc6",
+        "name": "Project resolution",
+        "purpose": "One rule that turns a working location into a project, or says it cannot.",
+        "ownedByStory": "s3",
+        "consumedByStories": [
+          "s4"
+        ],
+        "assumptions": [],
+        "interfaceSketch": "interface ProjectResolver { resolve(location: string): ProjectId }"
+      },
+      {
+        "id": "sc7",
+        "name": "Memory server contract and client",
+        "purpose": "The versioned requests and answers of the memory server and the one way to send them, with idempotent updates.",
+        "ownedByStory": "s4",
+        "consumedByStories": [],
+        "assumptions": [],
+        "interfaceSketch": "interface ContractVersion { major: number; minor: number }\ninterface QueryRequest { version: ContractVersion; project: ProjectId; text: string; entities: string[]; kind?: EntryKind; limit: number }\n// entities: official names the calling agent gives for what the query is about; may be empty.\ninterface QueryResult { entry: Entry; score: number }\ninterface QueryResponse { version: ContractVersion; results: QueryResult[] }\ninterface NamesRequest { version: ContractVersion; project: ProjectId }\ninterface NamesResponse { version: ContractVersion; names: string[] }\ninterface CheckpointRequest { version: ContractVersion; agent: string; sessionId: string }\ninterface CheckpointResponse { version: ContractVersion; checkpoint: Checkpoint | null }\ninterface UpdateRequest { version: ContractVersion; project: ProjectId; from: Checkpoint | null; to: Checkpoint; add: Entry[]; retire: { entryId: string; replacedBy?: string }[] }\ntype UpdateOutcome = 'applied' | 'unchanged' | 'out_of_sequence';\ninterface UpdateResponse { version: ContractVersion; outcome: UpdateOutcome; checkpoint: Checkpoint | null; added: string[]; retired: string[] }\n// Decided in this order against the stored checkpoint of the session:\n// 'unchanged'       to.position is at or before the stored position\n// 'applied'         from equals the stored checkpoint (both null for a new session); the stored checkpoint becomes to\n// 'out_of_sequence' anything else; nothing changes and the stored checkpoint is returned\ninterface MemoryClient { query(request: QueryRequest): QueryResponse; names(request: NamesRequest): NamesResponse; checkpoint(request: CheckpointRequest): CheckpointResponse; update(request: UpdateRequest): UpdateResponse }"
+      },
+      {
+        "id": "sc8",
+        "name": "Embedding interface and cache",
+        "purpose": "Turning text into vectors that say which model produced them, with an optional disk cache offering the same interface.",
+        "ownedByStory": "s5",
+        "consumedByStories": [],
+        "assumptions": [
+          "c5"
+        ],
+        "interfaceSketch": "interface EncoderFingerprint { modelName: string; modelDigest: string; quantization: string; backendName: string; backendVersion: string; dimension: number; textConvention: string; dtype: string }\ninterface Embedder { fingerprint: EncoderFingerprint; encode(texts: string[]): number[][] }\ninterface CachedEmbedder extends Embedder { }"
+      },
+      {
+        "id": "sc9",
+        "name": "Extraction and storage interfaces",
+        "purpose": "Turning conversation messages into candidate entries that use and tag official names, and keeping and finding entries and checkpoints, without naming a runtime or store.",
+        "ownedByStory": "s5",
+        "consumedByStories": [],
+        "assumptions": [],
+        "interfaceSketch": "// text is the original wording, read while parsing and not stored.\ninterface Message { source: Source; role: 'user' | 'agent'; text: string }\ninterface Candidate { kind: EntryKind; text: string; entities: NamedEntity[]; sources: Source[]; replaces: string[] }\ninterface Extractor { modelName: string; extract(window: Message[], existing: Entry[], knownNames: string[]): Candidate[] }\n// Each candidate holds one directive or fact, with the condition or scope that applies to it; one message may give several.\n// Candidate text uses official names, keeping versions, and reuses a known name where it means the same thing.\n// Every implementation returns only entities that appear in the candidate text, with their positions, and no text over 500 characters.\ninterface StoredVector { fingerprint: EncoderFingerprint; values: number[] }\ninterface Change { from: Checkpoint | null; to: Checkpoint; add: { entry: Entry; vector: StoredVector }[]; retire: { entryId: string; replacedBy?: string }[] }\ninterface ChangeResult { outcome: 'applied' | 'unchanged' | 'out_of_sequence'; checkpoint: Checkpoint | null }\ninterface EntryStore { checkpoint(agent: string, sessionId: string): Checkpoint | null; apply(change: Change): ChangeResult; names(project: ProjectId): string[]; search(project: ProjectId, vector: StoredVector, entities: string[], kind: EntryKind | null, limit: number): { entry: Entry; score: number }[] }\n// Guarantees required of every implementation:\n// after a failure at any point, submitting the same change again leaves no entry stored twice;\n// only tagged entities are keyword indexed;\n// an entry whose tagged entity loosely matches a name in the query is a search candidate even if vector search would not have returned it;\n// missing a relevant entry is worse than returning an extra one;\n// exact name matches rank ahead of looser ones, and looser matches do not crowd out strong vector results."
+      }
+    ],
+    "storyBoundaries": [
+      {
+        "storyId": "s1",
+        "owns": [
+          "sc1",
+          "sc2",
+          "sc10"
+        ],
+        "depends": [],
+        "internal": "How entries and named entities are checked and represented in Python, the entries, checkpoints and failures modules of core/common, the validation module of core/utils, and the changes to the import-direction test for nested packages and module cycles."
+      },
+      {
+        "storyId": "s2",
+        "owns": [
+          "sc3",
+          "sc4",
+          "sc5"
+        ],
+        "depends": [
+          "sc1",
+          "sc10",
+          "sc2"
+        ],
+        "internal": "Per-platform location rules, the configuration file format and its validation, and how activity is written and rotated. Session archiving itself belongs to a later module."
+      },
+      {
+        "storyId": "s3",
+        "owns": [
+          "sc6"
+        ],
+        "depends": [
+          "sc1",
+          "sc10",
+          "sc2"
+        ],
+        "internal": "The rule that identifies a project from a location and how it behaves across worktrees and machines."
+      },
+      {
+        "storyId": "s4",
+        "owns": [
+          "sc7"
+        ],
+        "depends": [
+          "sc1",
+          "sc10",
+          "sc2",
+          "sc3",
+          "sc4",
+          "sc5",
+          "sc6"
+        ],
+        "internal": "Wire encoding, endpoint layout, version compatibility rule, time limits, the HTTP library and how failures are mapped to shared kinds."
+      },
+      {
+        "storyId": "s5",
+        "owns": [
+          "sc8",
+          "sc9"
+        ],
+        "depends": [
+          "sc1",
+          "sc10",
+          "sc2"
+        ],
+        "internal": "The move of the embedding protocol into core/common, of its checks into core/utils and of its cache into core/cache/embedding, and the exact method signatures of the interfaces. The local model's instructions belong to the parser design and the calling agent's steering to the MCP adapter design. The loose matching technique, the ranking and the meaning of a score are left to the store design."
+      }
+    ],
+    "nonFunctional": {
+      "observability": "Every process records activity in the shape of sc5; the client records its calls through the activity package.",
+      "durability": "Updates are idempotent: the session checkpoint decides whether a change is applied, unchanged or out of sequence, and a checkpoint advances only with stored entries. The store design must keep this true across a failure between writing entries and advancing the checkpoint.",
+      "performance": "No targets are agreed."
+    },
+    "rolloutOverview": {
+      "phases": [
+        {
+          "name": "Phase A: definitions and layout",
+          "includesStories": [
+            "s1"
+          ],
+          "rationale": "Every other story uses the definitions, checks, failure kinds and import table.",
+          "backwardCompat": "The existing embedding tests keep passing; the import test still rejects unlisted packages.",
+          "featureFlag": null
+        },
+        {
+          "name": "Phase B: base infrastructure and interfaces",
+          "includesStories": [
+            "s2",
+            "s3",
+            "s5"
+          ],
+          "rationale": "Each depends only on the shared definitions, checks and layout.",
+          "backwardCompat": "The embedding protocol and cache move with unchanged behaviour and the cache tests keep passing.",
+          "featureFlag": null
+        },
+        {
+          "name": "Phase C: server contract and client",
+          "includesStories": [
+            "s4"
+          ],
+          "rationale": "The client needs settings, activity records and project identity.",
+          "backwardCompat": "",
+          "featureFlag": null
+        }
+      ],
+      "orderingRationale": "s1 first because all stories depend on it; s2, s3 and s5 are independent of each other; s4 depends on s2 and s3 and lands last.",
+      "riskyBits": [
+        {
+          "area": "Idempotent updates across a crash",
+          "why": "A failure between writing entries and advancing the checkpoint could store entries twice, and a rerun model may word them differently.",
+          "mitigation": "sc9 requires that resubmitting adds nothing twice; the store design must show how, checking what LanceDB can commit together."
+        },
+        {
+          "area": "Positions in history files",
+          "why": "Checkpoints and source references assume a position that only increases in an appended file; a rewritten or split file would break both.",
+          "mitigation": "The history reader design confirms this for each agent before relying on it."
+        },
+        {
+          "area": "Normalization by the local model",
+          "why": "With no original wording stored, a lost condition or negation, a badly split turn or a wrongly resolved name cannot be detected from stored data.",
+          "mitigation": "The parser test measures splitting, kept conditions and names before the parser design is accepted."
+        }
+      ]
+    },
+    "alternativesConsidered": [
+      {
+        "id": "a1",
+        "name": "Nested core with common and utils packages",
+        "oneLineSummary": "Core packages under agent_pfc/core, with shared definitions in core/common, shared functions in core/utils and behaviour in separate packages.",
+        "approach": "A core namespace holds only subpackages. core/common holds the shared definitions and core/utils the shared functions, such as the checks the definitions run; both are divided into modules by subject.\n\nPackages that do work sit beside them under core. The import-direction test enforces a table, rejects cycles between modules and forbids anything under core from importing outside it. This is the shape the project owner has chosen.",
+        "pros": [
+          "Each shared rule is written once.",
+          "Every shared definition and function has one place to look for it.",
+          "The core boundary shows in every import path and one rule enforces it."
+        ],
+        "cons": [
+          "common and utils depend on each other as packages, so the test must also check for module cycles.",
+          "A package needing one definition depends on the package holding all of them.",
+          "The import checker must be rewritten to handle nested packages."
+        ],
+        "costEstimate": "M",
+        "assumptionsRelied": [
+          "c5",
+          "c6"
+        ]
+      },
+      {
+        "id": "a2",
+        "name": "Nested core with a definitions package per subject",
+        "oneLineSummary": "Core packages under agent_pfc/core, with separate packages for entries, failures, contract and each interface.",
+        "approach": "The same core namespace, but definitions are split into one package per subject, each holding its own checks.\n\nBehaviour packages depend only on the definition packages they use, and the import table lists each edge.",
+        "pros": [
+          "Each dependency names exactly what a package uses.",
+          "No two packages depend on each other."
+        ],
+        "cons": [
+          "Checks are repeated across packages.",
+          "Does not put shared code in common and utils packages, which the owner requires."
+        ],
+        "costEstimate": "M",
+        "assumptionsRelied": [
+          "c5"
+        ],
+        "reasonRejected": "Fails the shared-code constraint."
+      },
+      {
+        "id": "a3",
+        "name": "Flat packages without a core namespace",
+        "oneLineSummary": "Common, utils and behaviour packages directly under agent_pfc with an import table.",
+        "approach": "No core namespace; core packages and later modules sit side by side directly under the project package.\n\nWhich packages form the core is recorded as a list in the import-direction test.",
+        "pros": [
+          "The existing one-level import checker needs the least change.",
+          "Import paths are shorter."
+        ],
+        "cons": [
+          "The core boundary is visible only in the test, not in the tree.",
+          "The owner has decided the packages belong under core."
+        ],
+        "costEstimate": "S",
+        "assumptionsRelied": [
+          "c5"
+        ],
+        "reasonRejected": "Weakens the core boundary and goes against the owner's decision to nest under core."
+      }
+    ],
+    "chosenAlternative": "a1",
+    "openQuestions": [],
+    "erDefinition": {
+      "narrative": "The shared definitions and how entries, their named entities, sources and checkpoints relate to a project and a session.",
+      "classes": {
+        "Entry": {
+          "description": "One instruction or data point, written with official names.",
+          "attributes": {
+            "project": {
+              "description": "The one project the entry belongs to.",
+              "range": "ProjectId",
+              "required": true
+            },
+            "text": {
+              "description": "Normalized text of at most 500 characters.",
+              "required": true
+            },
+            "entities": {
+              "description": "Named entities tagged in the entry text; may be none.",
+              "range": "NamedEntity",
+              "multivalued": true,
+              "minimum_cardinality": 0
+            },
+            "sources": {
+              "description": "References to the messages the entry came from.",
+              "range": "Source",
+              "multivalued": true,
+              "required": true,
+              "minimum_cardinality": 1
+            },
+            "provenance": {
+              "description": "Models that produced the entry.",
+              "range": "Provenance",
+              "required": true
+            },
+            "replacedBy": {
+              "description": "The entry that replaced a retired one.",
+              "range": "Entry"
+            }
+          }
+        },
+        "NamedEntity": {
+          "description": "A tagged official name in an entry's text; owned by that entry.",
+          "attributes": {
+            "text": {
+              "description": "The official name as written in the entry.",
+              "required": true
+            },
+            "start": {
+              "description": "First character of the span.",
+              "range": "integer",
+              "required": true
+            },
+            "end": {
+              "description": "Character after the span.",
+              "range": "integer",
+              "required": true
+            }
+          }
+        },
+        "ProjectId": {
+          "description": "Identity of a project.",
+          "attributes": {
+            "value": {
+              "description": "Identifier.",
+              "identifier": true,
+              "required": true
+            }
+          }
+        },
+        "Source": {
+          "description": "Where a message is: no wording is stored.",
+          "attributes": {
+            "agent": {
+              "description": "Agent that owns the session.",
+              "required": true
+            },
+            "sessionId": {
+              "description": "Session of the message.",
+              "required": true
+            },
+            "file": {
+              "description": "Session history file.",
+              "required": true
+            },
+            "position": {
+              "description": "Where the message is in the file.",
+              "range": "integer",
+              "required": true
+            },
+            "spokenAt": {
+              "description": "When the message was written.",
+              "required": true
+            }
+          }
+        },
+        "Provenance": {
+          "description": "Which models produced an entry.",
+          "attributes": {
+            "extractionModel": {
+              "description": "Classification and normalization model.",
+              "required": true
+            },
+            "embeddingModel": {
+              "description": "Embedding model.",
+              "required": true
+            }
+          }
+        },
+        "Checkpoint": {
+          "description": "How far one session has been processed; one per agent and session.",
+          "attributes": {
+            "agent": {
+              "description": "Agent that owns the session.",
+              "required": true
+            },
+            "sessionId": {
+              "description": "Session the checkpoint belongs to.",
+              "required": true
+            },
+            "file": {
+              "description": "History file to read.",
+              "required": true
+            },
+            "position": {
+              "description": "Where to proceed from in the file; only increases.",
+              "range": "integer",
+              "required": true
+            }
+          }
+        }
+      }
+    },
+    "componentDependencyDefinition": {
+      "narrative": "The core packages and which may import which. common and utils import each other as packages without a cycle between modules.",
+      "components": [
+        {
+          "id": "common",
+          "label": "core/common",
+          "description": "Shared definitions."
+        },
+        {
+          "id": "utils",
+          "label": "core/utils",
+          "description": "Shared functions, starting with definition checks."
+        },
+        {
+          "id": "locations",
+          "label": "core/locations",
+          "description": "Finds file locations on each platform."
+        },
+        {
+          "id": "identity",
+          "label": "core/identity",
+          "description": "Works out the project of a location."
+        },
+        {
+          "id": "cache_embedding",
+          "label": "core/cache/embedding",
+          "description": "Disk cache in front of an embedder."
+        },
+        {
+          "id": "config",
+          "label": "core/config",
+          "description": "Loads and checks settings."
+        },
+        {
+          "id": "activity",
+          "label": "core/activity",
+          "description": "Records what processes do."
+        },
+        {
+          "id": "client",
+          "label": "core/client",
+          "description": "Calls the memory server."
+        }
+      ],
+      "dependencies": [
+        {
+          "from": "common",
+          "to": "utils"
+        },
+        {
+          "from": "utils",
+          "to": "common"
+        },
+        {
+          "from": "locations",
+          "to": "common"
+        },
+        {
+          "from": "locations",
+          "to": "utils"
+        },
+        {
+          "from": "identity",
+          "to": "common"
+        },
+        {
+          "from": "identity",
+          "to": "utils"
+        },
+        {
+          "from": "cache_embedding",
+          "to": "common"
+        },
+        {
+          "from": "cache_embedding",
+          "to": "utils"
+        },
+        {
+          "from": "config",
+          "to": "common"
+        },
+        {
+          "from": "config",
+          "to": "utils"
+        },
+        {
+          "from": "config",
+          "to": "locations"
+        },
+        {
+          "from": "activity",
+          "to": "common"
+        },
+        {
+          "from": "activity",
+          "to": "utils"
+        },
+        {
+          "from": "activity",
+          "to": "locations"
+        },
+        {
+          "from": "activity",
+          "to": "config"
+        },
+        {
+          "from": "client",
+          "to": "common"
+        },
+        {
+          "from": "client",
+          "to": "utils"
+        },
+        {
+          "from": "client",
+          "to": "config"
+        },
+        {
+          "from": "client",
+          "to": "activity"
+        }
+      ]
+    },
+    "companions": [
+      {
+        "kind": "diagram-mermaid",
+        "relPath": "docs/epics/core-base-infrastructure-E20261126690f3893/er-model.html",
+        "title": "ER model"
+      },
+      {
+        "kind": "diagram-mermaid",
+        "relPath": "docs/epics/core-base-infrastructure-E20261126690f3893/component-dependency.html",
+        "title": "Component dependencies"
+      }
+    ]
+  },
+  "citations": [
+    {
+      "id": "c1",
+      "kind": "analyze-bundle",
+      "ref": "s1",
+      "quotedText": "One source package with a single subpackage, embeddings; the only project imports are inside it or from tests."
+    },
+    {
+      "id": "c2",
+      "kind": "code",
+      "ref": "src/agent_pfc/embeddings/protocol.py:26"
+    },
+    {
+      "id": "c3",
+      "kind": "code",
+      "ref": "src/agent_pfc/embeddings/cache.py"
+    },
+    {
+      "id": "c4",
+      "kind": "code",
+      "ref": "tests/test_architecture.py"
+    },
+    {
+      "id": "c5",
+      "kind": "doc",
+      "ref": "docs/REQUIREMENTS.md"
+    },
+    {
+      "id": "c6",
+      "kind": "convention",
+      "ref": "CLAUDE.md:18-28"
+    }
+  ]
+}
