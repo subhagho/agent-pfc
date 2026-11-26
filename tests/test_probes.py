@@ -22,7 +22,7 @@ def test_valid_set_is_loaded_with_review_flag(tmp_path: Path, reviewed: bool) ->
 
 
 # Edits the records in place; whatever it returns is ignored.
-Change = Callable[[list[dict[str, Any]], list[dict[str, Any]]], object]
+Change = Callable[[list[Any], list[Any]], object]
 
 
 def _set(records: int, index: int, field: str, value: Any) -> Change:
@@ -59,6 +59,20 @@ CASES: dict[str, tuple[Change, str]] = {
         _set(OPERATIONS, 0, "modality", "optional"),
         "field 'modality' must be one of",
     ),
+    "operation-not-an-object": (
+        lambda operations, queries: operations.append("text"),
+        "operations.jsonl:11: not a JSON object",
+    ),
+    "query-not-an-object": (
+        lambda operations, queries: queries.append(7),
+        "queries.jsonl:11: not a JSON object",
+    ),
+    "unknown-query-modality": (
+        _set(QUERIES, 0, "modality", "optional"),
+        "queries.jsonl:1: field 'modality' must be one of",
+    ),
+    "phase-boolean": (_set(OPERATIONS, 0, "phase", True), "field 'phase'"),
+    "phase-missing": (_drop_field(OPERATIONS, "phase"), "field 'phase'"),
     "unknown-split": (_set(OPERATIONS, 0, "split", "dev"), "field 'split'"),
     "phase-not-integer": (_set(OPERATIONS, 0, "phase", "1"), "field 'phase'"),
     "phase-wrong": (
@@ -138,6 +152,21 @@ def test_manifest_failures(
     tmp_path: Path, changes: dict[str, Any], message: str
 ) -> None:
     write_probe_set(tmp_path, manifest_changes=changes)
+    with pytest.raises(ProbeValidationError, match=message):
+        load_probe_set(tmp_path)
+
+
+@pytest.mark.parametrize(
+    ("content", "message"),
+    [
+        (b"[]", "manifest.json: not a JSON object"),
+        (b"{broken", "manifest.json: not valid JSON"),
+        (b"\xff\xfe\x00", "manifest.json: not valid JSON"),
+    ],
+    ids=["not-object", "not-json", "not-text"],
+)
+def test_unreadable_manifest(tmp_path: Path, content: bytes, message: str) -> None:
+    (write_probe_set(tmp_path) / "manifest.json").write_bytes(content)
     with pytest.raises(ProbeValidationError, match=message):
         load_probe_set(tmp_path)
 
