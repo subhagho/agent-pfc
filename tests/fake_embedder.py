@@ -22,8 +22,10 @@ def fake_fingerprint(dimension: int = 8) -> EncoderFingerprint:
 
 
 class FakeEmbedder:
-    def __init__(self, dimension: int = 8) -> None:
+    def __init__(self, dimension: int = 8, aliases: dict[str, str] | None = None) -> None:
         self.fingerprint = fake_fingerprint(dimension)
+        # Texts that must get the same vector as another text.
+        self.aliases = aliases or {}
         self.calls: list[list[str]] = []
 
     def encode(self, texts: Sequence[str]) -> np.ndarray:
@@ -31,7 +33,8 @@ class FakeEmbedder:
         self.calls.append(list(texts))
         rows = np.empty((len(texts), self.fingerprint.dimension), np.float32)
         for index, text in enumerate(texts):
-            seed = int.from_bytes(hashlib.sha256(text.encode()).digest()[:8])
+            named = self.aliases.get(text, text)
+            seed = int.from_bytes(hashlib.sha256(named.encode()).digest()[:8])
             row = np.random.default_rng(seed).standard_normal(rows.shape[1])
             rows[index] = row / np.linalg.norm(row)
         return rows
