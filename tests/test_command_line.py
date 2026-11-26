@@ -1,7 +1,9 @@
 """End to end, offline: the command line with a fake embedder."""
 
 import json
-from collections.abc import Sequence
+import threading
+from collections.abc import Iterator, Sequence
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 import numpy as np
@@ -9,7 +11,7 @@ import pytest
 from fake_embedder import FakeEmbedder
 from probe_fixture import write_probe_set
 
-from agent_pfc.cli import main
+from agent_pfc.cli import DEFAULT_DIGEST, DEFAULT_MODEL, main
 from agent_pfc.embeddings.errors import EmbeddingBackendError
 
 
@@ -164,3 +166,96 @@ def test_run_id_must_be_a_directory_name(tmp_path: Path, capsys) -> None:
     assert main(arguments, Factory()) == 1
     assert not (tmp_path / "outside").exists()
     assert "not a directory name" in capsys.readouterr().err
+
+
+class StandInServer:
+    """A loopback HTTP server answering the three requests the backend makes.
+
+    It notes each request path and, for an embed request, the run record as it
+    was on disk at that moment.
+    """
+
+    def __init__(self, record_path: Path) -> None:
+        self.paths: list[str] = []
+        self.records_at_embed: list[dict | None] = []
+        server = self
+
+        class Handler(BaseHTTPRequestHandler):
+            def log_message(self, *args: object) -> None:
+                pass
+
+            def do_GET(self) -> None:
+                server.paths.append(self.path)
+                if self.path == "/api/version":
+                    self._reply({"version": "stand-in"})
+                    return
+                entry = {
+                    "name": DEFAULT_MODEL,
+                    "digest": DEFAULT_DIGEST,
+                    "details": {"quantization_level": "Q8_0"},
+                }
+                self._reply({"models": [entry]})
+
+            def do_POST(self) -> None:
+                server.paths.append(self.path)
+                server.records_at_embed.append(
+                    json.loads(record_path.read_text())
+                    if record_path.exists()
+                    else None
+                )
+                body = self.rfile.read(int(self.headers["Content-Length"]))
+                request = json.loads(body)
+                fake = FakeEmbedder(request["dimensions"])
+                self._reply({"embeddings": fake.encode(request["input"]).tolist()})
+
+            def _reply(self, content: dict) -> None:
+                data = json.dumps(content).encode()
+                self.send_response(200)
+                self.send_header("Content-Length", str(len(data)))
+                self.end_headers()
+                self.wfile.write(data)
+
+        self.http = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        self.url = f"http://127.0.0.1:{self.http.server_port}"
+
+
+@pytest.fixture
+def stand_in(tmp_path: Path) -> Iterator[StandInServer]:
+    server = StandInServer(tmp_path / "runs/one/run.json")
+    thread = threading.Thread(target=server.http.serve_forever, daemon=True)
+    thread.start()
+    yield server
+    server.http.shutdown()
+    server.http.server_close()
+    thread.join()
+
+
+def test_real_backend_embeds_only_after_the_criterion_is_recorded(
+    tmp_path: Path, stand_in: StandInServer
+) -> None:
+    arguments = _arguments(tmp_path, True, "--base-url", stand_in.url)
+    assert main(arguments) == 0
+
+    assert "/api/embed" in stand_in.paths
+    # Building the three embedders only reads the model list and version.
+    before = stand_in.paths[: stand_in.paths.index("/api/embed")]
+    assert before == ["/api/tags", "/api/version"] * 3
+    first = stand_in.records_at_embed[0]
+    assert first is not None and first["status"] == "started"
+    assert first["criterion"]["min_accuracy"] == 0.95
+    assert _record(tmp_path)["status"] == "completed"
+    assert list((tmp_path / "cache").glob("*.npy"))
+
+
+def test_real_backend_embeds_nothing_when_the_run_directory_exists(
+    tmp_path: Path, stand_in: StandInServer
+) -> None:
+    kept = tmp_path / "runs/one/run.json"
+    kept.parent.mkdir(parents=True)
+    kept.write_text("earlier")
+
+    arguments = _arguments(tmp_path, True, "--base-url", stand_in.url)
+    assert main(arguments) == 1
+    assert stand_in.paths == ["/api/tags", "/api/version"] * 3
+    assert kept.read_text() == "earlier"
+    assert not (tmp_path / "cache").exists()
