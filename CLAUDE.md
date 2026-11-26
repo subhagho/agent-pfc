@@ -13,7 +13,7 @@ Decided so far:
 - Gemma 4 E2B classifies and normalizes; Qwen3 0.6B embeds. Both come from config and are downloaded if absent.
 - Models run through llama.cpp as a Python library, installed by the memory service installer, with no Ollama dependency. It must support Linux, macOS and Windows.
 
-No design document has been written yet. Code and documents from the earlier design are not a reference for new work.
+Read first: `docs/REQUIREMENTS.md`. Design is done one module at a time, in the order it lists. Do not design against a requirement marked Proposed as if it were settled. Code and documents from the earlier design are not a reference for new work.
 
 ## Coding guidelines (non-negotiable)
 
