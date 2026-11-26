@@ -1,6 +1,6 @@
 """Import direction between the project's packages.
 
-Static imports only: a module imported through importlib is not seen.
+Imports are read statically, so dynamic importing is forbidden outright.
 """
 
 import ast
@@ -45,7 +45,29 @@ def _imported_names(module: str, is_package: bool, source: str) -> list[str]:
     return [n for n in names if n == ROOT or n.startswith(f"{ROOT}.")]
 
 
+def _dynamic_imports(source: str) -> list[str]:
+    """Ways `source` could import a module that static reading would miss."""
+    found: list[str] = []
+    for node in ast.walk(ast.parse(source)):
+        if isinstance(node, ast.Import):
+            found += [a.name for a in node.names if a.name == "importlib"]
+        elif isinstance(node, ast.ImportFrom) and node.module == "importlib":
+            found += [
+                f"importlib.{a.name}"
+                for a in node.names
+                if a.name in ("import_module", "__import__")
+            ]
+        elif isinstance(node, ast.Name) and node.id == "__import__":
+            found.append(node.id)
+    return found
+
+
 def violations(module: str, source: str, is_package: bool = False) -> list[str]:
+    dynamic = [f"{module} uses {name}" for name in _dynamic_imports(source)]
+    return dynamic + _static_violations(module, source, is_package)
+
+
+def _static_violations(module: str, source: str, is_package: bool) -> list[str]:
     parts = module.split(".")
     if len(parts) == 1:  # the root package imports nothing from the project
         return [f"{module} imports {n}" for n in _imported_names(module, True, source)]
@@ -89,6 +111,9 @@ def test_import_direction_rejects_forbidden_examples() -> None:
         ("agent_pfc.experiments.collapse", "from agent_pfc.embeddings import X"),
         ("agent_pfc.reporting.markdown", "def f():\n    from agent_pfc import probes"),
         ("agent_pfc.cli", "import agent_pfc"),
+        ("agent_pfc.domain.probe", "import importlib\nimportlib.import_module('x')"),
+        ("agent_pfc.domain.probe", "from importlib import import_module"),
+        ("agent_pfc.domain.probe", "__import__('agent_pfc.probes')"),
         ("agent_pfc.helpers", ""),
     ]
     for module, source in forbidden:
