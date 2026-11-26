@@ -58,10 +58,7 @@ def run_collapse(
     `embedders` holds one embedder per dimension, otherwise alike. Everything
     is checked before the first text is embedded.
     """
-    if not (probes.reviewed_by_user or draft):
-        raise UnreviewedProbeSetError(
-            "the probe set is not reviewed by the user: only a draft run is allowed"
-        )
+    require_runnable(probes, draft)
     by_dimension = _by_dimension(embedders, config)
     results: list[CollapseResult] = []
     for dimension in config.dimensions:
@@ -77,6 +74,13 @@ def run_collapse(
         results=tuple(results),
         verdict=None if draft else judge(results, config.criterion),
     )
+
+
+def require_runnable(probes: ProbeSet, draft: bool) -> None:
+    if not (probes.reviewed_by_user or draft):
+        raise UnreviewedProbeSetError(
+            "the probe set is not reviewed by the user: only a draft run is allowed"
+        )
 
 
 def _by_dimension(
