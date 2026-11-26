@@ -1,6 +1,6 @@
 # agent-pfc requirements
 
-Version 0.1. 26 November 2026.
+Version 0.4. 27 November 2026.
 
 This document says what the system must do. Design is done separately, one module at a time.
 
@@ -60,7 +60,7 @@ E1: that design decisions count as instructions is agreed.
 | C7 | Parsing runs in its own worker process, started by the daemon. | Agreed |
 | C8 | The history of command-line coding agents is made available to the daemon. | Agreed |
 | C9 | Tool output, compaction summaries, subagent traffic and injected messages are excluded. Pasted text is marked as pasted. | Proposed |
-| C10 | A checkpoint advances only after the entries are confirmed stored. Rerunning a batch adds nothing twice. | Proposed |
+| C10 | Updates are idempotent. A session's checkpoint decides which file is read and from where, and advances only after the entries are confirmed stored. Submitting again without new turns changes nothing. | Agreed |
 | C11 | Only one run is active at a time. Missed triggers lead to one run, not one per missed trigger. | Proposed |
 | C12 | When sessions overlap, the later message wins. | Proposed |
 | C13 | Support Claude Code history first, then Codex. | Proposed |
@@ -79,7 +79,8 @@ E1: that design decisions count as instructions is agreed.
 | Q6 | A query returns only entries of the named project. | Proposed |
 | Q7 | Results are returned as stored, labelled as instruction or data point, with source and date. | Proposed |
 | Q8 | The agent may send related concerns with a query, for example "transaction consistency" for a sharding decision. | Proposed |
-| Q9 | The agent judges which results apply. Search is not expected to reject every irrelevant result. | Proposed |
+| Q9 | The agent judges which results apply. Search is not expected to reject every irrelevant result. | Agreed |
+| Q10 | While normalizing an entry, the local model replaces each named entity with its official name, keeping versions, and tags it. Only tagged entities are keyword indexed. The calling agent is steered to use official names and to send them with its query. Names are matched loosely: missing a relevant entry is worse than returning an extra one. Exact matches rank first, and loose matches do not crowd out strong vector results. Generic queries rely on vector search. | Agreed |
 
 ## 6. Service and storage
 
@@ -182,7 +183,7 @@ Module 1 comes first because the others build on it. Its contents are:
 | 1 | Core and base infrastructure | E1 to E9, V6, N1 to N6 |
 | 2 | Model management | M1 to M4, M9 |
 | 3 | Model runtime | M5, M6 |
-| 4 | Store | V2, V3, M10 |
+| 4 | Store | V2, V3, M10, Q10 |
 | 5 | Process lifecycle | N7, N8, C11 |
 | 6 | Memory server | V1, V3 to V7 |
 | 7 | MCP adapter | Q1 to Q9 |
