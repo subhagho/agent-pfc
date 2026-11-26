@@ -2,30 +2,27 @@
 
 ## About this project
 
-agent-pfc is a standalone Python project: the PFC, an **action memory** for coding agents. It stores directives, decisions, constraints and corrections as directed pseudo-AOTD relationships between entities, using a frozen pretrained embedding model, and returns the stored rules that apply to a decision the agent is considering. It is not a reasoning engine, a policy enforcer, an information store or an AFM implementation.
+agent-pfc is a standalone Python project: the PFC, a **memory of instructions and data points** for coding agents. It is not embedded in insrc.
 
-The first objective is empirical: compare entity and operation embedding composition methods, and establish that the representation works before building a memory service.
+Decided so far:
 
-Read first:
+- Memory holds short, normalized entries in LanceDB, as instructions or data points, scoped to one project.
+- The coding agent does not save entries. A separate worker process, started by a daemon on timed triggers, parses chat histories in moving windows, resuming each session from its checkpoint up to 5 minutes before the run.
+- A local HTTP memory server owns the store. Its indexer thread is the only writer.
+- Agents query the server through MCP, when they choose to. Memory must not be intrusive.
+- Gemma 4 E2B classifies and normalizes; Qwen3 0.6B embeds. Both come from config and are downloaded if absent.
+- Models run through llama.cpp as a Python library, installed by the memory service installer, with no Ollama dependency. It must support Linux, macOS and Windows.
 
-- `docs/PFC_PYTHON_PROJECT_CONTEXT.md`: scope, architecture, milestones and guardrails.
-- `docs/PFC_Embedding_Benchmark_v0.1.zip`: the supplied benchmark. Keep it unchanged.
-- `docs/PFC_SCOPE_REVIEW.md`: open design gaps and benchmark findings.
-
-### Deeper context on AOTD
-
-For deeper context on AOTD (Attention, Operation, Target, Decorators), refer to the AFM project in the parent directory, `../AFM`. Start with `../AFM/docs/AOTD.md` and `../AFM/docs/FIRST_PRINCIPLES.md`; `../AFM/docs/AFM_PFC_CONTEXT.md` records how the PFC idea arose.
-
-AFM is background, not this project's specification. Where it differs from `docs/PFC_PYTHON_PROJECT_CONTEXT.md`, the PFC document wins. Do not import AFM mechanisms here, and do not modify the AFM project from this repository.
+No design document has been written yet. Code and documents from the earlier design are not a reference for new work.
 
 ## Coding guidelines (non-negotiable)
 
 **Separation of concerns and modularity are the prime directive.** They apply to the package structure as much as to the code.
 
 - Each package and module has one responsibility. No catch-all `utils` or `common` modules.
-- Layers depend on explicit interfaces (protocols) and domain types. Backend-specific details, such as Ollama, stay inside their backend.
+- Layers depend on explicit interfaces (protocols) and domain types. Backend-specific details, such as llama.cpp or LanceDB, stay inside their backend.
 - Dependencies point one way. Domain models depend on nothing else in the project; the CLI only wires parts together.
-- Keep pure logic apart from I/O. Composition and scoring do not read files, call models or write reports.
+- Keep pure logic apart from I/O. Core logic does not read files, call models or access the store directly.
 - Designs state these boundaries, and a violation fails review.
 
 <!-- insrc:steering:start -->

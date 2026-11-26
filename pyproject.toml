@@ -1,7 +1,7 @@
 [project]
 name = "agent-pfc"
 version = "0.1.0"
-description = "Add your description here"
+description = "A memory of instructions and data points for coding agents"
 readme = "README.md"
 authors = [
     { name = "Subho Ghosh", email = "subho.ghosh@outlook.com" }
@@ -10,9 +10,6 @@ requires-python = ">=3.12"
 dependencies = [
     "numpy>=2.5.5",
 ]
-
-[project.scripts]
-agent-pfc = "agent_pfc.cli:main"
 
 [build-system]
 requires = ["uv_build>=0.11.26,<0.12.0"]

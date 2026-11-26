@@ -4,7 +4,10 @@ Imports are read statically, so dynamic importing is forbidden outright.
 """
 
 import ast
+import sys
 from pathlib import Path
+
+import pytest
 
 ROOT = "agent_pfc"
 SOURCE = Path(__file__).parents[1] / "src" / ROOT
@@ -12,16 +15,7 @@ SOURCE = Path(__file__).parents[1] / "src" / ROOT
 # Package (or top-level module) -> what it may import from the project.
 # A dotted entry allows that submodule only.
 ALLOWED: dict[str, frozenset[str]] = {
-    "domain": frozenset(),
-    "probes": frozenset({"domain"}),
     "embeddings": frozenset(),
-    "composition": frozenset({"domain"}),
-    "evaluation": frozenset({"domain"}),
-    "experiments": frozenset(
-        {"domain", "composition", "evaluation", "embeddings.protocol"}
-    ),
-    "reporting": frozenset({"domain", "evaluation", "experiments"}),
-    "cli": frozenset({"domain", "probes", "embeddings", "experiments", "reporting"}),
 }
 
 
@@ -109,43 +103,58 @@ def test_import_direction_follows_allowed_table() -> None:
     assert found == []
 
 
+# The examples use their own packages, so they test the checker's rules
+# independently of which packages the project currently has.
+EXAMPLES: dict[str, frozenset[str]] = {
+    "core": frozenset(),
+    "store": frozenset({"core"}),
+    "service": frozenset({"core", "store.protocol"}),
+}
+
+
+@pytest.fixture
+def example_table(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(sys.modules[__name__], "ALLOWED", EXAMPLES)
+
+
+@pytest.mark.usefixtures("example_table")
 def test_import_direction_rejects_forbidden_examples() -> None:
     forbidden = [
-        ("agent_pfc.domain.probe", "from agent_pfc.probes import loading"),
-        ("agent_pfc.domain.probe", "from ..probes import loading"),
-        ("agent_pfc.embeddings.cache", "import agent_pfc.domain"),
-        ("agent_pfc.evaluation.ranking", "from agent_pfc import embeddings"),
-        ("agent_pfc.experiments.collapse", "from agent_pfc.embeddings.ollama import X"),
-        ("agent_pfc.experiments.collapse", "from agent_pfc.embeddings import X"),
-        ("agent_pfc.reporting.markdown", "def f():\n    from agent_pfc import probes"),
-        ("agent_pfc.cli", "import agent_pfc"),
-        ("agent_pfc.domain.probe", "import importlib\nimportlib.import_module('x')"),
-        ("agent_pfc.domain.probe", "from importlib import import_module"),
-        ("agent_pfc.domain.probe", "__import__('agent_pfc.probes')"),
-        ("agent_pfc.domain.probe", "import builtins\nbuiltins.__import__('x')"),
-        ("agent_pfc.domain.probe", "import importlib.util\nimportlib.import_module('x')"),
-        ("agent_pfc.domain.probe", "from importlib.util import find_spec"),
-        ("agent_pfc.domain.probe", "import runpy"),
-        ("agent_pfc.domain.probe", "exec('from agent_pfc import probes')"),
-        ("agent_pfc.domain.probe", "from builtins import __import__ as load\nload('x')"),
-        ("agent_pfc.domain.probe", "__builtins__['__imp' 'ort__']('x')"),
+        ("agent_pfc.core.entry", "from agent_pfc.store import protocol"),
+        ("agent_pfc.core.entry", "from ..store import protocol"),
+        ("agent_pfc.store.table", "import agent_pfc.service"),
+        ("agent_pfc.store.table", "from agent_pfc import service"),
+        ("agent_pfc.service.search", "from agent_pfc.store.table import X"),
+        ("agent_pfc.service.search", "from agent_pfc.store import X"),
+        ("agent_pfc.store.table", "def f():\n    from agent_pfc import service"),
+        ("agent_pfc.service.search", "import agent_pfc"),
+        ("agent_pfc.core.entry", "import importlib\nimportlib.import_module('x')"),
+        ("agent_pfc.core.entry", "from importlib import import_module"),
+        ("agent_pfc.core.entry", "__import__('agent_pfc.store')"),
+        ("agent_pfc.core.entry", "import builtins\nbuiltins.__import__('x')"),
+        ("agent_pfc.core.entry", "import importlib.util\nimportlib.import_module('x')"),
+        ("agent_pfc.core.entry", "from importlib.util import find_spec"),
+        ("agent_pfc.core.entry", "import runpy"),
+        ("agent_pfc.core.entry", "exec('from agent_pfc import store')"),
+        ("agent_pfc.core.entry", "from builtins import __import__ as load\nload('x')"),
+        ("agent_pfc.core.entry", "__builtins__['__imp' 'ort__']('x')"),
         ("agent_pfc.helpers", ""),
     ]
     for module, source in forbidden:
         assert violations(module, source), (module, source)
 
 
+@pytest.mark.usefixtures("example_table")
 def test_import_direction_accepts_allowed_examples() -> None:
     allowed = [
-        ("agent_pfc.domain.probe", "from agent_pfc.domain.modality import Modality"),
-        ("agent_pfc.domain.probe", "from .modality import Modality"),
-        ("agent_pfc.probes.loading", "from agent_pfc.domain import ProbeSet"),
-        ("agent_pfc.experiments.collapse", "from agent_pfc.embeddings.protocol import X"),
-        ("agent_pfc.experiments.collapse", "from agent_pfc.embeddings import protocol"),
-        ("agent_pfc.cli", "from agent_pfc.embeddings.ollama import X"),
+        ("agent_pfc.core.entry", "from agent_pfc.core.kind import Kind"),
+        ("agent_pfc.core.entry", "from .kind import Kind"),
+        ("agent_pfc.store.table", "from agent_pfc.core import Entry"),
+        ("agent_pfc.service.search", "from agent_pfc.store.protocol import X"),
+        ("agent_pfc.service.search", "from agent_pfc.store import protocol"),
     ]
     for module, source in allowed:
         assert violations(module, source) == [], (module, source)
 
     # A package's relative import stays inside that package.
-    assert violations("agent_pfc.domain", "from .modality import Modality", True) == []
+    assert violations("agent_pfc.core", "from .kind import Kind", True) == []
