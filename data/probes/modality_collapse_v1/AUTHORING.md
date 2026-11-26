@@ -90,7 +90,37 @@ of that knowledge in the way a second author's would be.
 ## Queries
 
 `queries.jsonl` was written by hand by the same author, one list per concept and
-modality, with synonym terms assigned by position. Author's statement, which the
-files cannot prove: no embedding of any query was computed or looked at while
-writing or editing them. The committed set has not been embedded by any run at
-the time of this record. The benchmark archive was not opened.
+modality, with synonym terms assigned by position. The first draft (commit
+`510fafe`) reused sentence patterns. At the user's request it was rewritten, in
+several passes guided by phrase counts, the word-only baseline below and a final
+read-through. `REVIEW.md` reports the resulting figures.
+
+Author's statement, which the files cannot prove: no embedding of any query was
+computed or looked at while writing or editing them. Neither version has been
+embedded by any run at the time of this record. The benchmark archive was not
+opened.
+
+The word-only baseline was computed by this script:
+
+```python
+"""How well single words alone predict the modality: naive Bayes, one concept held out."""
+import json, math, re, sys
+from collections import Counter
+
+records = [json.loads(l) for l in open(sys.argv[1])]
+concepts = sorted({r["concept"] for r in records})
+modalities = sorted({r["modality"] for r in records})
+tokens = lambda text: set(re.findall(r"[a-z']+", text.lower()))
+right = Counter()
+for held in concepts:
+    train = [r for r in records if r["concept"] != held]
+    counts = {m: Counter(w for r in train if r["modality"] == m for w in tokens(r["text"])) for m in modalities}
+    size = {m: sum(r["modality"] == m for r in train) for m in modalities}
+    vocabulary = set().union(*counts.values())
+    for r in (r for r in records if r["concept"] == held):
+        words = tokens(r["text"]) & vocabulary
+        guess = max(modalities, key=lambda m: sum(math.log((counts[m][w] + 1) / (size[m] + 2)) for w in words))
+        right[r["modality"]] += guess == r["modality"]
+total = Counter(r["modality"] for r in records)
+print(json.dumps({"overall": sum(right.values()) / len(records), **{m: right[m] / total[m] for m in modalities}}))
+```
