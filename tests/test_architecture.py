@@ -114,13 +114,10 @@ def violations(module: str, source: str, is_package: bool = False) -> list[str]:
 def _static_violations(module: str, source: str, is_package: bool) -> list[str]:
     packages = {ROOT} | {f"{ROOT}.{p}" for p in (*ALLOWED, *NAMESPACES)}
     imported = _imported_names(module, is_package, source, packages)
-    if module == ROOT:  # the root package imports nothing from the project
-        return [f"{module} imports {n}" for n in imported]
-
     path = module.removeprefix(f"{ROOT}.")
     owner = max((key for key in ALLOWED if _within(path, key)), key=len, default=None)
     if owner is None:
-        if not (is_package and path in NAMESPACES):
+        if not (is_package and (module == ROOT or path in NAMESPACES)):
             return [f"{module} is not in the allowed table"]
         if not _only_docstring(source):
             return [f"{module} is a namespace and holds more than a docstring"]
@@ -213,8 +210,6 @@ def test_real_source_tree_follows_table_and_has_no_module_cycle() -> None:
         ("agent_pfc.helpers", ""),
         ("agent_pfc.core.helpers", ""),
         ("agent_pfc.core.cache.query.store", ""),
-        # The root imports nothing from the project.
-        ("agent_pfc", "import agent_pfc.core.common"),
         # Dynamic importing.
         ("agent_pfc.core.common.x", "import importlib\nimportlib.import_module('x')"),
         ("agent_pfc.core.common.x", "from importlib import import_module"),
@@ -232,9 +227,17 @@ def test_examples_reject_forbidden_imports(module: str, source: str) -> None:
     assert violations(module, source), (module, source)
 
 
-@pytest.mark.parametrize("namespace", ["agent_pfc.core", "agent_pfc.core.cache"])
+@pytest.mark.parametrize(
+    "namespace", ["agent_pfc", "agent_pfc.core", "agent_pfc.core.cache"]
+)
 def test_examples_reject_a_namespace_with_code(namespace: str) -> None:
-    for source in ('"""Doc."""\nX = 1', "from . import common", '"""A."""\n"""B."""'):
+    sources = (
+        '"""Doc."""\nX = 1',
+        "X = 1",
+        "import agent_pfc.core.common",
+        '"""A."""\n"""B."""',
+    )
+    for source in sources:
         assert violations(namespace, source, True), source
     # A namespace is a package: a plain module of that name is unlisted.
     assert violations(namespace, '"""Doc."""', False)
@@ -319,6 +322,7 @@ def test_allowed_examples_for_nested_packages_are_accepted(
 
 
 def test_allowed_examples_include_namespaces_and_acyclic_modules() -> None:
+    assert violations("agent_pfc", '"""Doc."""', True) == []
     assert violations("agent_pfc.core", '"""Doc."""', True) == []
     assert violations("agent_pfc.core.cache", "", True) == []
     # A package's relative import stays inside that package.
