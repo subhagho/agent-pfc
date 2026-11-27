@@ -136,6 +136,17 @@ def _static_violations(module: str, source: str, is_package: bool) -> list[str]:
     return found
 
 
+def _also_run(target: str, module: str) -> list[str]:
+    """`target`, and the packages above it that importing it from `module` runs.
+
+    A package above `module` is already being imported, so passing through it
+    adds nothing. Naming it as the target still counts.
+    """
+    parts = target.split(".")
+    above = [".".join(parts[:end]) for end in range(1, len(parts))]
+    return [target] + [name for name in above if not _within(module, name)]
+
+
 def cycles(modules: Modules) -> list[str]:
     """One import cycle among `modules`, naming them, or nothing if none."""
     # Any parent of a module is a package, with or without an __init__.
@@ -148,8 +159,12 @@ def cycles(modules: Modules) -> list[str]:
             # The imported name may be an attribute: find the module holding it.
             while name and name not in modules:
                 name = name.rpartition(".")[0]
-            if name and name != module:
-                graph[module].add(name)
+            if name:
+                graph[module].update(
+                    run
+                    for run in _also_run(name, module)
+                    if run in modules and run != module
+                )
     try:
         TopologicalSorter(graph).prepare()
     except CycleError as error:
@@ -269,6 +284,12 @@ def test_examples_give_a_module_to_the_longest_key(
             "agent_pfc.a": ("from .x import X", True),
             "agent_pfc.a.x": ("from agent_pfc.a import Y", False),
         },
+        # Through the __init__ that runs when a submodule is imported.
+        {
+            "agent_pfc.a.x": ("from agent_pfc.b.y import Y", False),
+            "agent_pfc.b": ("from agent_pfc.a.x import X", True),
+            "agent_pfc.b.y": ("", False),
+        },
     ],
 )
 def test_examples_reject_a_module_cycle_naming_the_modules(modules: Modules) -> None:
@@ -314,3 +335,10 @@ def test_allowed_examples_include_namespaces_and_acyclic_modules() -> None:
         "agent_pfc.core.utils": ('"""Doc."""', True),
     }
     assert cycles(modules) == []
+    # An __init__ may re-export modules of its package that import each other.
+    package: Modules = {
+        "agent_pfc.a": ("from .x import X", True),
+        "agent_pfc.a.x": ("from agent_pfc.a.y import Y", False),
+        "agent_pfc.a.y": ("", False),
+    }
+    assert cycles(package) == []
