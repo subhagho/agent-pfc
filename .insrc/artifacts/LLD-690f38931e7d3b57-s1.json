@@ -1,0 +1,858 @@
+{
+  "meta": {
+    "workflow": "design.story",
+    "runId": "wf-1795756585971-7m6t9b",
+    "repoPath": "/Users/subhagho/work/projects/agent-pfc",
+    "createdAt": "2026-11-27T05:18:30.967Z",
+    "attribution": {
+      "outputs": [
+        {
+          "role": "(client)",
+          "tier": "core",
+          "runner": "cli-claude",
+          "model": "claude-sonnet-5-5"
+        }
+      ]
+    },
+    "elapsedMs": 124743,
+    "repoIndexedAt": null,
+    "schemaVersion": 1,
+    "epicCreatedAt": "2026-11-26T19:34:25.496Z",
+    "epicHash": "690f38931e7d3b57",
+    "epicSlug": "core-base-infrastructure",
+    "storyId": "s1",
+    "hldBaseRunId": "wf-1795756288787-nvbycn",
+    "hldEffectiveHash": "689c403bed6f9266ba61aa9d24b2dfc693752af247715de61f84c6e7ac65a971",
+    "hldAmendmentsApplied": [],
+    "storyTitle": "Define memory entries and shared failures",
+    "authoredBy": "controller",
+    "lifecycle": {
+      "status": "approved",
+      "revision": {
+        "number": 3,
+        "contentHash": "fea66e0c46926d0f646cd15d917cdb0656f9685248c7d54bd70cbd6af74aa623",
+        "at": "2026-11-27T05:18:31.119Z",
+        "by": {
+          "id": "insrc:system",
+          "kind": "system",
+          "properties": {}
+        }
+      },
+      "signoffs": [],
+      "approval": {
+        "revision": 3,
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        },
+        "at": "2026-11-27T05:34:53.789Z"
+      }
+    },
+    "revision": 3,
+    "envelope": {
+      "description": "",
+      "references": [],
+      "attachments": []
+    }
+  },
+  "body": {
+    "summary": {
+      "prose": "This story creates the definitions every module shares: memory entries and their tagged names, source references, projects, session checkpoints and one failure type, with their checks written once. A definition checks itself when created, and retiring an entry, which records the time, is the only change it allows. The import test learns nested packages and rejects cycles between modules.",
+      "audience": "technical"
+    },
+    "hldContextSlice": {
+      "frameworkSummary": "agent_pfc/core holds only subpackages. core/common holds the shared definitions and core/utils the shared functions, each divided into modules by subject. locations, config, activity, identity, client and cache/embedding each do one job. An import table enforced by test keeps dependencies pointing one way.",
+      "ownedContracts": [
+        {
+          "id": "sc1",
+          "name": "Memory definitions, checkpoints and failures",
+          "purpose": "One definition of entries and their named entities, sources, projects, session checkpoints and the failures modules raise.",
+          "ownedByStory": "s1",
+          "consumedByStories": [
+            "s2",
+            "s3",
+            "s4",
+            "s5"
+          ],
+          "assumptions": [
+            "c5"
+          ],
+          "interfaceSketch": "type EntryKind = 'instruction' | 'data_point'; type EntryStatus = 'active' | 'retired';\ninterface ProjectId { value: string }\n// A reference to where an entry came from. The original wording is not stored.\ninterface Source { agent: string; sessionId: string; file: string; position: number; spokenAt: string }\ninterface Provenance { extractionModel: string; embeddingModel: string }\n// An official name in an entry's text, such as a library, database or file. Valid only if text equals the entry text from start up to, not including, end.\ninterface NamedEntity { text: string; start: number; end: number }\n// text is normalized, uses official names and is at most 500 characters.\n// retiredAt is an offset time, present on a retired entry and absent on an active one; replacedBy only on a retired one.\ninterface Entry { id: string; project: ProjectId; kind: EntryKind; text: string; entities: NamedEntity[]; sources: Source[]; provenance: Provenance; status: EntryStatus; retiredAt?: string; replacedBy?: string; retire(retiredAt: string, replacedBy?: string): void }\n// retire changes this entry, once, recording the time its caller gives; nothing else about an entry changes. A retired entry is never reactivated, and retiring it again is invalid input.\n// Entries compare by value. Refusing a copy of a retired entry is the store's duty (sc9).\n// An empty kind or project is invalid input naming the field.\ninterface Checkpoint { agent: string; sessionId: string; file: string; position: number; lastMessageId: string; lastMessageAt: string }\ntype FailureKind = 'invalid_input' | 'invalid_configuration' | 'unknown_project' | 'server_unreachable' | 'incompatible_version' | 'request_failed' | 'backend_failed';\ninterface Failure { kind: FailureKind; message: string }"
+        },
+        {
+          "id": "sc2",
+          "name": "Core layout and import table",
+          "purpose": "Which core packages exist and what each may import.",
+          "ownedByStory": "s1",
+          "consumedByStories": [
+            "s2",
+            "s3",
+            "s4",
+            "s5"
+          ],
+          "assumptions": [],
+          "interfaceSketch": "interface ImportTable { [packagePath: string]: string[] }\n// 'core.common': ['core.utils']; 'core.utils': ['core.common']\n// 'core.locations', 'core.identity', 'core.cache.embedding': ['core.common','core.utils']\n// 'core.config': ['core.common','core.utils','core.locations']\n// 'core.activity': ['core.common','core.utils','core.locations','core.config']\n// 'core.client': ['core.common','core.utils','core.config','core.activity']\n// No cycle between modules."
+        },
+        {
+          "id": "sc10",
+          "name": "Definition checks",
+          "purpose": "One implementation of each check that definitions, settings and requests apply to their values.",
+          "ownedByStory": "s1",
+          "consumedByStories": [
+            "s2",
+            "s3",
+            "s4",
+            "s5"
+          ],
+          "assumptions": [],
+          "interfaceSketch": "// Module core.utils.validation. Each check returns the accepted value or raises an invalid_input Failure naming the field.\ninterface Validation { requireText(field: string, value: unknown): string; requirePosition(field: string, value: unknown): number; requireOffsetTime(field: string, value: unknown): string }"
+        }
+      ],
+      "consumedContracts": [],
+      "boundary": {
+        "storyId": "s1",
+        "owns": [
+          "sc1",
+          "sc2",
+          "sc10"
+        ],
+        "depends": [],
+        "internal": "How entries and named entities are checked and represented in Python, the entries, checkpoints and failures modules of core/common, the validation module of core/utils, and the changes to the import-direction test for nested packages and module cycles."
+      },
+      "adjacentBoundaries": [
+        {
+          "storyId": "s2",
+          "owns": [
+            "sc3",
+            "sc4",
+            "sc5"
+          ],
+          "depends": [
+            "sc1",
+            "sc10",
+            "sc2"
+          ],
+          "internal": "Per-platform location rules, the configuration file format and its validation, including the compaction defaults, and how activity is written and rotated. Session archiving itself belongs to a later module."
+        },
+        {
+          "storyId": "s3",
+          "owns": [
+            "sc6"
+          ],
+          "depends": [
+            "sc1",
+            "sc10",
+            "sc2"
+          ],
+          "internal": "The rule that identifies a project from a location and how it behaves across worktrees and machines."
+        },
+        {
+          "storyId": "s4",
+          "owns": [
+            "sc7"
+          ],
+          "depends": [
+            "sc1",
+            "sc10",
+            "sc2",
+            "sc3",
+            "sc4",
+            "sc5",
+            "sc6"
+          ],
+          "internal": "Wire encoding, endpoint layout, version compatibility rule, time limits, the HTTP library and how failures are mapped to shared kinds."
+        },
+        {
+          "storyId": "s5",
+          "owns": [
+            "sc8",
+            "sc9"
+          ],
+          "depends": [
+            "sc1",
+            "sc10",
+            "sc2"
+          ],
+          "internal": "The move of the embedding protocol into core/common, of its checks into core/utils and of its cache into core/cache/embedding, and the exact method signatures of the interfaces. The local model's instructions belong to the parser design and the calling agent's steering to the MCP adapter design. The loose matching technique, the ranking, the meaning of a score, how history is laid out and how compaction works are left to the store design, and starting compaction on schedule to the memory server design."
+        }
+      ],
+      "rolloutPhase": "Phase A: definitions and layout",
+      "nonFunctional": {
+        "observability": "Every process records activity in the shape of sc5; the client records its calls through the activity package.",
+        "durability": "Updates are idempotent: the session checkpoint decides whether a change is applied, unchanged or out of sequence, and a checkpoint advances only with stored entries. The store design must keep this true across a failure between writing entries and advancing the checkpoint.",
+        "performance": "No targets are agreed."
+      }
+    },
+    "contractDetails": {
+      "surfaceLevel": "internal-shared",
+      "api": [
+        {
+          "name": "FailureKind",
+          "signature": "class FailureKind(StrEnum): INVALID_INPUT, INVALID_CONFIGURATION, UNKNOWN_PROJECT, SERVER_UNREACHABLE, INCOMPATIBLE_VERSION, REQUEST_FAILED, BACKEND_FAILED  # values are the lower-case names",
+          "parameters": [],
+          "returns": {
+            "type": "FailureKind",
+            "meaning": "One of the seven failure kinds."
+          },
+          "errors": [],
+          "preconditions": [],
+          "postconditions": [
+            "Each value equals the string in the approved contract."
+          ]
+        },
+        {
+          "name": "Failure",
+          "signature": "class Failure(Exception): __init__(self, kind: FailureKind, message: str); kind: FailureKind; message: str",
+          "parameters": [
+            {
+              "name": "kind",
+              "type": "FailureKind",
+              "purpose": "Lets a caller tell failures apart.",
+              "optional": false
+            },
+            {
+              "name": "message",
+              "type": "str",
+              "purpose": "What went wrong, in words a user can act on.",
+              "optional": false
+            }
+          ],
+          "returns": {
+            "type": "Failure",
+            "meaning": "The one exception modules raise for shared failures."
+          },
+          "errors": [
+            {
+              "type": "TypeError",
+              "condition": "kind is not a FailureKind; a programming error."
+            },
+            {
+              "type": "ValueError",
+              "condition": "message is blank; a programming error."
+            }
+          ],
+          "preconditions": [],
+          "postconditions": [
+            "str(failure) equals the message."
+          ]
+        },
+        {
+          "name": "Validation",
+          "signature": "require_text(field: str, value: object) -> str; require_position(field: str, value: object) -> int; require_offset_time(field: str, value: object) -> str",
+          "parameters": [
+            {
+              "name": "field",
+              "type": "str",
+              "purpose": "Name used in the failure message.",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "object",
+              "purpose": "The value to check.",
+              "optional": false
+            }
+          ],
+          "returns": {
+            "type": "str | int",
+            "meaning": "The accepted value, unchanged."
+          },
+          "errors": [
+            {
+              "type": "Failure(invalid_input)",
+              "condition": "require_text: not a string, or blank. require_position: not an integer, a boolean, or negative. require_offset_time: not an ISO 8601 string with a UTC offset."
+            }
+          ],
+          "preconditions": [],
+          "postconditions": [
+            "No value is trimmed or converted."
+          ]
+        },
+        {
+          "name": "EntryKind",
+          "signature": "class EntryKind(StrEnum): INSTRUCTION = 'instruction', DATA_POINT = 'data_point'",
+          "parameters": [],
+          "returns": {
+            "type": "EntryKind",
+            "meaning": "Whether an entry is an instruction or a data point."
+          },
+          "errors": [],
+          "preconditions": [],
+          "postconditions": []
+        },
+        {
+          "name": "EntryStatus",
+          "signature": "class EntryStatus(StrEnum): ACTIVE = 'active', RETIRED = 'retired'",
+          "parameters": [],
+          "returns": {
+            "type": "EntryStatus",
+            "meaning": "Whether an entry is in force."
+          },
+          "errors": [],
+          "preconditions": [],
+          "postconditions": []
+        },
+        {
+          "name": "ProjectId",
+          "signature": "@dataclass(frozen=True) class ProjectId: value: str",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "str",
+              "purpose": "Identifier of the project; how it is derived belongs to s3.",
+              "optional": false
+            }
+          ],
+          "returns": {
+            "type": "ProjectId",
+            "meaning": "A project identity usable as a dictionary key."
+          },
+          "errors": [
+            {
+              "type": "Failure(invalid_input)",
+              "condition": "value fails require_text."
+            }
+          ],
+          "preconditions": [],
+          "postconditions": [
+            "Equal values compare equal."
+          ]
+        },
+        {
+          "name": "Source",
+          "signature": "@dataclass(frozen=True, kw_only=True) class Source: agent: str; session_id: str; file: str; position: int; spoken_at: str",
+          "parameters": [
+            {
+              "name": "file",
+              "type": "str",
+              "purpose": "The session history file.",
+              "optional": false
+            },
+            {
+              "name": "position",
+              "type": "int",
+              "purpose": "Where the message is in the file; its unit is set by the history reader.",
+              "optional": false
+            },
+            {
+              "name": "spoken_at",
+              "type": "str",
+              "purpose": "When the message was written, as ISO 8601 with a UTC offset.",
+              "optional": false
+            }
+          ],
+          "returns": {
+            "type": "Source",
+            "meaning": "A reference to the message an entry came from, without its wording."
+          },
+          "errors": [
+            {
+              "type": "Failure(invalid_input)",
+              "condition": "A string fails require_text, position fails require_position or spoken_at fails require_offset_time."
+            }
+          ],
+          "preconditions": [],
+          "postconditions": []
+        },
+        {
+          "name": "Provenance",
+          "signature": "@dataclass(frozen=True, kw_only=True) class Provenance: extraction_model: str; embedding_model: str",
+          "parameters": [],
+          "returns": {
+            "type": "Provenance",
+            "meaning": "The models that produced an entry."
+          },
+          "errors": [
+            {
+              "type": "Failure(invalid_input)",
+              "condition": "Either name fails require_text."
+            }
+          ],
+          "preconditions": [],
+          "postconditions": []
+        },
+        {
+          "name": "NamedEntity",
+          "signature": "@dataclass(frozen=True, kw_only=True) class NamedEntity: text: str; start: int; end: int",
+          "parameters": [
+            {
+              "name": "start",
+              "type": "int",
+              "purpose": "Index of the first character, counted in Python string positions.",
+              "optional": false
+            },
+            {
+              "name": "end",
+              "type": "int",
+              "purpose": "Index after the last character.",
+              "optional": false
+            }
+          ],
+          "returns": {
+            "type": "NamedEntity",
+            "meaning": "A tagged official name within an entry's text."
+          },
+          "errors": [
+            {
+              "type": "Failure(invalid_input)",
+              "condition": "text is blank, a position is invalid, or end minus start differs from the length of text."
+            }
+          ],
+          "preconditions": [],
+          "postconditions": []
+        },
+        {
+          "name": "Entry",
+          "signature": "@dataclass(frozen=True, kw_only=True) class Entry: id: str; project: ProjectId; kind: EntryKind; text: str; entities: tuple[NamedEntity, ...]; sources: tuple[Source, ...]; provenance: Provenance; status: EntryStatus; retired_at: str | None = None; replaced_by: str | None = None; retire(self, retired_at: str, replaced_by: str | None = None) -> None  # compares by value, not hashable",
+          "parameters": [
+            {
+              "name": "text",
+              "type": "str",
+              "purpose": "Normalized rule or fact, at most 500 characters counted as Python string positions.",
+              "optional": false
+            },
+            {
+              "name": "entities",
+              "type": "tuple[NamedEntity, ...]",
+              "purpose": "Tagged names; may be empty.",
+              "optional": false
+            },
+            {
+              "name": "sources",
+              "type": "tuple[Source, ...]",
+              "purpose": "Where the entry came from; at least one.",
+              "optional": false
+            },
+            {
+              "name": "retired_at",
+              "type": "str | None",
+              "purpose": "When the entry was retired, as ISO 8601 with a UTC offset. Required when retired and absent when active; the argument of retire is required.",
+              "optional": true
+            },
+            {
+              "name": "replaced_by",
+              "type": "str | None",
+              "purpose": "Identifier of the entry that replaced a retired one.",
+              "optional": true
+            }
+          ],
+          "returns": {
+            "type": "Entry",
+            "meaning": "A checked entry that only retire can change."
+          },
+          "errors": [
+            {
+              "type": "Failure(invalid_input)",
+              "condition": "On creation: kind or project is empty; a value has the wrong type; id or text is blank; text is longer than 500 characters; entities or sources is not a tuple of the right type; sources is empty; an entity differs from the text at its positions; a retired entry has no retired_at or one that fails require_offset_time; an active entry has retired_at or replaced_by; replaced_by is blank or equals id. The message names the field."
+            },
+            {
+              "type": "Failure(invalid_input)",
+              "condition": "On retire: the entry is already retired, retired_at fails require_offset_time, or replaced_by is blank or equals id. Nothing changes."
+            },
+            {
+              "type": "TypeError",
+              "condition": "A required argument is left out; a programming error."
+            }
+          ],
+          "preconditions": [],
+          "postconditions": [
+            "After retire, the same object has status retired, the given retirement time and the given replacement, and every other field is unchanged.",
+            "A retired entry may be created directly, with its retirement time and with or without a replacement, so that stored entries can be read back.",
+            "The definitions do not prevent an active copy of a retired entry; the store refuses it."
+          ]
+        },
+        {
+          "name": "Checkpoint",
+          "signature": "@dataclass(frozen=True, kw_only=True) class Checkpoint: agent: str; session_id: str; file: str; position: int; last_message_id: str; last_message_at: str",
+          "parameters": [
+            {
+              "name": "position",
+              "type": "int",
+              "purpose": "Where to proceed from in the file.",
+              "optional": false
+            }
+          ],
+          "returns": {
+            "type": "Checkpoint",
+            "meaning": "How far one session has been processed."
+          },
+          "errors": [
+            {
+              "type": "Failure(invalid_input)",
+              "condition": "A string fails require_text, position fails require_position or last_message_at fails require_offset_time."
+            }
+          ],
+          "preconditions": [],
+          "postconditions": [
+            "No comparison or update rule is defined here; that belongs to the store and server."
+          ]
+        },
+        {
+          "name": "ImportTable",
+          "signature": "ALLOWED: dict[str, frozenset[str]]  # dotted package path below agent_pfc -> packages or modules it may import; NAMESPACES: frozenset[str] = {'core', 'core.cache'}",
+          "parameters": [],
+          "returns": {
+            "type": "list[str]",
+            "meaning": "Violations; empty when every import follows the table and no modules form a cycle."
+          },
+          "errors": [],
+          "preconditions": [
+            "Imports are read statically; dynamic importing stays forbidden."
+          ],
+          "postconditions": [
+            "A module belongs to the longest table key that prefixes its path.",
+            "A module with no owning key is a violation unless it is the __init__ of a namespace.",
+            "A namespace __init__ holds only a docstring.",
+            "Every key starting 'core.' may import only keys starting 'core.'.",
+            "A cycle among project module imports is a violation naming the modules."
+          ]
+        }
+      ]
+    },
+    "dataModelChanges": [
+      {
+        "entity": "agent_pfc.core.common.failures",
+        "change": "new",
+        "details": "Module holding FailureKind and Failure. Imports nothing from the project, so the checks can import it without a cycle.",
+        "callSites": []
+      },
+      {
+        "entity": "agent_pfc.core.utils.validation",
+        "change": "new",
+        "details": "Module holding the three checks. Imports only the failures module.",
+        "callSites": []
+      },
+      {
+        "entity": "agent_pfc.core.common.entries",
+        "change": "new",
+        "details": "Module holding EntryKind, EntryStatus, ProjectId, Source, Provenance, NamedEntity and Entry, with the 500-character limit. Imports the failures and validation modules. An entry owns its entities and sources.",
+        "callSites": []
+      },
+      {
+        "entity": "agent_pfc.core.common.checkpoints",
+        "change": "new",
+        "details": "Module holding Checkpoint. Imports the validation module.",
+        "callSites": []
+      },
+      {
+        "entity": "agent_pfc.core, core.common and core.utils packages",
+        "change": "new",
+        "details": "Each __init__ holds only a docstring, so importing one module loads no other.",
+        "callSites": []
+      },
+      {
+        "entity": "Import table",
+        "change": "field-modify",
+        "details": "Keyed by dotted package paths, lists the approved core packages plus the existing embeddings package, which keeps its empty entry until s5 moves it, and gains the cycle check.",
+        "callSites": [
+          "tests/test_architecture.py:17-90"
+        ]
+      },
+      {
+        "entity": "agent_pfc package docstring",
+        "change": "field-modify",
+        "details": "Replaced with the current project description, since it describes the removed design.",
+        "callSites": [
+          "src/agent_pfc/__init__.py"
+        ]
+      }
+    ],
+    "interactionWithShared": [
+      {
+        "contractId": "sc1",
+        "role": "implements",
+        "howDetails": "The three common modules define every type in the contract with snake_case field names and tuples for lists. The existing EmbeddingBackendError is not touched; s5 moves it onto the backend_failed kind."
+      },
+      {
+        "contractId": "sc10",
+        "role": "implements",
+        "howDetails": "The validation module defines the three checks, and the definitions of this story use them."
+      },
+      {
+        "contractId": "sc2",
+        "role": "implements",
+        "howDetails": "The import test holds the approved table and namespaces, checks nested packages and rejects module cycles. Packages of later stories are listed now and created by those stories."
+      }
+    ],
+    "errorPaths": {
+      "errorCases": [
+        {
+          "scenario": "An entry is created with an empty kind or project.",
+          "detection": "The entry's creation check tests both fields for no value before any other check.",
+          "response": "Failure with invalid_input naming the field.",
+          "userImpact": "The caller learns which value is missing; nothing is created.",
+          "recoverable": true
+        },
+        {
+          "scenario": "A value has the wrong type, such as a string for kind, a list for sources or a boolean for a position.",
+          "detection": "The shared checks and the creation checks test each field's type, treating a boolean as not an integer.",
+          "response": "Failure with invalid_input naming the field.",
+          "userImpact": "The caller learns which value is wrong.",
+          "recoverable": true
+        },
+        {
+          "scenario": "Entry text is longer than 500 characters.",
+          "detection": "The entry measures the length of text on creation.",
+          "response": "Failure with invalid_input naming text.",
+          "userImpact": "The parser must shorten or split the entry, or it is not stored.",
+          "recoverable": true
+        },
+        {
+          "scenario": "A tagged name does not match the entry text.",
+          "detection": "The entry compares each entity's text with its own text between start and end, including an end beyond the text's length.",
+          "response": "Failure with invalid_input naming entities.",
+          "userImpact": "A wrongly positioned tag cannot reach the index.",
+          "recoverable": true
+        },
+        {
+          "scenario": "A time is not ISO 8601 or has no UTC offset.",
+          "detection": "The time check parses the value with the standard library and tests that the result has an offset.",
+          "response": "Failure with invalid_input naming the field.",
+          "userImpact": "Times from different machines stay comparable.",
+          "recoverable": true
+        },
+        {
+          "scenario": "An entry's status and retirement fields disagree: retired without a retirement time, or active with a retirement time or a replacement.",
+          "detection": "The creation check compares status with retired_at and replaced_by.",
+          "response": "Failure with invalid_input naming retired_at or replaced_by.",
+          "userImpact": "A retired entry always carries the time that purging needs.",
+          "recoverable": true
+        },
+        {
+          "scenario": "A retired entry is retired again, or retire is given an invalid time, the entry's own identifier or a blank replacement.",
+          "detection": "retire reads the status and checks both arguments before changing anything.",
+          "response": "Failure with invalid_input naming status, retired_at or replaced_by; the entry is unchanged.",
+          "userImpact": "A recorded retirement cannot be silently overwritten.",
+          "recoverable": true
+        },
+        {
+          "scenario": "Code assigns a field of an entry directly.",
+          "detection": "The frozen dataclass rejects the assignment.",
+          "response": "The language's frozen-instance error.",
+          "userImpact": "The mistake shows up in tests of the assigning module.",
+          "recoverable": false
+        },
+        {
+          "scenario": "A failure is created with a blank message or an unknown kind.",
+          "detection": "The failure checks its arguments itself, without the shared checks.",
+          "response": "ValueError or TypeError, since the mistake is in the code raising it.",
+          "userImpact": "The mistake shows up in tests of the raising module.",
+          "recoverable": false
+        },
+        {
+          "scenario": "A package imports something its table entry does not allow, is not in the table, or modules import each other in a loop.",
+          "detection": "The import test reads every source file's imports statically and searches the module import graph for a cycle.",
+          "response": "The test fails naming the modules.",
+          "userImpact": "The developer fixes the dependency before it is merged.",
+          "recoverable": true
+        }
+      ],
+      "edgeCases": [
+        {
+          "input": "Entry text of exactly 500 characters.",
+          "expected": "Accepted."
+        },
+        {
+          "input": "An entry with no named entities.",
+          "expected": "Accepted with an empty tuple."
+        },
+        {
+          "input": "Entry text containing non-Latin characters or emoji before a tagged name.",
+          "expected": "Positions and length count Python string positions, so the tag matches."
+        },
+        {
+          "input": "The same name tagged twice at two places in one entry.",
+          "expected": "Both tags are accepted."
+        },
+        {
+          "input": "An entry read back already retired, with a retirement time and no replacement.",
+          "expected": "Accepted."
+        },
+        {
+          "input": "A retirement time earlier than the source's time.",
+          "expected": "Accepted; the definitions do not compare times from different clocks."
+        },
+        {
+          "input": "An active copy of a retired entry made by code.",
+          "expected": "Created; refusing it is the store's duty."
+        },
+        {
+          "input": "A rule with leading or trailing spaces, a negation and a condition.",
+          "expected": "Text is kept exactly as given."
+        },
+        {
+          "input": "A source or checkpoint at position zero.",
+          "expected": "Accepted."
+        },
+        {
+          "input": "A time ending in Z.",
+          "expected": "Accepted as an offset of zero."
+        },
+        {
+          "input": "Two entries with equal fields, then one is retired.",
+          "expected": "They compare equal before and unequal after."
+        }
+      ],
+      "invariantsToPreserve": []
+    },
+    "testStrategy": {
+      "testLevels": [
+        {
+          "level": "unit",
+          "purpose": "Each definition and check accepts valid values and rejects invalid ones with the right failure.",
+          "subjects": [
+            "Failure and FailureKind",
+            "The validation checks",
+            "Entry creation and retire, including the retirement time",
+            "NamedEntity, Source, Provenance and ProjectId",
+            "Checkpoint"
+          ]
+        },
+        {
+          "level": "contract",
+          "purpose": "The definitions match the approved contract and the packages follow the import table.",
+          "subjects": [
+            "Failure kind, entry kind and entry status values",
+            "Field names of Source and Entry",
+            "ImportTable over the real source tree",
+            "ImportTable against forbidden and accepted examples for nested packages and cycles"
+          ]
+        }
+      ],
+      "acceptanceMapping": [
+        {
+          "criterionId": "ac1",
+          "provingTests": [
+            "tests/test_entries.py: an entry with an empty kind raises an invalid_input failure naming kind",
+            "tests/test_entries.py: an entry with an empty project raises an invalid_input failure naming project"
+          ]
+        },
+        {
+          "criterionId": "ac2",
+          "provingTests": [
+            "tests/test_entries.py: retire changes the same entry and records the time, with and without a replacement",
+            "tests/test_entries.py: retiring a retired entry fails and leaves it unchanged",
+            "tests/test_entries.py: retire with an invalid time fails and leaves the entry active",
+            "tests/test_entries.py: a retired entry needs a retirement time and an active entry has none",
+            "tests/test_entries.py: assigning a field of an entry directly is rejected"
+          ]
+        },
+        {
+          "criterionId": "ac3",
+          "provingTests": [
+            "tests/test_entries.py: entry text with a negation, a scope and surrounding spaces is kept exactly",
+            "tests/test_entries.py: a source has only agent, session, file, position and time"
+          ]
+        },
+        {
+          "criterionId": "ac4",
+          "provingTests": [
+            "tests/test_architecture.py: the real source tree follows the table and has no module cycle",
+            "tests/test_architecture.py: examples reject core.common importing outside common and utils, an unlisted nested package, a namespace with code, a core package importing outside core and a module cycle"
+          ]
+        },
+        {
+          "criterionId": "ac5",
+          "provingTests": [
+            "tests/test_entries.py: text of 501 characters raises an invalid_input failure naming text and text of 500 is accepted"
+          ]
+        },
+        {
+          "criterionId": "ac6",
+          "provingTests": [
+            "tests/test_entries.py: an entity that differs from the text at its positions raises an invalid_input failure naming entities"
+          ]
+        }
+      ],
+      "testFramework": "pytest"
+    },
+    "alternativesConsidered": [
+      {
+        "id": "a1",
+        "name": "Frozen dataclasses with a retire method",
+        "oneLineSummary": "Standard-library frozen dataclasses that check themselves with the shared checks; only retire changes an entry.",
+        "approach": "Each definition is a frozen dataclass that runs the shared checks when created. Entry has one method, retire, which takes the retirement time and an optional replacement, checks them, and then sets status, retired_at and replaced_by on the same object, bypassing the freeze for those three fields only. Entries compare by value and are not hashable, since they can change.",
+        "pros": [
+          "No new dependency",
+          "Direct assignment is rejected",
+          "A stored entry read back compares field for field"
+        ],
+        "cons": [
+          "Retire must bypass the freeze deliberately",
+          "Code can still build an active copy of a retired entry, which the store refuses"
+        ],
+        "costEstimate": "S"
+      },
+      {
+        "id": "a2",
+        "name": "Private fields with read-only properties",
+        "oneLineSummary": "Entry as an ordinary class with private fields, read-only properties and a retire method; other definitions as frozen dataclasses.",
+        "approach": "Entry stores private attributes and exposes each through a property, with retire changing the private status, retirement time and replacement. Equality and representation are written by hand.",
+        "pros": [
+          "No bypass of a freeze is needed",
+          "Public attributes cannot be assigned"
+        ],
+        "cons": [
+          "Much hand-written code for properties and equality",
+          "Differs in style from every other definition",
+          "Private attributes can still be changed by code that chooses to"
+        ],
+        "costEstimate": "M",
+        "reasonRejected": "More code for no stronger guarantee."
+      },
+      {
+        "id": "a3",
+        "name": "Mutable dataclass",
+        "oneLineSummary": "Entry as an ordinary mutable dataclass with a retire method.",
+        "approach": "Entry is a plain dataclass checked on creation, with retire setting status, retirement time and replacement. Nothing prevents other assignments.",
+        "pros": [
+          "Shortest code",
+          "No new dependency"
+        ],
+        "cons": [
+          "Any field can be assigned after the checks",
+          "A retired entry can be reactivated by assignment",
+          "Does not hold the rule that only retirement changes an entry"
+        ],
+        "costEstimate": "XS",
+        "reasonRejected": "Cannot hold the retirement rule."
+      }
+    ],
+    "chosenAlternative": "a1",
+    "openQuestions": []
+  },
+  "citations": [
+    {
+      "id": "c1",
+      "kind": "analyze-bundle",
+      "ref": "s1",
+      "quotedText": "One source package with a single subpackage, embeddings; the only project imports are inside it or from tests."
+    },
+    {
+      "id": "c2",
+      "kind": "code",
+      "ref": "tests/test_architecture.py:17-90"
+    },
+    {
+      "id": "c3",
+      "kind": "code",
+      "ref": "src/agent_pfc/embeddings/protocol.py:14-32"
+    },
+    {
+      "id": "c4",
+      "kind": "code",
+      "ref": "src/agent_pfc/__init__.py"
+    },
+    {
+      "id": "c5",
+      "kind": "doc",
+      "ref": "docs/REQUIREMENTS.md"
+    },
+    {
+      "id": "c6",
+      "kind": "convention",
+      "ref": "CLAUDE.md:18-28"
+    }
+  ]
+}
