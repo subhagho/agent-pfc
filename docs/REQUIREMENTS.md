@@ -1,6 +1,6 @@
 # agent-pfc requirements
 
-Version 0.5. 27 November 2026.
+Version 0.6. 27 November 2026.
 
 This document says what the system must do. Design is done separately, one module at a time.
 
@@ -42,8 +42,9 @@ Not in scope:
 | E5 | One entry holds one rule or fact. | Agreed |
 | E6 | An entry records its source (agent, session, session file, position and time) and the models that produced it. The original wording is not stored. | Agreed |
 | E7 | An entry is created only from what the user states or accepts. An agent's unaccepted proposal is not an entry. | Agreed |
-| E8 | A newer decision replaces the outdated entry. The old one is retired, not erased. An entry can also be retired with no replacement. A retired entry is not reactivated. | Agreed |
+| E8 | A newer decision replaces the outdated entry. The old one is retired, and the time is recorded. An entry can also be retired with no replacement. A retired entry is not reactivated. | Agreed |
 | E9 | A rule already stored is not stored again. | Agreed |
+| E10 | A retired entry is moved to history, without its embedding or keyword index. It can be purged after a configured period; purging is off by default. | Agreed |
 
 E1: that design decisions count as instructions is agreed.
 
@@ -68,6 +69,7 @@ E1: that design decisions count as instructions is agreed.
 | C15 | Raw chat history stays on the user's machine. Only entries and source references reach the memory server. | Proposed |
 | C16 | The local model breaks each turn into simple directives and facts, one per entry, each keeping the condition or scope that applies to it. A turn is not stored whole as one entry. | Agreed |
 | C17 | A setting, off by default, turns on local archiving of Claude sessions, so that an entry's source can be looked up after the agent deletes its history. Remote archiving may follow. | Agreed |
+| C18 | The local model compares each new entry with similar stored entries, found by vector similarity and names, and with similar ones from the same run, and decides whether it is new, a duplicate or a replacement. | Agreed |
 
 ## 5. Querying
 
@@ -95,6 +97,8 @@ E1: that design decisions count as instructions is agreed.
 | V5 | The server listens only on loopback, requires a token and checks request origins. | Proposed |
 | V6 | The HTTP API is versioned. | Agreed |
 | V7 | A user can list and retire entries, through the server. | Proposed |
+| V8 | A compaction job runs on a schedule. It moves retired entries to history, purges them when due and removes old table versions. The indexer thread does its writes. Until it runs, search skips retired entries. | Agreed |
+| V9 | The store accepts a new entry only as active and with an unused ID. Only a retirement changes an existing entry. | Agreed |
 
 ## 7. Models and installation
 
@@ -154,14 +158,13 @@ Small, throwaway tests on one Apple M3 Pro. They are indications, not acceptance
 ## 11. Open questions
 
 1. Should exceptions be linked to the general rules they limit, or only state their own scope?
-2. How are replacements and duplicates detected?
-3. What window size and overlap should parsing use?
-4. How does each agent's history reach the daemon, and which agents come first?
-5. How is a project identified, so that the same project matches across machines?
-6. Are there preferences that apply to every project?
-7. Should trial decisions ("start with X") be stored differently from settled ones?
-8. What are the quality targets in section 9?
-9. How is the daemon, server and MCP side started and kept running on each platform?
+2. What window size and overlap should parsing use?
+3. How does each agent's history reach the daemon, and which agents come first?
+4. How is a project identified, so that the same project matches across machines?
+5. Are there preferences that apply to every project?
+6. Should trial decisions ("start with X") be stored differently from settled ones?
+7. What are the quality targets in section 9?
+8. How is the daemon, server and MCP side started and kept running on each platform?
 
 ## 12. Modules to design
 
@@ -188,11 +191,11 @@ Module 1 comes first because the others build on it. Its contents are:
 | 1 | Core and base infrastructure | E1 to E9, V6, N1 to N6, N9 |
 | 2 | Model management | M1 to M4, M9 |
 | 3 | Model runtime | M5, M6 |
-| 4 | Store | V2, V3, M10, Q10 |
+| 4 | Store | V2, V3, V8, V9, E10, M10, Q10 |
 | 5 | Process lifecycle | N7, N8, C11 |
 | 6 | Memory server | V1, V3 to V7 |
 | 7 | MCP adapter | Q1 to Q9 |
 | 8 | History readers | C3, C8, C9, C13 to C15, C17 |
-| 9 | Parser | C5, C6, C16, E4, E5, E7 to E9 |
+| 9 | Parser | C5, C6, C16, C18, E4, E5, E7 to E9 |
 | 10 | Daemon | C2, C4, C7, C10, C12 |
 | 11 | Installer | M6 to M8, S4 |
