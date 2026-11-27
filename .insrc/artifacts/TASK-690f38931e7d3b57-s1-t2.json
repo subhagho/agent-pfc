@@ -1,0 +1,93 @@
+{
+  "meta": {
+    "workflow": "plan",
+    "runId": "store-b9a4fb56-f3b0-483f-b57c-323d4dc72b24",
+    "repoPath": "/Users/subhagho/work/projects/agent-pfc",
+    "createdAt": "2026-11-27T05:46:52.448Z",
+    "epicCreatedAt": "2026-11-26T19:34:25.496Z",
+    "elapsedMs": 0,
+    "repoIndexedAt": null,
+    "schemaVersion": 1,
+    "epicHash": "690f38931e7d3b57",
+    "storyId": "s1",
+    "envelope": {
+      "description": "Add the shared failure type and the definition checks",
+      "parent": {
+        "entityId": "STORY-690f38931e7d3b57-s1",
+        "type": "STORY",
+        "relation": "derived-from"
+      },
+      "references": [
+        {
+          "entityId": "PLAN-690f38931e7d3b57-s1",
+          "type": "PLAN",
+          "relation": "derived-from",
+          "fragment": "revision 1"
+        },
+        {
+          "entityId": "TASK-690f38931e7d3b57-s1-t1",
+          "type": "TASK",
+          "relation": "depends-on"
+        }
+      ],
+      "attachments": []
+    },
+    "lifecycle": {
+      "status": "approved",
+      "revision": {
+        "number": 1,
+        "contentHash": "4dd317e62a42a1f5828beab0a42c1f42b6bd085307255245088104b562a3705b",
+        "at": "2026-11-27T05:46:52.449Z",
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        }
+      },
+      "signoffs": [],
+      "approval": {
+        "revision": 1,
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        },
+        "at": "2026-11-27T05:46:52.452Z"
+      }
+    },
+    "revision": 1
+  },
+  "body": {
+    "title": "Add the shared failure type and the definition checks",
+    "summary": "Create the core, core.common and core.utils packages with docstring-only __init__ files, the failures module and the validation module, with their tests.",
+    "size": "S",
+    "order": 2,
+    "acceptanceChecks": [
+      "The seven failure kind values equal the contract strings and str of a failure is its message",
+      "A blank message or unknown kind raises ValueError or TypeError",
+      "Each check returns the value unchanged or raises an invalid_input Failure naming the field",
+      "A wrong type, a boolean or negative position, and a time without an offset are rejected; a time ending in Z is accepted",
+      "failures imports nothing from the project and validation imports only failures"
+    ],
+    "tests": [
+      {
+        "level": "unit",
+        "name": "tests/test_failures.py: failure kind values equal the contract and a failure reads as its message"
+      },
+      {
+        "level": "unit",
+        "name": "tests/test_failures.py: a blank message or unknown kind is a programming error"
+      },
+      {
+        "level": "unit",
+        "name": "tests/test_validation.py: each check returns an accepted value unchanged"
+      },
+      {
+        "level": "unit",
+        "name": "tests/test_validation.py: each check rejects an invalid value with an invalid_input failure naming the field"
+      }
+    ],
+    "planTaskId": "t2"
+  },
+  "citations": []
+}

@@ -1,0 +1,140 @@
+{
+  "meta": {
+    "workflow": "plan",
+    "runId": "store-9b24b721-0018-4b41-8410-9109e628e38d",
+    "repoPath": "/Users/subhagho/work/projects/agent-pfc",
+    "createdAt": "2026-11-27T05:46:52.456Z",
+    "epicCreatedAt": "2026-11-26T19:34:25.496Z",
+    "elapsedMs": 0,
+    "repoIndexedAt": null,
+    "schemaVersion": 1,
+    "epicHash": "690f38931e7d3b57",
+    "storyId": "s1",
+    "envelope": {
+      "description": "Add the entry definitions",
+      "parent": {
+        "entityId": "STORY-690f38931e7d3b57-s1",
+        "type": "STORY",
+        "relation": "derived-from"
+      },
+      "references": [
+        {
+          "entityId": "PLAN-690f38931e7d3b57-s1",
+          "type": "PLAN",
+          "relation": "derived-from",
+          "fragment": "revision 1"
+        },
+        {
+          "entityId": "TASK-690f38931e7d3b57-s1-t2",
+          "type": "TASK",
+          "relation": "depends-on"
+        }
+      ],
+      "attachments": []
+    },
+    "lifecycle": {
+      "status": "approved",
+      "revision": {
+        "number": 1,
+        "contentHash": "53942494bdaa903f337d966e69986f9a303bc4d31c8f29ba2a8522967167a56f",
+        "at": "2026-11-27T05:46:52.456Z",
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        }
+      },
+      "signoffs": [],
+      "approval": {
+        "revision": 1,
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        },
+        "at": "2026-11-27T05:46:52.460Z"
+      }
+    },
+    "revision": 1
+  },
+  "body": {
+    "title": "Add the entry definitions",
+    "summary": "Add the entries module with EntryKind, EntryStatus, ProjectId, Source, Provenance, NamedEntity and Entry, its 500-character limit and retire, with the tests for the acceptance criteria.",
+    "size": "M",
+    "order": 3,
+    "acceptanceChecks": [
+      "Entry kind and status values equal the contract strings",
+      "Empty kind or project, wrong types, empty sources and mismatched tags are rejected naming the field",
+      "Text of 501 characters is rejected and 500 is accepted; text is kept exactly",
+      "Tags after non-Latin text or emoji and a name tagged twice are accepted",
+      "retire changes the same entry once and records the time, with or without a replacement; a failed retire changes nothing",
+      "A retired entry needs a retirement time and may be created directly; an active entry has no time or replacement",
+      "Direct field assignment is rejected; entries compare by value before and after retirement and are not hashable",
+      "A source has only agent, session, file, position and time"
+    ],
+    "tests": [
+      {
+        "level": "unit",
+        "name": "tests/test_entries.py: an entry with an empty kind raises an invalid_input failure naming kind"
+      },
+      {
+        "level": "unit",
+        "name": "tests/test_entries.py: an entry with an empty project raises an invalid_input failure naming project"
+      },
+      {
+        "level": "unit",
+        "name": "tests/test_entries.py: retire changes the same entry and records the time, with and without a replacement"
+      },
+      {
+        "level": "unit",
+        "name": "tests/test_entries.py: retiring a retired entry fails and leaves it unchanged"
+      },
+      {
+        "level": "unit",
+        "name": "tests/test_entries.py: retire with an invalid time fails and leaves the entry active"
+      },
+      {
+        "level": "unit",
+        "name": "tests/test_entries.py: a retired entry needs a retirement time and an active entry has none"
+      },
+      {
+        "level": "unit",
+        "name": "tests/test_entries.py: assigning a field of an entry directly is rejected"
+      },
+      {
+        "level": "unit",
+        "name": "tests/test_entries.py: entry text with a negation, a scope and surrounding spaces is kept exactly"
+      },
+      {
+        "level": "unit",
+        "name": "tests/test_entries.py: a source has only agent, session, file, position and time"
+      },
+      {
+        "level": "unit",
+        "name": "tests/test_entries.py: text of 501 characters raises an invalid_input failure naming text and text of 500 is accepted"
+      },
+      {
+        "level": "unit",
+        "name": "tests/test_entries.py: an entity that differs from the text at its positions raises an invalid_input failure naming entities"
+      },
+      {
+        "level": "unit",
+        "name": "tests/test_entries.py: tags after non-Latin text or emoji and repeated names are accepted"
+      },
+      {
+        "level": "unit",
+        "name": "tests/test_entries.py: wrong types and invalid source, provenance and project values are rejected naming the field"
+      },
+      {
+        "level": "unit",
+        "name": "tests/test_entries.py: entry kind and status values equal the contract"
+      },
+      {
+        "level": "unit",
+        "name": "tests/test_entries.py: entries compare by value and are not hashable"
+      }
+    ],
+    "planTaskId": "t3"
+  },
+  "citations": []
+}

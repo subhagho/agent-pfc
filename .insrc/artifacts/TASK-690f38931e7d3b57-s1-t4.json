@@ -1,0 +1,88 @@
+{
+  "meta": {
+    "workflow": "plan",
+    "runId": "store-1dbd4029-3689-477f-9b57-1a38ce0c6225",
+    "repoPath": "/Users/subhagho/work/projects/agent-pfc",
+    "createdAt": "2026-11-27T05:46:52.465Z",
+    "epicCreatedAt": "2026-11-26T19:34:25.496Z",
+    "elapsedMs": 0,
+    "repoIndexedAt": null,
+    "schemaVersion": 1,
+    "epicHash": "690f38931e7d3b57",
+    "storyId": "s1",
+    "envelope": {
+      "description": "Add checkpoints and replace the stale package description",
+      "parent": {
+        "entityId": "STORY-690f38931e7d3b57-s1",
+        "type": "STORY",
+        "relation": "derived-from"
+      },
+      "references": [
+        {
+          "entityId": "PLAN-690f38931e7d3b57-s1",
+          "type": "PLAN",
+          "relation": "derived-from",
+          "fragment": "revision 1"
+        },
+        {
+          "entityId": "TASK-690f38931e7d3b57-s1-t2",
+          "type": "TASK",
+          "relation": "depends-on"
+        }
+      ],
+      "attachments": []
+    },
+    "lifecycle": {
+      "status": "approved",
+      "revision": {
+        "number": 1,
+        "contentHash": "16f315d32343ecef8b802e23d3efbae3d616c583c9c8e21c14ca7bda4b19a33e",
+        "at": "2026-11-27T05:46:52.465Z",
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        }
+      },
+      "signoffs": [],
+      "approval": {
+        "revision": 1,
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        },
+        "at": "2026-11-27T05:46:52.468Z"
+      }
+    },
+    "revision": 1
+  },
+  "body": {
+    "title": "Add checkpoints and replace the stale package description",
+    "summary": "Add the checkpoints module with its tests and replace the root package docstring with the current project description.",
+    "size": "S",
+    "order": 4,
+    "acceptanceChecks": [
+      "A blank string, an invalid position or a time without an offset in a checkpoint is rejected naming the field",
+      "Position zero is accepted",
+      "The root docstring describes the current project",
+      "The whole suite passes with the real source tree following the table and having no cycle"
+    ],
+    "tests": [
+      {
+        "level": "unit",
+        "name": "tests/test_checkpoints.py: a checkpoint accepts position zero"
+      },
+      {
+        "level": "unit",
+        "name": "tests/test_checkpoints.py: an invalid checkpoint value is rejected naming the field"
+      },
+      {
+        "level": "unit",
+        "name": "tests/test_architecture.py: the real source tree follows the table and has no module cycle"
+      }
+    ],
+    "planTaskId": "t4"
+  },
+  "citations": []
+}

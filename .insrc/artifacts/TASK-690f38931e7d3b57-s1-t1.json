@@ -1,0 +1,84 @@
+{
+  "meta": {
+    "workflow": "plan",
+    "runId": "store-0d4a56d4-77e7-4a42-b2f3-06b4729f5939",
+    "repoPath": "/Users/subhagho/work/projects/agent-pfc",
+    "createdAt": "2026-11-27T05:46:52.426Z",
+    "epicCreatedAt": "2026-11-26T19:34:25.496Z",
+    "elapsedMs": 0,
+    "repoIndexedAt": null,
+    "schemaVersion": 1,
+    "epicHash": "690f38931e7d3b57",
+    "storyId": "s1",
+    "envelope": {
+      "description": "Extend the import test to nested packages and cycles",
+      "parent": {
+        "entityId": "STORY-690f38931e7d3b57-s1",
+        "type": "STORY",
+        "relation": "derived-from"
+      },
+      "references": [
+        {
+          "entityId": "PLAN-690f38931e7d3b57-s1",
+          "type": "PLAN",
+          "relation": "derived-from",
+          "fragment": "revision 1"
+        }
+      ],
+      "attachments": []
+    },
+    "lifecycle": {
+      "status": "approved",
+      "revision": {
+        "number": 1,
+        "contentHash": "ab6390fd1c54ff7d3ca6111ae484eb96517d1835ed3ebd598fbbae0992ccc3bd",
+        "at": "2026-11-27T05:46:52.428Z",
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        }
+      },
+      "signoffs": [],
+      "approval": {
+        "revision": 1,
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        },
+        "at": "2026-11-27T05:46:52.437Z"
+      }
+    },
+    "revision": 1
+  },
+  "body": {
+    "title": "Extend the import test to nested packages and cycles",
+    "summary": "In tests/test_architecture.py, key the allowed table by dotted package paths with the approved core entries and the existing embeddings entry, add the namespace rule, the core boundary rule and the module cycle check, and rewrite the example tables to match.",
+    "size": "M",
+    "order": 1,
+    "acceptanceChecks": [
+      "A module belongs to the longest table key that prefixes its path",
+      "A module with no owning key is rejected unless it is a namespace __init__, and a namespace __init__ with code is rejected",
+      "A package under core importing outside core is rejected",
+      "A module import cycle is rejected and the modules are named",
+      "Dynamic importing is still rejected and the whole suite passes"
+    ],
+    "tests": [
+      {
+        "level": "unit",
+        "name": "tests/test_architecture.py: the real source tree follows the table and has no module cycle"
+      },
+      {
+        "level": "unit",
+        "name": "tests/test_architecture.py: examples reject core.common importing outside common and utils, an unlisted nested package, a namespace with code, a core package importing outside core and a module cycle"
+      },
+      {
+        "level": "unit",
+        "name": "tests/test_architecture.py: allowed examples for nested packages are accepted"
+      }
+    ],
+    "planTaskId": "t1"
+  },
+  "citations": []
+}
