@@ -1,0 +1,350 @@
+{
+  "meta": {
+    "workflow": "plan",
+    "runId": "wf-1795758031084-pejzta",
+    "repoPath": "/Users/subhagho/work/projects/agent-pfc",
+    "createdAt": "2026-11-27T05:41:45.228Z",
+    "epicCreatedAt": "2026-11-26T19:34:25.496Z",
+    "attribution": {
+      "outputs": [
+        {
+          "role": "(client)",
+          "tier": "core",
+          "runner": "cli-claude",
+          "model": "claude-sonnet-5-5"
+        }
+      ]
+    },
+    "elapsedMs": 73807,
+    "repoIndexedAt": null,
+    "schemaVersion": 1,
+    "epicHash": "690f38931e7d3b57",
+    "epicSlug": "core-base-infrastructure",
+    "storyId": "s1",
+    "lldRunId": "wf-1795756585971-7m6t9b",
+    "lldEffectiveHash": "689c403bed6f9266ba61aa9d24b2dfc693752af247715de61f84c6e7ac65a971",
+    "authoredBy": "controller",
+    "lifecycle": {
+      "status": "approved",
+      "revision": {
+        "number": 1,
+        "contentHash": "96f9b09d3bdc4ac4dd6501aee5469a23df35c299453bac9676e5b693b8a4d17e",
+        "at": "2026-11-27T05:41:45.439Z",
+        "by": {
+          "id": "insrc:system",
+          "kind": "system",
+          "properties": {}
+        }
+      },
+      "signoffs": [],
+      "approval": {
+        "revision": 1,
+        "by": {
+          "id": "insrc:approval",
+          "kind": "system",
+          "properties": {}
+        },
+        "at": "2026-11-27T05:46:51.305Z"
+      }
+    },
+    "revision": 1,
+    "envelope": {
+      "description": "",
+      "references": [],
+      "attachments": []
+    },
+    "rangeBase": "cb46785bacfe583e47fd3356376f70d0730ab78a"
+  },
+  "body": {
+    "summary": {
+      "prose": "The build first teaches the import test about nested packages and cycles, so that new core code is checked from its first file. It then adds the failure type and checks, followed by the entry definitions and the checkpoint. Everything is new code except the import test and one docstring.",
+      "audience": "technical"
+    },
+    "tasks": [
+      {
+        "id": "t1",
+        "title": "Extend the import test to nested packages and cycles",
+        "summary": "In tests/test_architecture.py, key the allowed table by dotted package paths with the approved core entries and the existing embeddings entry, add the namespace rule, the core boundary rule and the module cycle check, and rewrite the example tables to match.",
+        "size": "M",
+        "order": 1,
+        "dependsOn": [],
+        "acceptanceChecks": [
+          "A module belongs to the longest table key that prefixes its path",
+          "A module with no owning key is rejected unless it is a namespace __init__, and a namespace __init__ with code is rejected",
+          "A package under core importing outside core is rejected",
+          "A module import cycle is rejected and the modules are named",
+          "Dynamic importing is still rejected and the whole suite passes"
+        ],
+        "derivedFrom": [
+          "c1",
+          "c2",
+          "c3",
+          "c4"
+        ],
+        "tests": [
+          {
+            "level": "unit",
+            "name": "tests/test_architecture.py: the real source tree follows the table and has no module cycle"
+          },
+          {
+            "level": "unit",
+            "name": "tests/test_architecture.py: examples reject core.common importing outside common and utils, an unlisted nested package, a namespace with code, a core package importing outside core and a module cycle"
+          },
+          {
+            "level": "unit",
+            "name": "tests/test_architecture.py: allowed examples for nested packages are accepted"
+          }
+        ]
+      },
+      {
+        "id": "t2",
+        "title": "Add the shared failure type and the definition checks",
+        "summary": "Create the core, core.common and core.utils packages with docstring-only __init__ files, the failures module and the validation module, with their tests.",
+        "size": "S",
+        "order": 2,
+        "dependsOn": [
+          "t1"
+        ],
+        "acceptanceChecks": [
+          "The seven failure kind values equal the contract strings and str of a failure is its message",
+          "A blank message or unknown kind raises ValueError or TypeError",
+          "Each check returns the value unchanged or raises an invalid_input Failure naming the field",
+          "A wrong type, a boolean or negative position, and a time without an offset are rejected; a time ending in Z is accepted",
+          "failures imports nothing from the project and validation imports only failures"
+        ],
+        "derivedFrom": [
+          "c1",
+          "c2",
+          "c3",
+          "c5"
+        ],
+        "tests": [
+          {
+            "level": "unit",
+            "name": "tests/test_failures.py: failure kind values equal the contract and a failure reads as its message"
+          },
+          {
+            "level": "unit",
+            "name": "tests/test_failures.py: a blank message or unknown kind is a programming error"
+          },
+          {
+            "level": "unit",
+            "name": "tests/test_validation.py: each check returns an accepted value unchanged"
+          },
+          {
+            "level": "unit",
+            "name": "tests/test_validation.py: each check rejects an invalid value with an invalid_input failure naming the field"
+          }
+        ]
+      },
+      {
+        "id": "t3",
+        "title": "Add the entry definitions",
+        "summary": "Add the entries module with EntryKind, EntryStatus, ProjectId, Source, Provenance, NamedEntity and Entry, its 500-character limit and retire, with the tests for the acceptance criteria.",
+        "size": "M",
+        "order": 3,
+        "dependsOn": [
+          "t2"
+        ],
+        "acceptanceChecks": [
+          "Entry kind and status values equal the contract strings",
+          "Empty kind or project, wrong types, empty sources and mismatched tags are rejected naming the field",
+          "Text of 501 characters is rejected and 500 is accepted; text is kept exactly",
+          "Tags after non-Latin text or emoji and a name tagged twice are accepted",
+          "retire changes the same entry once and records the time, with or without a replacement; a failed retire changes nothing",
+          "A retired entry needs a retirement time and may be created directly; an active entry has no time or replacement",
+          "Direct field assignment is rejected; entries compare by value before and after retirement and are not hashable",
+          "A source has only agent, session, file, position and time"
+        ],
+        "derivedFrom": [
+          "c1",
+          "c2",
+          "c3",
+          "c4"
+        ],
+        "tests": [
+          {
+            "level": "unit",
+            "name": "tests/test_entries.py: an entry with an empty kind raises an invalid_input failure naming kind"
+          },
+          {
+            "level": "unit",
+            "name": "tests/test_entries.py: an entry with an empty project raises an invalid_input failure naming project"
+          },
+          {
+            "level": "unit",
+            "name": "tests/test_entries.py: retire changes the same entry and records the time, with and without a replacement"
+          },
+          {
+            "level": "unit",
+            "name": "tests/test_entries.py: retiring a retired entry fails and leaves it unchanged"
+          },
+          {
+            "level": "unit",
+            "name": "tests/test_entries.py: retire with an invalid time fails and leaves the entry active"
+          },
+          {
+            "level": "unit",
+            "name": "tests/test_entries.py: a retired entry needs a retirement time and an active entry has none"
+          },
+          {
+            "level": "unit",
+            "name": "tests/test_entries.py: assigning a field of an entry directly is rejected"
+          },
+          {
+            "level": "unit",
+            "name": "tests/test_entries.py: entry text with a negation, a scope and surrounding spaces is kept exactly"
+          },
+          {
+            "level": "unit",
+            "name": "tests/test_entries.py: a source has only agent, session, file, position and time"
+          },
+          {
+            "level": "unit",
+            "name": "tests/test_entries.py: text of 501 characters raises an invalid_input failure naming text and text of 500 is accepted"
+          },
+          {
+            "level": "unit",
+            "name": "tests/test_entries.py: an entity that differs from the text at its positions raises an invalid_input failure naming entities"
+          },
+          {
+            "level": "unit",
+            "name": "tests/test_entries.py: tags after non-Latin text or emoji and repeated names are accepted"
+          },
+          {
+            "level": "unit",
+            "name": "tests/test_entries.py: wrong types and invalid source, provenance and project values are rejected naming the field"
+          },
+          {
+            "level": "unit",
+            "name": "tests/test_entries.py: entry kind and status values equal the contract"
+          },
+          {
+            "level": "unit",
+            "name": "tests/test_entries.py: entries compare by value and are not hashable"
+          }
+        ]
+      },
+      {
+        "id": "t4",
+        "title": "Add checkpoints and replace the stale package description",
+        "summary": "Add the checkpoints module with its tests and replace the root package docstring with the current project description.",
+        "size": "S",
+        "order": 4,
+        "dependsOn": [
+          "t2"
+        ],
+        "acceptanceChecks": [
+          "A blank string, an invalid position or a time without an offset in a checkpoint is rejected naming the field",
+          "Position zero is accepted",
+          "The root docstring describes the current project",
+          "The whole suite passes with the real source tree following the table and having no cycle"
+        ],
+        "derivedFrom": [
+          "c1",
+          "c2",
+          "c4"
+        ],
+        "tests": [
+          {
+            "level": "unit",
+            "name": "tests/test_checkpoints.py: a checkpoint accepts position zero"
+          },
+          {
+            "level": "unit",
+            "name": "tests/test_checkpoints.py: an invalid checkpoint value is rejected naming the field"
+          },
+          {
+            "level": "unit",
+            "name": "tests/test_architecture.py: the real source tree follows the table and has no module cycle"
+          }
+        ]
+      }
+    ],
+    "testStrategyCoverage": [
+      {
+        "lldStrategyItem": "Failure and FailureKind",
+        "coveredByTaskIds": [
+          "t2"
+        ]
+      },
+      {
+        "lldStrategyItem": "The validation checks",
+        "coveredByTaskIds": [
+          "t2"
+        ]
+      },
+      {
+        "lldStrategyItem": "Entry creation and retire, including the retirement time",
+        "coveredByTaskIds": [
+          "t3"
+        ]
+      },
+      {
+        "lldStrategyItem": "NamedEntity, Source, Provenance and ProjectId",
+        "coveredByTaskIds": [
+          "t3"
+        ]
+      },
+      {
+        "lldStrategyItem": "Checkpoint",
+        "coveredByTaskIds": [
+          "t4"
+        ]
+      },
+      {
+        "lldStrategyItem": "Failure kind, entry kind and entry status values",
+        "coveredByTaskIds": [
+          "t2",
+          "t3"
+        ]
+      },
+      {
+        "lldStrategyItem": "Field names of Source and Entry",
+        "coveredByTaskIds": [
+          "t3"
+        ]
+      },
+      {
+        "lldStrategyItem": "ImportTable over the real source tree",
+        "coveredByTaskIds": [
+          "t1",
+          "t4"
+        ]
+      },
+      {
+        "lldStrategyItem": "ImportTable against forbidden and accepted examples for nested packages and cycles",
+        "coveredByTaskIds": [
+          "t1"
+        ]
+      }
+    ]
+  },
+  "citations": [
+    {
+      "id": "c1",
+      "kind": "prior-artifact",
+      "ref": "LLD s1 contractDetails"
+    },
+    {
+      "id": "c2",
+      "kind": "prior-artifact",
+      "ref": "LLD s1 dataModelChanges"
+    },
+    {
+      "id": "c3",
+      "kind": "prior-artifact",
+      "ref": "LLD s1 errorPaths"
+    },
+    {
+      "id": "c4",
+      "kind": "prior-artifact",
+      "ref": "LLD s1 testStrategy"
+    },
+    {
+      "id": "c5",
+      "kind": "prior-artifact",
+      "ref": "LLD s1 interactionWithShared"
+    }
+  ]
+}
