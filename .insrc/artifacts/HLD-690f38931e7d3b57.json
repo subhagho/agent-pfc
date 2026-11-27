@@ -1,9 +1,9 @@
 {
   "meta": {
     "workflow": "design.epic",
-    "runId": "wf-1795722296902-sefs3g",
+    "runId": "wf-1795756288787-nvbycn",
     "repoPath": "/Users/subhagho/work/projects/agent-pfc",
-    "createdAt": "2026-11-26T19:47:09.844Z",
+    "createdAt": "2026-11-27T05:13:54.037Z",
     "epicCreatedAt": "2026-11-26T19:34:25.496Z",
     "attribution": {
       "outputs": [
@@ -15,7 +15,7 @@
         }
       ]
     },
-    "elapsedMs": 132294,
+    "elapsedMs": 144926,
     "repoIndexedAt": null,
     "schemaVersion": 1,
     "epicHash": "690f38931e7d3b57",
@@ -24,9 +24,9 @@
     "lifecycle": {
       "status": "approved",
       "revision": {
-        "number": 1,
-        "contentHash": "3832fe8cc4d7344a5c504aba6db35ea3346a3564d55b7102fb36bfdf47c3e237",
-        "at": "2026-11-26T19:47:10.178Z",
+        "number": 2,
+        "contentHash": "cfabdbb252d6c55a71822521bb451904c204adb8d88fad59cbd2882036de0ae3",
+        "at": "2026-11-27T05:13:54.175Z",
         "by": {
           "id": "insrc:system",
           "kind": "system",
@@ -35,34 +35,35 @@
       },
       "signoffs": [],
       "approval": {
-        "revision": 1,
+        "revision": 2,
         "by": {
           "id": "insrc:approval",
           "kind": "system",
           "properties": {}
         },
-        "at": "2026-11-26T19:52:17.670Z"
+        "at": "2026-11-27T05:15:40.277Z"
       }
     },
-    "revision": 1,
     "envelope": {
       "description": "",
       "references": [],
       "attachments": []
-    }
+    },
+    "revision": 2
   },
   "body": {
     "summary": {
-      "prose": "Everything the later modules share lives under one core: shared definitions in common, shared functions in utils, and one package for each job that needs doing. Memory keeps normalized entries with a reference to where they came from, not the original wording. Updates are idempotent, and entries can be found by the official names tagged in them.",
+      "prose": "Everything the later modules share lives under one core: shared definitions in common, shared functions in utils, and one package for each job that needs doing. Memory keeps normalized entries with a reference to where they came from, not the original wording; the local model compares each new entry with similar ones, and retired entries move to history on a schedule. Updates are idempotent, and entries can be found by the official names tagged in them.",
       "audience": "technical"
     },
     "frameworkSummary": "agent_pfc/core holds only subpackages. core/common holds the shared definitions and core/utils the shared functions, each divided into modules by subject. locations, config, activity, identity, client and cache/embedding each do one job. An import table enforced by test keeps dependencies pointing one way.",
-    "architectureShape": "Packages under agent_pfc/core and what each may import from the project. common: utils. utils: common. locations, identity and cache.embedding: common, utils. config: common, utils, locations. activity: common, utils, locations, config. client: common, utils, config, activity. common and utils may import each other as packages, never in a cycle between modules, and the import-direction test checks both rules. Modules of common are entries, checkpoints and failures (s1), locations, settings and activity shapes (s2), project resolution shape (s3), server contract (s4), and embedding, extraction and storage interfaces (s5). utils begins with the validation module that the definitions use (s1). core and core.cache are namespaces with no code of their own. Nothing under core may import anything in the project outside core. Later modules sit beside core.\n\nThe existing embeddings package is dissolved: its protocol and fingerprint move to common's embedding module, its checks to utils, its error becomes the backend failure kind, and its disk cache moves to cache/embedding with unchanged behaviour. The import-direction test is extended to packages nested two and three levels deep.\n\nEntries hold normalized text of at most 500 characters and a source reference to the session file and position; the original wording is not stored. Names are normalized by models, not by code: the extractor's implementation instructs the local model to split each turn into simple directives and facts, write each named entity's official name, keeping versions, reusing the project's known names, and tag it; the calling agent is steered to the same rule and sends official names with its query. The store keyword indexes only tagged entities and matches them loosely against the names of a query. The index is private to the store.",
+    "architectureShape": "Packages under agent_pfc/core and what each may import from the project. common: utils. utils: common. locations, identity and cache.embedding: common, utils. config: common, utils, locations. activity: common, utils, locations, config. client: common, utils, config, activity. common and utils may import each other as packages, never in a cycle between modules, and the import-direction test checks both rules. Modules of common are entries, checkpoints and failures (s1), locations, settings and activity shapes (s2), project resolution shape (s3), server contract (s4), and embedding, extraction and storage interfaces (s5). utils begins with the validation module that the definitions use (s1). core and core.cache are namespaces with no code of their own. Nothing under core may import anything in the project outside core. Later modules sit beside core.\n\nThe existing embeddings package is dissolved: its protocol and fingerprint move to common's embedding module, its checks to utils, its error becomes the backend failure kind, and its disk cache moves to cache/embedding with unchanged behaviour. The import-direction test is extended to packages nested two and three levels deep.\n\nEntries hold normalized text of at most 500 characters and a source reference to the session file and position; the original wording is not stored. Names are normalized by models, not by code: the extractor's implementation instructs the local model to split each turn into simple directives and facts, write each named entity's official name, keeping versions, reusing the project's known names, and tag it; the calling agent is steered to the same rule and sends official names with its query. The store keyword indexes only tagged entities and matches them loosely against the names of a query. The index is private to the store.\n\nAdding a rule takes two model steps. The extractor turns a window into candidates; the caller fetches similar entries for each; the extractor then decides whether a candidate is new, a duplicate or a replacement. A retired entry records when it was retired. The store takes new entries only as active with an unused identifier and never returns retired ones from a search. A scheduled compaction, written by the single indexer thread, moves retired entries to history without their embedding or keyword index, purges those older than the configured period, which is off by default, and removes old table versions.",
     "sharedContracts": [
       {
         "id": "sc1",
         "name": "Memory definitions, checkpoints and failures",
         "purpose": "One definition of entries and their named entities, sources, projects, session checkpoints and the failures modules raise.",
+        "interfaceSketch": "type EntryKind = 'instruction' | 'data_point'; type EntryStatus = 'active' | 'retired';\ninterface ProjectId { value: string }\n// A reference to where an entry came from. The original wording is not stored.\ninterface Source { agent: string; sessionId: string; file: string; position: number; spokenAt: string }\ninterface Provenance { extractionModel: string; embeddingModel: string }\n// An official name in an entry's text, such as a library, database or file. Valid only if text equals the entry text from start up to, not including, end.\ninterface NamedEntity { text: string; start: number; end: number }\n// text is normalized, uses official names and is at most 500 characters.\n// retiredAt is an offset time, present on a retired entry and absent on an active one; replacedBy only on a retired one.\ninterface Entry { id: string; project: ProjectId; kind: EntryKind; text: string; entities: NamedEntity[]; sources: Source[]; provenance: Provenance; status: EntryStatus; retiredAt?: string; replacedBy?: string; retire(retiredAt: string, replacedBy?: string): void }\n// retire changes this entry, once, recording the time its caller gives; nothing else about an entry changes. A retired entry is never reactivated, and retiring it again is invalid input.\n// Entries compare by value. Refusing a copy of a retired entry is the store's duty (sc9).\n// An empty kind or project is invalid input naming the field.\ninterface Checkpoint { agent: string; sessionId: string; file: string; position: number; lastMessageId: string; lastMessageAt: string }\ntype FailureKind = 'invalid_input' | 'invalid_configuration' | 'unknown_project' | 'server_unreachable' | 'incompatible_version' | 'request_failed' | 'backend_failed';\ninterface Failure { kind: FailureKind; message: string }",
         "ownedByStory": "s1",
         "consumedByStories": [
           "s2",
@@ -72,13 +73,13 @@
         ],
         "assumptions": [
           "c5"
-        ],
-        "interfaceSketch": "type EntryKind = 'instruction' | 'data_point'; type EntryStatus = 'active' | 'retired';\ninterface ProjectId { value: string }\n// A reference to where an entry came from. The original wording is not stored.\ninterface Source { agent: string; sessionId: string; file: string; position: number; spokenAt: string }\ninterface Provenance { extractionModel: string; embeddingModel: string }\n// An official name in an entry's text, such as a library, database or file. Valid only if text equals the entry text from start up to, not including, end.\ninterface NamedEntity { text: string; start: number; end: number }\n// text is normalized, uses official names and is at most 500 characters.\ninterface Entry { id: string; project: ProjectId; kind: EntryKind; text: string; entities: NamedEntity[]; sources: Source[]; provenance: Provenance; status: EntryStatus; replacedBy?: string; retire(replacedBy?: string): void }\n// retire changes this entry, once; nothing else about an entry changes. A retired entry is never reactivated, and retiring it again is invalid input.\n// An empty kind or project is invalid input naming the field.\ninterface Checkpoint { agent: string; sessionId: string; file: string; position: number; lastMessageId: string; lastMessageAt: string }\ntype FailureKind = 'invalid_input' | 'invalid_configuration' | 'unknown_project' | 'server_unreachable' | 'incompatible_version' | 'request_failed' | 'backend_failed';\ninterface Failure { kind: FailureKind; message: string }"
+        ]
       },
       {
         "id": "sc2",
         "name": "Core layout and import table",
         "purpose": "Which core packages exist and what each may import.",
+        "interfaceSketch": "interface ImportTable { [packagePath: string]: string[] }\n// 'core.common': ['core.utils']; 'core.utils': ['core.common']\n// 'core.locations', 'core.identity', 'core.cache.embedding': ['core.common','core.utils']\n// 'core.config': ['core.common','core.utils','core.locations']\n// 'core.activity': ['core.common','core.utils','core.locations','core.config']\n// 'core.client': ['core.common','core.utils','core.config','core.activity']\n// No cycle between modules.",
         "ownedByStory": "s1",
         "consumedByStories": [
           "s2",
@@ -86,13 +87,13 @@
           "s4",
           "s5"
         ],
-        "assumptions": [],
-        "interfaceSketch": "interface ImportTable { [packagePath: string]: string[] }\n// 'core.common': ['core.utils']; 'core.utils': ['core.common']\n// 'core.locations', 'core.identity', 'core.cache.embedding': ['core.common','core.utils']\n// 'core.config': ['core.common','core.utils','core.locations']\n// 'core.activity': ['core.common','core.utils','core.locations','core.config']\n// 'core.client': ['core.common','core.utils','core.config','core.activity']\n// No cycle between modules."
+        "assumptions": []
       },
       {
         "id": "sc10",
         "name": "Definition checks",
         "purpose": "One implementation of each check that definitions, settings and requests apply to their values.",
+        "interfaceSketch": "// Module core.utils.validation. Each check returns the accepted value or raises an invalid_input Failure naming the field.\ninterface Validation { requireText(field: string, value: unknown): string; requirePosition(field: string, value: unknown): number; requireOffsetTime(field: string, value: unknown): string }",
         "ownedByStory": "s1",
         "consumedByStories": [
           "s2",
@@ -100,81 +101,80 @@
           "s4",
           "s5"
         ],
-        "assumptions": [],
-        "interfaceSketch": "// Module core.utils.validation. Each check returns the accepted value or raises an invalid_input Failure naming the field.\ninterface Validation { requireText(field: string, value: unknown): string; requirePosition(field: string, value: unknown): number; requireOffsetTime(field: string, value: unknown): string }"
+        "assumptions": []
       },
       {
         "id": "sc3",
         "name": "File locations",
         "purpose": "Where configuration, data, models and logs live on the current platform.",
+        "interfaceSketch": "interface Locations { configFile: string; dataDir: string; modelDir: string; logDir: string }",
         "ownedByStory": "s2",
         "consumedByStories": [
           "s4"
         ],
-        "assumptions": [],
-        "interfaceSketch": "interface Locations { configFile: string; dataDir: string; modelDir: string; logDir: string }"
+        "assumptions": []
       },
       {
         "id": "sc4",
         "name": "Settings",
-        "purpose": "Validated settings, including model choices, the server address and session archiving.",
+        "purpose": "Validated settings, including model choices, the server address, session archiving and the compaction schedule.",
+        "interfaceSketch": "interface ModelChoice { source: string; file: string }\n// intervalMinutes: how often compaction runs; its default is set by the s2 design.\n// purgeAfterDays: how long history keeps a retired entry; null, meaning never purged, when the configuration does not set it.\ninterface CompactionSettings { intervalMinutes: number; purgeAfterDays: number | null }\n// archiveSessions is false when the configuration does not set it.\ninterface Settings { embeddingModel: ModelChoice; extractionModel: ModelChoice; server: { host: string; port: number }; archiveSessions: boolean; compaction: CompactionSettings }",
         "ownedByStory": "s2",
         "consumedByStories": [
           "s4"
         ],
-        "assumptions": [],
-        "interfaceSketch": "interface ModelChoice { source: string; file: string }\n// archiveSessions is false when the configuration does not set it.\ninterface Settings { embeddingModel: ModelChoice; extractionModel: ModelChoice; server: { host: string; port: number }; archiveSessions: boolean }"
+        "assumptions": []
       },
       {
         "id": "sc5",
         "name": "Activity record",
         "purpose": "One shape for what every process records.",
+        "interfaceSketch": "interface ActivityRecord { at: string; process: string; level: 'debug' | 'info' | 'warning' | 'error'; event: string; message: string }",
         "ownedByStory": "s2",
         "consumedByStories": [
           "s4"
         ],
-        "assumptions": [],
-        "interfaceSketch": "interface ActivityRecord { at: string; process: string; level: 'debug' | 'info' | 'warning' | 'error'; event: string; message: string }"
+        "assumptions": []
       },
       {
         "id": "sc6",
         "name": "Project resolution",
         "purpose": "One rule that turns a working location into a project, or says it cannot.",
+        "interfaceSketch": "interface ProjectResolver { resolve(location: string): ProjectId }",
         "ownedByStory": "s3",
         "consumedByStories": [
           "s4"
         ],
-        "assumptions": [],
-        "interfaceSketch": "interface ProjectResolver { resolve(location: string): ProjectId }"
+        "assumptions": []
       },
       {
         "id": "sc7",
         "name": "Memory server contract and client",
         "purpose": "The versioned requests and answers of the memory server and the one way to send them, with idempotent updates.",
+        "interfaceSketch": "interface ContractVersion { major: number; minor: number }\ninterface QueryRequest { version: ContractVersion; project: ProjectId; text: string; entities: string[]; kind?: EntryKind; limit: number }\n// entities: official names the calling agent gives for what the query is about; may be empty.\n// Results never include retired entries.\ninterface QueryResult { entry: Entry; score: number }\ninterface QueryResponse { version: ContractVersion; results: QueryResult[] }\ninterface NamesRequest { version: ContractVersion; project: ProjectId }\ninterface NamesResponse { version: ContractVersion; names: string[] }\ninterface CheckpointRequest { version: ContractVersion; agent: string; sessionId: string }\ninterface CheckpointResponse { version: ContractVersion; checkpoint: Checkpoint | null }\ninterface Retirement { entryId: string; retiredAt: string; replacedBy?: string }\ninterface UpdateRequest { version: ContractVersion; project: ProjectId; from: Checkpoint | null; to: Checkpoint; add: Entry[]; retire: Retirement[] }\ntype UpdateOutcome = 'applied' | 'unchanged' | 'out_of_sequence';\ninterface UpdateResponse { version: ContractVersion; outcome: UpdateOutcome; checkpoint: Checkpoint | null; added: string[]; retired: string[] }\n// Decided in this order against the stored checkpoint of the session:\n// 'unchanged'       to.position is at or before the stored position\n// 'applied'         from equals the stored checkpoint (both null for a new session); the stored checkpoint becomes to\n// 'out_of_sequence' anything else; nothing changes and the stored checkpoint is returned\n// An update that would apply but adds an entry that is not active, or whose id is already used, is invalid_input and nothing changes.\n// Additions are applied before retirements, so one update may add an entry and retire it.\ninterface MemoryClient { query(request: QueryRequest): QueryResponse; names(request: NamesRequest): NamesResponse; checkpoint(request: CheckpointRequest): CheckpointResponse; update(request: UpdateRequest): UpdateResponse }",
         "ownedByStory": "s4",
         "consumedByStories": [],
-        "assumptions": [],
-        "interfaceSketch": "interface ContractVersion { major: number; minor: number }\ninterface QueryRequest { version: ContractVersion; project: ProjectId; text: string; entities: string[]; kind?: EntryKind; limit: number }\n// entities: official names the calling agent gives for what the query is about; may be empty.\ninterface QueryResult { entry: Entry; score: number }\ninterface QueryResponse { version: ContractVersion; results: QueryResult[] }\ninterface NamesRequest { version: ContractVersion; project: ProjectId }\ninterface NamesResponse { version: ContractVersion; names: string[] }\ninterface CheckpointRequest { version: ContractVersion; agent: string; sessionId: string }\ninterface CheckpointResponse { version: ContractVersion; checkpoint: Checkpoint | null }\ninterface UpdateRequest { version: ContractVersion; project: ProjectId; from: Checkpoint | null; to: Checkpoint; add: Entry[]; retire: { entryId: string; replacedBy?: string }[] }\ntype UpdateOutcome = 'applied' | 'unchanged' | 'out_of_sequence';\ninterface UpdateResponse { version: ContractVersion; outcome: UpdateOutcome; checkpoint: Checkpoint | null; added: string[]; retired: string[] }\n// Decided in this order against the stored checkpoint of the session:\n// 'unchanged'       to.position is at or before the stored position\n// 'applied'         from equals the stored checkpoint (both null for a new session); the stored checkpoint becomes to\n// 'out_of_sequence' anything else; nothing changes and the stored checkpoint is returned\ninterface MemoryClient { query(request: QueryRequest): QueryResponse; names(request: NamesRequest): NamesResponse; checkpoint(request: CheckpointRequest): CheckpointResponse; update(request: UpdateRequest): UpdateResponse }"
+        "assumptions": []
       },
       {
         "id": "sc8",
         "name": "Embedding interface and cache",
         "purpose": "Turning text into vectors that say which model produced them, with an optional disk cache offering the same interface.",
+        "interfaceSketch": "interface EncoderFingerprint { modelName: string; modelDigest: string; quantization: string; backendName: string; backendVersion: string; dimension: number; textConvention: string; dtype: string }\ninterface Embedder { fingerprint: EncoderFingerprint; encode(texts: string[]): number[][] }\ninterface CachedEmbedder extends Embedder { }",
         "ownedByStory": "s5",
         "consumedByStories": [],
         "assumptions": [
           "c5"
-        ],
-        "interfaceSketch": "interface EncoderFingerprint { modelName: string; modelDigest: string; quantization: string; backendName: string; backendVersion: string; dimension: number; textConvention: string; dtype: string }\ninterface Embedder { fingerprint: EncoderFingerprint; encode(texts: string[]): number[][] }\ninterface CachedEmbedder extends Embedder { }"
+        ]
       },
       {
         "id": "sc9",
         "name": "Extraction and storage interfaces",
-        "purpose": "Turning conversation messages into candidate entries that use and tag official names, and keeping and finding entries and checkpoints, without naming a runtime or store.",
+        "purpose": "Turning conversation messages into candidate entries that use and tag official names, comparing them with similar ones, and keeping, finding and compacting entries and checkpoints, without naming a runtime or store.",
+        "interfaceSketch": "// text is the original wording, read while parsing and not stored.\ninterface Message { source: Source; role: 'user' | 'agent'; text: string }\ninterface Candidate { kind: EntryKind; text: string; entities: NamedEntity[]; sources: Source[] }\n// replaces: ids of entries in stored. replacesEarlier: positions in earlier.\ninterface Comparison { outcome: 'new' | 'duplicate' | 'replacement'; replaces: string[]; replacesEarlier: number[] }\ninterface Extractor { modelName: string; extract(window: Message[], knownNames: string[]): Candidate[]; compare(candidate: Candidate, stored: Entry[], earlier: Candidate[]): Comparison }\n// Each candidate holds one directive or fact, with the condition or scope that applies to it; one message may give several.\n// Candidate text uses official names, keeping versions, and reuses a known name where it means the same thing.\n// Every implementation returns only entities that appear in the candidate text, with their positions, and no text over 500 characters.\n// The caller gives compare the similar active entries, found by vector and name search, and the candidates kept earlier in the same run.\n// 'duplicate': the candidate means the same as one of them and is not added. 'new': nothing is replaced. 'replacement': at least one is replaced.\n// A replaced earlier candidate not yet stored is added and retired in the same change, so history keeps it.\ninterface StoredVector { fingerprint: EncoderFingerprint; values: number[] }\ninterface Retirement { entryId: string; retiredAt: string; replacedBy?: string }\ninterface Change { from: Checkpoint | null; to: Checkpoint; add: { entry: Entry; vector: StoredVector }[]; retire: Retirement[] }\ninterface ChangeResult { outcome: 'applied' | 'unchanged' | 'out_of_sequence'; checkpoint: Checkpoint | null }\ninterface CompactionResult { moved: number; purged: number }\ninterface EntryStore { checkpoint(agent: string, sessionId: string): Checkpoint | null; apply(change: Change): ChangeResult; names(project: ProjectId): string[]; search(project: ProjectId, vector: StoredVector, entities: string[], kind: EntryKind | null, limit: number): { entry: Entry; score: number }[]; compact(now: string, purgeAfterDays: number | null): CompactionResult }\n// Guarantees required of every implementation:\n// after a failure at any point, submitting the same change again leaves no entry stored twice;\n// an added entry is accepted only if it is active and its id is used by no active or history entry;\n// only a retirement changes an existing entry; additions are applied before retirements;\n// search never returns a retired entry, whether or not compaction has run;\n// compact moves retired entries to history without their vector or keyword index, removes from history those retired more than purgeAfterDays before now (none when null), and removes old table versions;\n// apply and compact are called only by the single indexer thread;\n// only tagged entities are keyword indexed;\n// an entry whose tagged entity loosely matches a name in the query is a search candidate even if vector search would not have returned it;\n// missing a relevant entry is worse than returning an extra one;\n// exact name matches rank ahead of looser ones, and looser matches do not crowd out strong vector results.",
         "ownedByStory": "s5",
         "consumedByStories": [],
-        "assumptions": [],
-        "interfaceSketch": "// text is the original wording, read while parsing and not stored.\ninterface Message { source: Source; role: 'user' | 'agent'; text: string }\ninterface Candidate { kind: EntryKind; text: string; entities: NamedEntity[]; sources: Source[]; replaces: string[] }\ninterface Extractor { modelName: string; extract(window: Message[], existing: Entry[], knownNames: string[]): Candidate[] }\n// Each candidate holds one directive or fact, with the condition or scope that applies to it; one message may give several.\n// Candidate text uses official names, keeping versions, and reuses a known name where it means the same thing.\n// Every implementation returns only entities that appear in the candidate text, with their positions, and no text over 500 characters.\ninterface StoredVector { fingerprint: EncoderFingerprint; values: number[] }\ninterface Change { from: Checkpoint | null; to: Checkpoint; add: { entry: Entry; vector: StoredVector }[]; retire: { entryId: string; replacedBy?: string }[] }\ninterface ChangeResult { outcome: 'applied' | 'unchanged' | 'out_of_sequence'; checkpoint: Checkpoint | null }\ninterface EntryStore { checkpoint(agent: string, sessionId: string): Checkpoint | null; apply(change: Change): ChangeResult; names(project: ProjectId): string[]; search(project: ProjectId, vector: StoredVector, entities: string[], kind: EntryKind | null, limit: number): { entry: Entry; score: number }[] }\n// Guarantees required of every implementation:\n// after a failure at any point, submitting the same change again leaves no entry stored twice;\n// only tagged entities are keyword indexed;\n// an entry whose tagged entity loosely matches a name in the query is a search candidate even if vector search would not have returned it;\n// missing a relevant entry is worse than returning an extra one;\n// exact name matches rank ahead of looser ones, and looser matches do not crowd out strong vector results."
+        "assumptions": []
       }
     ],
     "storyBoundaries": [
@@ -200,7 +200,7 @@
           "sc10",
           "sc2"
         ],
-        "internal": "Per-platform location rules, the configuration file format and its validation, and how activity is written and rotated. Session archiving itself belongs to a later module."
+        "internal": "Per-platform location rules, the configuration file format and its validation, including the compaction defaults, and how activity is written and rotated. Session archiving itself belongs to a later module."
       },
       {
         "storyId": "s3",
@@ -241,7 +241,7 @@
           "sc10",
           "sc2"
         ],
-        "internal": "The move of the embedding protocol into core/common, of its checks into core/utils and of its cache into core/cache/embedding, and the exact method signatures of the interfaces. The local model's instructions belong to the parser design and the calling agent's steering to the MCP adapter design. The loose matching technique, the ranking and the meaning of a score are left to the store design."
+        "internal": "The move of the embedding protocol into core/common, of its checks into core/utils and of its cache into core/cache/embedding, and the exact method signatures of the interfaces. The local model's instructions belong to the parser design and the calling agent's steering to the MCP adapter design. The loose matching technique, the ranking, the meaning of a score, how history is laid out and how compaction works are left to the store design, and starting compaction on schedule to the memory server design."
       }
     ],
     "nonFunctional": {
@@ -284,9 +284,9 @@
       "orderingRationale": "s1 first because all stories depend on it; s2, s3 and s5 are independent of each other; s4 depends on s2 and s3 and lands last.",
       "riskyBits": [
         {
-          "area": "Idempotent updates across a crash",
-          "why": "A failure between writing entries and advancing the checkpoint could store entries twice, and a rerun model may word them differently.",
-          "mitigation": "sc9 requires that resubmitting adds nothing twice; the store design must show how, checking what LanceDB can commit together."
+          "area": "Interrupted writes",
+          "why": "A failure between writing entries and advancing the checkpoint could store entries twice, and one during compaction could lose entries that should be kept.",
+          "mitigation": "sc9 requires that resubmitting adds nothing twice; the store design must show how updates and compaction survive interruption, checking what LanceDB can commit together."
         },
         {
           "area": "Positions in history files",
@@ -294,9 +294,9 @@
           "mitigation": "The history reader design confirms this for each agent before relying on it."
         },
         {
-          "area": "Normalization by the local model",
-          "why": "With no original wording stored, a lost condition or negation, a badly split turn or a wrongly resolved name cannot be detected from stored data.",
-          "mitigation": "The parser test measures splitting, kept conditions and names before the parser design is accepted."
+          "area": "Judgments by the local model",
+          "why": "With no original wording stored, a lost condition, a badly split turn or a wrong name cannot be detected from stored data; a wrong comparison drops a new rule as a duplicate or retires a valid one, and purging can then erase it.",
+          "mitigation": "The parser test measures splitting, kept conditions, names, duplicates and replacements before the parser design is accepted; purging stays off by default."
         }
       ]
     },
@@ -395,6 +395,9 @@
               "description": "Models that produced the entry.",
               "range": "Provenance",
               "required": true
+            },
+            "retiredAt": {
+              "description": "When the entry was retired; present only on a retired one."
             },
             "replacedBy": {
               "description": "The entry that replaced a retired one.",

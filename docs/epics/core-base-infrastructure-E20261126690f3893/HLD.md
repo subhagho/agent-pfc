@@ -4,7 +4,7 @@
 
 ## Summary
 
-Everything the later modules share lives under one core: shared definitions in common, shared functions in utils, and one package for each job that needs doing. Memory keeps normalized entries with a reference to where they came from, not the original wording. Updates are idempotent, and entries can be found by the official names tagged in them.
+Everything the later modules share lives under one core: shared definitions in common, shared functions in utils, and one package for each job that needs doing. Memory keeps normalized entries with a reference to where they came from, not the original wording; the local model compares each new entry with similar ones, and retired entries move to history on a schedule. Updates are idempotent, and entries can be found by the official names tagged in them.
 
 ## Contents
 
@@ -35,6 +35,8 @@ The existing embeddings package is dissolved: its protocol and fingerprint move 
 
 Entries hold normalized text of at most 500 characters and a source reference to the session file and position; the original wording is not stored. Names are normalized by models, not by code: the extractor's implementation instructs the local model to split each turn into simple directives and facts, write each named entity's official name, keeping versions, reusing the project's known names, and tag it; the calling agent is steered to the same rule and sends official names with its query. The store keyword indexes only tagged entities and matches them loosely against the names of a query. The index is private to the store.
 
+Adding a rule takes two model steps. The extractor turns a window into candidates; the caller fetches similar entries for each; the extractor then decides whether a candidate is new, a duplicate or a replacement. A retired entry records when it was retired. The store takes new entries only as active with an unused identifier and never returns retired ones from a search. A scheduled compaction, written by the single indexer thread, moves retired entries to history without their embedding or keyword index, purges those older than the configured period, which is off by default, and removes old table versions.
+
 ## 4. Diagrams
 
 - [ER model](./er-model.html)
@@ -60,8 +62,10 @@ interface Provenance { extractionModel: string; embeddingModel: string }
 // An official name in an entry's text, such as a library, database or file. Valid only if text equals the entry text from start up to, not including, end.
 interface NamedEntity { text: string; start: number; end: number }
 // text is normalized, uses official names and is at most 500 characters.
-interface Entry { id: string; project: ProjectId; kind: EntryKind; text: string; entities: NamedEntity[]; sources: Source[]; provenance: Provenance; status: EntryStatus; replacedBy?: string; retire(replacedBy?: string): void }
-// retire changes this entry, once; nothing else about an entry changes. A retired entry is never reactivated, and retiring it again is invalid input.
+// retiredAt is an offset time, present on a retired entry and absent on an active one; replacedBy only on a retired one.
+interface Entry { id: string; project: ProjectId; kind: EntryKind; text: string; entities: NamedEntity[]; sources: Source[]; provenance: Provenance; status: EntryStatus; retiredAt?: string; replacedBy?: string; retire(retiredAt: string, replacedBy?: string): void }
+// retire changes this entry, once, recording the time its caller gives; nothing else about an entry changes. A retired entry is never reactivated, and retiring it again is invalid input.
+// Entries compare by value. Refusing a copy of a retired entry is the store's duty (sc9).
 // An empty kind or project is invalid input naming the field.
 interface Checkpoint { agent: string; sessionId: string; file: string; position: number; lastMessageId: string; lastMessageAt: string }
 type FailureKind = 'invalid_input' | 'invalid_configuration' | 'unknown_project' | 'server_unreachable' | 'incompatible_version' | 'request_failed' | 'backend_failed';
@@ -121,14 +125,17 @@ interface Locations { configFile: string; dataDir: string; modelDir: string; log
 **Owner Story:** `s2`
 **Consumed by:** `s4`
 
-**Purpose:** Validated settings, including model choices, the server address and session archiving.
+**Purpose:** Validated settings, including model choices, the server address, session archiving and the compaction schedule.
 
 **Interface sketch (type-level):**
 
 ```
 interface ModelChoice { source: string; file: string }
+// intervalMinutes: how often compaction runs; its default is set by the s2 design.
+// purgeAfterDays: how long history keeps a retired entry; null, meaning never purged, when the configuration does not set it.
+interface CompactionSettings { intervalMinutes: number; purgeAfterDays: number | null }
 // archiveSessions is false when the configuration does not set it.
-interface Settings { embeddingModel: ModelChoice; extractionModel: ModelChoice; server: { host: string; port: number }; archiveSessions: boolean }
+interface Settings { embeddingModel: ModelChoice; extractionModel: ModelChoice; server: { host: string; port: number }; archiveSessions: boolean; compaction: CompactionSettings }
 ```
 
 ### 5.6 sc5: Activity record
@@ -169,19 +176,23 @@ interface ProjectResolver { resolve(location: string): ProjectId }
 interface ContractVersion { major: number; minor: number }
 interface QueryRequest { version: ContractVersion; project: ProjectId; text: string; entities: string[]; kind?: EntryKind; limit: number }
 // entities: official names the calling agent gives for what the query is about; may be empty.
+// Results never include retired entries.
 interface QueryResult { entry: Entry; score: number }
 interface QueryResponse { version: ContractVersion; results: QueryResult[] }
 interface NamesRequest { version: ContractVersion; project: ProjectId }
 interface NamesResponse { version: ContractVersion; names: string[] }
 interface CheckpointRequest { version: ContractVersion; agent: string; sessionId: string }
 interface CheckpointResponse { version: ContractVersion; checkpoint: Checkpoint | null }
-interface UpdateRequest { version: ContractVersion; project: ProjectId; from: Checkpoint | null; to: Checkpoint; add: Entry[]; retire: { entryId: string; replacedBy?: string }[] }
+interface Retirement { entryId: string; retiredAt: string; replacedBy?: string }
+interface UpdateRequest { version: ContractVersion; project: ProjectId; from: Checkpoint | null; to: Checkpoint; add: Entry[]; retire: Retirement[] }
 type UpdateOutcome = 'applied' | 'unchanged' | 'out_of_sequence';
 interface UpdateResponse { version: ContractVersion; outcome: UpdateOutcome; checkpoint: Checkpoint | null; added: string[]; retired: string[] }
 // Decided in this order against the stored checkpoint of the session:
 // 'unchanged'       to.position is at or before the stored position
 // 'applied'         from equals the stored checkpoint (both null for a new session); the stored checkpoint becomes to
 // 'out_of_sequence' anything else; nothing changes and the stored checkpoint is returned
+// An update that would apply but adds an entry that is not active, or whose id is already used, is invalid_input and nothing changes.
+// Additions are applied before retirements, so one update may add an entry and retire it.
 interface MemoryClient { query(request: QueryRequest): QueryResponse; names(request: NamesRequest): NamesResponse; checkpoint(request: CheckpointRequest): CheckpointResponse; update(request: UpdateRequest): UpdateResponse }
 ```
 
@@ -205,24 +216,36 @@ interface CachedEmbedder extends Embedder { }
 
 **Owner Story:** `s5`
 
-**Purpose:** Turning conversation messages into candidate entries that use and tag official names, and keeping and finding entries and checkpoints, without naming a runtime or store.
+**Purpose:** Turning conversation messages into candidate entries that use and tag official names, comparing them with similar ones, and keeping, finding and compacting entries and checkpoints, without naming a runtime or store.
 
 **Interface sketch (type-level):**
 
 ```
 // text is the original wording, read while parsing and not stored.
 interface Message { source: Source; role: 'user' | 'agent'; text: string }
-interface Candidate { kind: EntryKind; text: string; entities: NamedEntity[]; sources: Source[]; replaces: string[] }
-interface Extractor { modelName: string; extract(window: Message[], existing: Entry[], knownNames: string[]): Candidate[] }
+interface Candidate { kind: EntryKind; text: string; entities: NamedEntity[]; sources: Source[] }
+// replaces: ids of entries in stored. replacesEarlier: positions in earlier.
+interface Comparison { outcome: 'new' | 'duplicate' | 'replacement'; replaces: string[]; replacesEarlier: number[] }
+interface Extractor { modelName: string; extract(window: Message[], knownNames: string[]): Candidate[]; compare(candidate: Candidate, stored: Entry[], earlier: Candidate[]): Comparison }
 // Each candidate holds one directive or fact, with the condition or scope that applies to it; one message may give several.
 // Candidate text uses official names, keeping versions, and reuses a known name where it means the same thing.
 // Every implementation returns only entities that appear in the candidate text, with their positions, and no text over 500 characters.
+// The caller gives compare the similar active entries, found by vector and name search, and the candidates kept earlier in the same run.
+// 'duplicate': the candidate means the same as one of them and is not added. 'new': nothing is replaced. 'replacement': at least one is replaced.
+// A replaced earlier candidate not yet stored is added and retired in the same change, so history keeps it.
 interface StoredVector { fingerprint: EncoderFingerprint; values: number[] }
-interface Change { from: Checkpoint | null; to: Checkpoint; add: { entry: Entry; vector: StoredVector }[]; retire: { entryId: string; replacedBy?: string }[] }
+interface Retirement { entryId: string; retiredAt: string; replacedBy?: string }
+interface Change { from: Checkpoint | null; to: Checkpoint; add: { entry: Entry; vector: StoredVector }[]; retire: Retirement[] }
 interface ChangeResult { outcome: 'applied' | 'unchanged' | 'out_of_sequence'; checkpoint: Checkpoint | null }
-interface EntryStore { checkpoint(agent: string, sessionId: string): Checkpoint | null; apply(change: Change): ChangeResult; names(project: ProjectId): string[]; search(project: ProjectId, vector: StoredVector, entities: string[], kind: EntryKind | null, limit: number): { entry: Entry; score: number }[] }
+interface CompactionResult { moved: number; purged: number }
+interface EntryStore { checkpoint(agent: string, sessionId: string): Checkpoint | null; apply(change: Change): ChangeResult; names(project: ProjectId): string[]; search(project: ProjectId, vector: StoredVector, entities: string[], kind: EntryKind | null, limit: number): { entry: Entry; score: number }[]; compact(now: string, purgeAfterDays: number | null): CompactionResult }
 // Guarantees required of every implementation:
 // after a failure at any point, submitting the same change again leaves no entry stored twice;
+// an added entry is accepted only if it is active and its id is used by no active or history entry;
+// only a retirement changes an existing entry; additions are applied before retirements;
+// search never returns a retired entry, whether or not compaction has run;
+// compact moves retired entries to history without their vector or keyword index, removes from history those retired more than purgeAfterDays before now (none when null), and removes old table versions;
+// apply and compact are called only by the single indexer thread;
 // only tagged entities are keyword indexed;
 // an entry whose tagged entity loosely matches a name in the query is a search candidate even if vector search would not have returned it;
 // missing a relevant entry is worse than returning an extra one;
@@ -242,7 +265,7 @@ How entries and named entities are checked and represented in Python, the entrie
 **Owns:** `sc3`, `sc4`, `sc5`
 **Depends on:** `sc1`, `sc10`, `sc2`
 
-Per-platform location rules, the configuration file format and its validation, and how activity is written and rotated. Session archiving itself belongs to a later module.
+Per-platform location rules, the configuration file format and its validation, including the compaction defaults, and how activity is written and rotated. Session archiving itself belongs to a later module.
 
 ### 6.3 Story STORY-690f38931e7d3b57-s3
 
@@ -263,7 +286,7 @@ Wire encoding, endpoint layout, version compatibility rule, time limits, the HTT
 **Owns:** `sc8`, `sc9`
 **Depends on:** `sc1`, `sc10`, `sc2`
 
-The move of the embedding protocol into core/common, of its checks into core/utils and of its cache into core/cache/embedding, and the exact method signatures of the interfaces. The local model's instructions belong to the parser design and the calling agent's steering to the MCP adapter design. The loose matching technique, the ranking and the meaning of a score are left to the store design.
+The move of the embedding protocol into core/common, of its checks into core/utils and of its cache into core/cache/embedding, and the exact method signatures of the interfaces. The local model's instructions belong to the parser design and the calling agent's steering to the MCP adapter design. The loose matching technique, the ranking, the meaning of a score, how history is laid out and how compaction works are left to the store design, and starting compaction on schedule to the memory server design.
 
 ## 7. Non-functional targets
 
@@ -301,9 +324,9 @@ The client needs settings, activity records and project identity.
 
 | Area | Why | Mitigation |
 | :--- | :--- | :--- |
-| Idempotent updates across a crash | A failure between writing entries and advancing the checkpoint could store entries twice, and a rerun model may word them differently. | sc9 requires that resubmitting adds nothing twice; the store design must show how, checking what LanceDB can commit together. |
+| Interrupted writes | A failure between writing entries and advancing the checkpoint could store entries twice, and one during compaction could lose entries that should be kept. | sc9 requires that resubmitting adds nothing twice; the store design must show how updates and compaction survive interruption, checking what LanceDB can commit together. |
 | Positions in history files | Checkpoints and source references assume a position that only increases in an appended file; a rewritten or split file would break both. | The history reader design confirms this for each agent before relying on it. |
-| Normalization by the local model | With no original wording stored, a lost condition or negation, a badly split turn or a wrongly resolved name cannot be detected from stored data. | The parser test measures splitting, kept conditions and names before the parser design is accepted. |
+| Judgments by the local model | With no original wording stored, a lost condition, a badly split turn or a wrong name cannot be detected from stored data; a wrong comparison drops a new rule as a duplicate or retires a valid one, and purging can then erase it. | The parser test measures splitting, kept conditions, names, duplicates and replacements before the parser design is accepted; purging stays off by default. |
 
 ## 9. Alternatives considered
 
